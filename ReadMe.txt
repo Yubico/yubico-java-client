@@ -34,17 +34,19 @@ Eg. In your user login form, add Yubikey as the 2nd factor of authentication
 
 1) Your application verifies the username and password as usual.
 
-2) After verifying username/password, call YubiClient to verify the OTP as 
-   the 2nd-factor strong authentication.
+2) After verifying username/password, call YubiClient to verify the
+   OTP as the 2nd-factor strong authentication.
 
-3) Log the user in or reject the user depends whether the OTP validation result 
-   is true or false.
+3) Log the user in or reject the user depends whether the OTP
+   validation result is true or false.
 
 
-For demo purposes, the above is enough, you can just validate the OTP and let the user in.
+For demo purposes, the above is enough, you can just validate the OTP
+and let the user in.
 
-During production time, it is suggested that you create a database table for yubikey to 
-link the user ID (owner of the key) to the Yubikey DeviceId.
+During production time, it is suggested that you create a database
+table for yubikey to link the user ID (owner of the key) to the
+Yubikey DeviceId.
 
 --------------+-----------
  DeviceId     |  UserId
@@ -55,28 +57,30 @@ bjuilddkfopf       2285
 ..........         ....
 
 
-First time when a user plugs in a Yubikey, the DeviceId non-exists in the table, so you
-ask him/her to register. Verify the OTP to make sure he/she does own that key.
+First time when a user plugs in a Yubikey, the DeviceId non-exists in
+the table, so you ask him/her to register. Verify the OTP to make sure
+he/she does own that key.
 
-Later, when the user comes back to your site, you can just do the above validation 
-steps 1 - 3 and make sure this is the user that owns the device.
+Later, when the user comes back to your site, you can just do the
+above validation steps 1 - 3 and make sure this is the user that owns
+the device.
 
 Refer to mashed life that supports Yubikey. That's a good example:
 
 https://mashedlife.com/yubikey.php
 
 
-------------------------------------------------------------------------------------
-Test Yubico validation service with your Yubikey in action using YubicoClient
-------------------------------------------------------------------------------------
+Test Yubico validation service with your Yubikey in action using
+YubicoClient
+----------------------------------------------------------------
 
 Usage: runIt.bat Auth_ID OTP
 
 Eg. runIt.bat 32 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku
 
-The binary is at code\com\yubico\YubicoClient.class
+The binary is at src\com\yubico\YubicoClient.class
 
-[0] cd code\
+[0] cd src\
 
 [1] Plug Yubikey into your USB port, touch the button to generate the OTP:
 

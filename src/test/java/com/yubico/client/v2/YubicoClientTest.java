@@ -18,7 +18,7 @@ public class YubicoClientTest {
 
     @Before
     public void setup() {
-        client=new YubicoClientImpl();
+        client=new YubicoClientImpl(4711);
     }
 
     @Test
@@ -29,19 +29,19 @@ public class YubicoClientTest {
     @Test
     public void testBadOTP() {
         String otp="kaka";
-        YubicoResponse response = client.verify(4711, otp);
+        YubicoResponse response = client.verify(otp);
         assertNotNull(response);
-        assertTrue(response.getStatus() == YubicoResponseStatus.BAD_OTP);
         assertEquals(otp, response.getOtp());
+        assertTrue(response.getStatus() == YubicoResponseStatus.BAD_OTP);
     }
 
     @Test
     public void testReplayedOTP() {
         String otp="cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-        YubicoResponse response = client.verify(4711, otp);
+        YubicoResponse response = client.verify(otp);
         assertNotNull(response);
-        assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
         assertEquals(otp, response.getOtp());
+        assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
     }
 
 }

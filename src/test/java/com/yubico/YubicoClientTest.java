@@ -21,7 +21,7 @@ public class YubicoClientTest {
 	public void testYubicoClient() {
 		YubicoClient c = new YubicoClient(4711);
 		
-		assertTrue(c.YUBICO_AUTH_SRV_URL.contains("yubico.org"));
+		assertTrue(c.YUBICO_AUTH_SRV_URL.contains("yubico.com"));
 	}
 
 	/**

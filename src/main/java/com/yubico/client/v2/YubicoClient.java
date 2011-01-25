@@ -8,6 +8,9 @@ package com.yubico.client.v2;
  * To change this template use File | Settings | File Templates.
  */
 public interface YubicoClient {
-    public YubicoResponse verify( Integer id, String otp );
+    public YubicoResponse verify( String otp );
+    public void setClientId(Integer id);
+    public Integer getClientId();
+
 }
 

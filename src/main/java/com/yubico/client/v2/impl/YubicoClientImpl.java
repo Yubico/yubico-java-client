@@ -17,11 +17,24 @@ import java.net.URLConnection;
  */
 public class YubicoClientImpl implements YubicoClient {
     private static Logger logger = Logger.getLogger(YubicoClientImpl.class);
+    private Integer clientId;
 
-    public YubicoResponse verify(Integer id, String otp) {
+    public YubicoClientImpl(Integer id) {
+        this.clientId=id;
+    }
+
+    public Integer getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public YubicoResponse verify(String otp) {
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-            URL srv = new URL("http://api.yubico.com/wsapi/2.0/verify?id=" + id +
+            URL srv = new URL("http://api.yubico.com/wsapi/2.0/verify?id=" + clientId +
                     "&otp=" + otp +
                     "&timestamp=1" +
                     "&nonce=" + nonce
@@ -45,6 +58,9 @@ public class YubicoClientImpl implements YubicoClient {
             logger.warn("Got exception when parsing response from server.", e);
             return null;
         }
+
+
+
     }
 }
 

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Yubico AB.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,37 +28,29 @@
  *  SUCH DAMAGE.
  */
 
-package com.yubico;
+package com.yubico.jaas;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import java.security.Principal;
 
 /**
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
-public class YubicoClientTest {
-
+public class YubicoPrincipal implements Principal {
+	/** The public ID of a Yubikey */
+	private String publicId;
+	
 	/**
-	 * Test method for {@link com.yubico.YubicoClient#YubicoClient(int)}.
-	 */
-	@SuppressWarnings("static-access")
-	@Test
-	public void testYubicoClient() {
-		YubicoClient c = new YubicoClient(4711);
-		
-		assertTrue(c.YUBICO_AUTH_SRV_URL.contains("yubico.com"));
-	}
+     * Constructor.
+     * 
+     * @param newName principal's name
+     */
+    public YubicoPrincipal(String s) {
+        this.publicId = s;
+    }
 
-	/**
-	 * Test method for {@link com.yubico.YubicoClient#getId()}.
-	 */
-	@Test
-	public void testGetId() {
-		YubicoClient c = new YubicoClient(4711);
-
-		assertEquals(4711, c.getId());
-	}
-
+    /** {@inheritDoc} */
+    public String getName() {
+        return publicId;
+    }
 }

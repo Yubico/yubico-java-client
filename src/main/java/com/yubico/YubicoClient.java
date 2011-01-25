@@ -76,6 +76,13 @@ public class YubicoClient {
 		return _response;
 	}
 	
+	/**
+	 * Verify otp against online verification service.
+	 *
+	 * @param otp	The OTP to verify, in modhex format.
+	 * 
+	 * @return bool		Verified OK or not?
+	 */
 	public boolean verify( String otp ) {
 
 		boolean result = false;
@@ -104,6 +111,23 @@ public class YubicoClient {
 		return result;
 		
 	} // End of verify
+	
+	/**
+	 * Extract the public ID of a Yubikey from an OTP it generated.
+	 *
+	 * @param otp	The OTP to extract ID from, in modhex format.
+	 * 
+	 * @return string	Public ID of Yubikey that generated otp. Between 0 and 12 characters.
+	 */
+	public String getPublicId(String otp) {
+		Integer len = otp.length();
+		
+		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
+		 * (if anything) is the public ID of the Yubikey. The ID can be set to ''
+		 * through personalization.
+		 */
+		return otp.substring(0, len - 32);
+	} // End of getPublicId
 	
 	public static void main (String args []) throws Exception
 	{

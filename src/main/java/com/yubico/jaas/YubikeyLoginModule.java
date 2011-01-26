@@ -4,7 +4,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * * Redistributions of source code must retain the above copyright
  *   notice, this list of conditions and the following disclaimer.
  *
@@ -30,6 +30,8 @@
 package com.yubico.jaas;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -48,27 +50,27 @@ import com.yubico.YubicoClient;
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a
  * Yubikey Validation Service.
- * 
+ *
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
 public class YubikeyLoginModule implements LoginModule {
 
 	/* Options */
-	public static final String OPTION_YUBICO_CLIENT_ID = "clientId"; 
-	
+	public static final String OPTION_YUBICO_CLIENT_ID = "clientId";
+
 	/* JAAS stuff */
 	private Subject subject;
 	private CallbackHandler callbackHandler;
-	
+
 	/* YubicoClient settings */
 	private Integer clientId;
 	private YubicoClient yc;
-	
-    private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
 
-    private YubicoPrincipal principal;
-    
+	private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
+
+	private YubicoPrincipal principal;
+
 	/* (non-Javadoc)
 	 * @see javax.security.auth.spi.LoginModule#abort()
 	 */
@@ -95,9 +97,9 @@ public class YubikeyLoginModule implements LoginModule {
 		log.debug("Initializing YubikeyLoginModule");
 		this.subject = newSubject;
 		this.callbackHandler = newCallbackHandler;
-		
+
 		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
-		
+
 		this.yc = new YubicoClient(this.clientId);
 	}
 
@@ -106,32 +108,54 @@ public class YubikeyLoginModule implements LoginModule {
 	 */
 	public boolean login() throws LoginException {
 		log.debug("Begin OTP login");
-		
-		PasswordCallback passCb = new PasswordCallback("Enter OTP: ", false);
-		try {
-            if (callbackHandler != null) {
-                callbackHandler.handle(new Callback[] { passCb });
 
-                char c[] = passCb.getPassword();
-                String otp = new String(c);
-                log.debug("Got OTP {}", otp);
-        			
-                if (this.yc.verify(otp)) {
-                	String publicId = this.yc.getPublicId(otp);
-                	log.info("OTP verified successfully (YubiKey {})", publicId);
-                	principal = new YubicoPrincipal(publicId);
-                	return true;			
-                }
-                log.info("OTP did NOT verify");
-            } else {
-            	throw new LoginException("No callback handler available in login()");
-            }
-		} catch (IOException ex) {
-			log.error("Unable to verify OTP", ex);
-		} catch (UnsupportedCallbackException ex) {
-			log.error("Callback type not supported", ex);				
+		List<String> otps = get_tokens();
+		for (String otp : otps) {
+			log.trace("Checking OTP {}", otp);
+
+			if (this.yc.verify(otp)) {
+				String publicId = this.yc.getPublicId(otp);
+				log.info("OTP verified successfully (YubiKey {})", publicId);
+				principal = new YubicoPrincipal(publicId);
+				return true;
+			}
+			log.info("OTP did NOT verify");
 		}
 		return false;
+	}
+
+	private List<String> get_tokens() throws LoginException {
+		//PasswordCallback passCb = new PasswordCallback("Enter OTP: ", false);
+		MultiValuePasswordCallback mv_passCb = new MultiValuePasswordCallback("Enter authentication tokens: ", false);
+		List<String> result = new ArrayList<String>();
+
+		try {
+			if (callbackHandler == null) {
+				throw new LoginException("No callback handler available in login()");
+			}
+
+			/* Fetch a password using the callbackHandler */
+			callbackHandler.handle(new Callback[] { mv_passCb });
+
+			for (char[] c : mv_passCb.getSecrets()) {
+				String s = new String(c);
+				/* Check that OTP is at least 32 chars before we verify it. User might have entered
+				 * some other password instead of an OTP, and we don't want to send that, possibly
+				 * in clear text, over the network.
+				 */
+				if (s.length() < 32) {
+					log.info("Skipping token, not a valid YubiKey OTP (too short, {} < 32)", s.length());
+				} else {
+					result.add(s);
+				}
+			}
+		} catch (UnsupportedCallbackException ex) {
+			log.error("Callback type not supported", ex);
+		} catch (IOException ex) {
+			log.error("CallbackHandler failed", ex);
+		}
+
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -141,5 +165,48 @@ public class YubikeyLoginModule implements LoginModule {
 		log.debug("In logout()");
 		subject.getPrincipals().remove(this.principal);
 		return false;
+	}
+
+	/**
+	 * A class that extends PasswordCallback to keep a list of all values
+	 * set using setPassword(). If the application using this JAAS plugin
+	 * wants to pass us multiple authentication factors, it just calls
+	 * setPassword() more than once in the CallbackHandler.
+	 */
+	public class MultiValuePasswordCallback extends PasswordCallback {
+		private static final long serialVersionUID = 5362005708680822656L;
+		private ArrayList<char[]> secrets = new ArrayList<char[]>();
+
+		public MultiValuePasswordCallback(String prompt, boolean echoOn) {
+			super(prompt, echoOn);
+		}
+
+		/**
+		 * @return Returns all the secrets.
+		 */
+		public List<char[]> getSecrets() {
+			return secrets;
+		}
+
+		/**
+		 * @param password A secret to add to our list.
+		 */
+		public void setPassword(char[] password) {
+			this.secrets.add(password);
+		}
+
+		/**
+		 * Tries to clear all the passwords from memory.
+		 */
+		public void clearPassword() {
+			for (char pw[] : this.secrets) {
+				for (int i = 0; i < pw.length; i++) {
+					pw[i] = 0;
+				}
+			}
+
+			/* Now discard the list. */
+			this.secrets = new ArrayList<char []>();
+		}
 	}
 }

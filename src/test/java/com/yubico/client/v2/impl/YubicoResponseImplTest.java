@@ -31,13 +31,19 @@ public class YubicoResponseImplTest {
 
     @Test
     public void testParser() {
-        String testData="h=bkpBCQZ/kbVDBDL9Eaa/GIaWBBk=\n" +
-                    "t=2011-01-26T11:08:49Z0316\n" +
-                    "status=BAD_OTP";
+        String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
+                            "t=2011-01-26T11:48:21Z0323\n" +
+                            "otp=cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd\n" +
+                            "nonce=askjdnkagfdgdgdgggggggddddddddd\n" +
+                            "status=REPLAYED_OTP\n";
+
         try {
             YubicoResponse response = new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
-            assertEquals("2011-01-26T11:08:49Z0316",response.getT());
-            // TBD: More asserts here
+            assertEquals("2011-01-26T11:48:21Z0323",response.getT());
+            assertEquals("lPuwrWh8/5ZuRBN1q+v7/pCOfYo=", response.getH());
+            assertEquals("REPLAYED_OTP", response.getStatus().toString());
+            assertEquals("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd", response.getOtp());
+            assertEquals("askjdnkagfdgdgdgggggggddddddddd", response.getNonce());
         } catch (IOException ioe) {
             fail("Encountered an exception");
         }

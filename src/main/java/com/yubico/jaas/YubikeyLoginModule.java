@@ -113,6 +113,19 @@ public class YubikeyLoginModule implements LoginModule {
                 callbackHandler.handle(new Callback[] { passCb });
 
                 char c[] = passCb.getPassword();
+                if (c == null) {
+                	throw new LoginException ("Could not get password using PasswordCallback");
+                }
+                
+                /* Check that OTP is at least 32 chars before we verify it. User might have entered
+                 * some other password instead of an OTP, and we don't want to send that, possibly
+                 * in clear text, over the network.
+                 */
+                if (c.length < 32) {
+                	log.info("Invalid YubiKey OTP (too short, {} < 32)", c.length);
+                	return false;                	
+                }
+                
                 String otp = new String(c);
                 log.debug("Got OTP {}", otp);
         			

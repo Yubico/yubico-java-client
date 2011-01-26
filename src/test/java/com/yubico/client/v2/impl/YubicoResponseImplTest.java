@@ -30,11 +30,36 @@ public class YubicoResponseImplTest {
     }
 
     @Test
+    public void testToString() {
+        String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
+                            "t=2011-01-26T11:48:21Z0323\n" +
+                            "otp=cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd\n" +
+                            "nonce=askjdnkagfdgdgdgggggggddddddddd\n" +
+                            "timestamp=4711\n" +
+                            "sessioncounter=42\n" +
+                            "sessionuse=666\n" +
+                            "sl=foo\n" +
+                            "status=REPLAYED_OTP\n";
+
+        try {
+            YubicoResponse response = new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            assertTrue(response.toString().contains("REPLAYED_OTP"));
+            assertTrue(response.toString().contains("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd"));
+        } catch (IOException ioe) {
+            fail("Encountered an exception");
+        }
+    }
+
+    @Test
     public void testParser() {
         String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
                             "t=2011-01-26T11:48:21Z0323\n" +
                             "otp=cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd\n" +
                             "nonce=askjdnkagfdgdgdgggggggddddddddd\n" +
+                            "timestamp=4711\n" +
+                            "sessioncounter=42\n" +
+                            "sessionuse=666\n" +
+                            "sl=foo\n" +
                             "status=REPLAYED_OTP\n";
 
         try {
@@ -44,6 +69,11 @@ public class YubicoResponseImplTest {
             assertEquals("REPLAYED_OTP", response.getStatus().toString());
             assertEquals("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd", response.getOtp());
             assertEquals("askjdnkagfdgdgdgggggggddddddddd", response.getNonce());
+            assertEquals("4711", response.getTimestamp());
+            assertEquals("42", response.getSessioncounter());
+            assertEquals("foo", response.getSl());
+            assertEquals("666", response.getSessionuse());
+
         } catch (IOException ioe) {
             fail("Encountered an exception");
         }

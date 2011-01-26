@@ -28,6 +28,10 @@ public class YubicoResponseImpl implements YubicoResponse {
     private String nonce;
 
     public YubicoResponseImpl(InputStream inStream) throws IOException {
+        if(inStream == null) {
+            throw new IOException("InputStream argument was null");
+        }
+
         BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
 
         String inputLine;

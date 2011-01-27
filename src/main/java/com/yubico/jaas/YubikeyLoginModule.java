@@ -109,6 +109,10 @@ public class YubikeyLoginModule implements LoginModule {
 	public boolean login() throws LoginException {
 		log.debug("Begin OTP login");
 
+		if (callbackHandler == null) {
+			throw new LoginException("No callback handler available in login()");
+		}
+
 		List<String> otps = get_tokens();
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
@@ -130,10 +134,6 @@ public class YubikeyLoginModule implements LoginModule {
 		List<String> result = new ArrayList<String>();
 
 		try {
-			if (callbackHandler == null) {
-				throw new LoginException("No callback handler available in login()");
-			}
-
 			/* Fetch a password using the callbackHandler */
 			callbackHandler.handle(new Callback[] { mv_passCb });
 

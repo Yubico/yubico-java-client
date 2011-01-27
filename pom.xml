@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.yubico.java</groupId>
   <artifactId>yubico-validation-client</artifactId>
-  <version>1.0</version>
+  <version>1.0-shib</version>
   <name>Yubico OTP validation client</name>
   <description>Client library written in Java for verifying Yubikey one-time passwords (OTPs).</description>
   <organization>
@@ -35,7 +35,14 @@
   		<artifactId>slf4j-api</artifactId>
   		<version>1.6.1</version>
   		<type>jar</type>
-  		<scope>compile</scope>
+  		<scope>runtime</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.opensaml</groupId>
+  		<artifactId>opensaml</artifactId>
+  		<version>2.4.1</version>
+  		<type>jar</type>
+  		<scope>runtime</scope>
   	</dependency>
   </dependencies>
 </project>

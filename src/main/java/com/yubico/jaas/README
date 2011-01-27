@@ -1,0 +1,51 @@
+These are JAAS-plugins for authentication using Yubikeys (primarily).
+
+For information about JAAS configuration, see
+  http://download.oracle.com/javase/1.5.0/docs/api/javax/security/auth/login/Configuration.html
+
+YubikeyLoginModule :
+
+  This JAAS plugin authenticates OTPs against the online Yubico validation servers.
+
+  Parameters :
+
+     clientId	Your Client API key for the validation service. Not actually needed
+     		for validation v1, so set this to 4711.
+
+  Example configuration :
+
+    YourApplicationAuth {
+        com.yubico.jaas.YubikeyLoginModule required
+    	    clientId="4711";
+    };	
+  
+
+HTTPOathHotpLoginModule :
+
+  This JAAS plugin validates OATH-HOTPs using HTTP. The username and password
+  entered in your application will be used to attempt a HTTP Basic Auth login
+  to an URL you specify, and if that succeeds and the resulting response contains
+  an expected string, authentication is granted.
+
+  One tested backend solution for validation of the HOTPs is the Apache mod_authn_otp :
+
+    http://code.google.com/p/mod-authn-otp/
+
+  Parameters :
+
+     protectedUrl	(required) The URL you have protected with OATH-HOTP
+     			HTTP Basic Auth.
+     expectedOutput	Default is "Authenticated OK".
+     minLength		Default is 6.
+     maxLength		Default is 12 (6-8 bytes HOTP and 4 bytes PIN).
+     requireAllDigits	Default is "true".
+
+  Example configuration :
+
+    YourApplicationAuth {
+    	com.yubico.jaas.HTTPOathHotpLoginModule sufficient
+	    protectedUrl = "http://auth.example.com/oath-protected/"
+	    expectedOutput = "User authenticated OK";
+    };	
+  
+

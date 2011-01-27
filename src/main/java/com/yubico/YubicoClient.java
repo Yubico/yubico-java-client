@@ -87,8 +87,6 @@ public class YubicoClient {
 
 		boolean result = false;
 		
-		_response = "";
-		
 		try {			
 	        URL srv = new URL(YUBICO_AUTH_SRV_URL + _clientId + "&otp=" + otp);
 	        URLConnection conn = srv.openConnection(); 
@@ -96,8 +94,7 @@ public class YubicoClient {
 	                                conn.getInputStream()));
 	        String inputLine;
 	        while ((inputLine = in.readLine()) != null) { 
-	        	_response += inputLine + "\n";
-	            if (inputLine.startsWith("status=")) {
+		    if (inputLine.startsWith("status=")) {
 	            	if (inputLine.equals("status=OK")) {
 	            		result = true;
 	            	}

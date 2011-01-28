@@ -13,8 +13,8 @@ public class Cmd {
     {
         if (args.length != 2) {
             System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
-            System.err.println("\nUsage: java com.yubico.client.v2.YubicoClient Auth_ID OTP");
-            System.err.println("\nEg. java com.yubico.client.v2.YubicoClient 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
+            System.err.println("\nUsage: java -jar client.jar Auth_ID OTP");
+            System.err.println("\nEg. java -jar client.jar 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
             System.err.println("\nTouch Yubikey to generate the OTP. Visit Yubico.com for more details.");
             return;
         }
@@ -32,7 +32,8 @@ public class Cmd {
             System.out.println("\n* Failed to verify OTP");
         }
 
-        System.out.println("\n* Last response:\n" + response);
+        System.out.println("\n* Last response: " + response);
+        System.out.println("\n");
 
     } // End of main
 

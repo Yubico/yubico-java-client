@@ -42,7 +42,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.yubico.client.v1.YubicoClient</mainClass>
+                            <mainClass>com.yubico.client.v2.Cmd</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

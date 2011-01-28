@@ -26,7 +26,7 @@ public class Cmd {
         yc.setClientId(authId);
         YubicoResponse response = yc.verify(otp);
 
-        if(response.getStatus() == YubicoResponseStatus.OK) {
+        if(response!=null && response.getStatus() == YubicoResponseStatus.OK) {
             System.out.println("\n* OTP verified OK");
         } else {
             System.out.println("\n* Failed to verify OTP");

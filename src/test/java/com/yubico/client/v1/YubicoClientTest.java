@@ -1,11 +1,10 @@
 /**
  * 
  */
-package com.yubico;
+package com.yubico.client.v1;
 
 import static org.junit.Assert.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,7 +14,7 @@ import org.junit.Test;
 public class YubicoClientTest {
 
 	/**
-	 * Test method for {@link com.yubico.YubicoClient#YubicoClient(int)}.
+	 * Test method for {@link com.yubico.client.v1.YubicoClient#YubicoClient(int)}.
 	 */
 	@Test
 	public void testYubicoClient() {
@@ -25,7 +24,7 @@ public class YubicoClientTest {
 	}
 
 	/**
-	 * Test method for {@link com.yubico.YubicoClient#getId()}.
+	 * Test method for {@link com.yubico.client.v1.YubicoClient#getId()}.
 	 */
 	@Test
 	public void testGetId() {

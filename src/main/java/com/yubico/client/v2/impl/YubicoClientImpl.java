@@ -27,7 +27,7 @@ public class YubicoClientImpl extends YubicoClient {
     public YubicoResponse verify(String otp) {
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-            URL srv = new URL("http://api.yubico.com/wsapi/2.0/verify?id=" + clientId +
+            URL srv = new URL("https://api.yubico.com/wsapi/2.0/verify?id=" + clientId +
                     "&otp=" + otp +
                     "&timestamp=1" +
                     "&nonce=" + nonce

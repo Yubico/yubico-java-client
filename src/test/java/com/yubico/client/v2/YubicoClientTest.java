@@ -18,7 +18,8 @@ public class YubicoClientTest {
 
     @Before
     public void setup() {
-        client=new YubicoClientImpl(4711);
+        client=YubicoClient.getClient();
+        client.setClientId(4711);
     }
 
     @Test

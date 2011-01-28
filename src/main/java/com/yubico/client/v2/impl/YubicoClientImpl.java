@@ -15,20 +15,13 @@ import java.net.URLConnection;
  * Time: 2:34 PM
  * To change this template use File | Settings | File Templates.
  */
-public class YubicoClientImpl implements YubicoClient {
+public class YubicoClientImpl extends YubicoClient {
     private static Logger logger = Logger.getLogger(YubicoClientImpl.class);
-    private Integer clientId;
+
+    public YubicoClientImpl() {}
 
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
-    }
-
-    public Integer getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Integer clientId) {
-        this.clientId = clientId;
     }
 
     public YubicoResponse verify(String otp) {

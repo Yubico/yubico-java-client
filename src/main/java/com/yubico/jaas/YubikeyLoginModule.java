@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
@@ -44,6 +45,10 @@ import javax.security.auth.spi.LoginModule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import com.yubico.YubicoClient;
 
@@ -107,35 +112,50 @@ public class YubikeyLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#login()
 	 */
 	public boolean login() throws LoginException {
+		boolean validated = false;
+		NameCallback nameCb = new NameCallback("Enter username: ");
+
 		log.debug("Begin OTP login");
 
 		if (callbackHandler == null) {
 			throw new LoginException("No callback handler available in login()");
 		}
-
-		List<String> otps = get_tokens();
+		
+		List<String> otps = get_tokens(nameCb);
+		
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
 
 			if (this.yc.verify(otp)) {
 				String publicId = this.yc.getPublicId(otp);
 				log.info("OTP verified successfully (YubiKey {})", publicId);
-				principal = new YubicoPrincipal(publicId);
-				return true;
+				if (is_right_user(nameCb.getName(), publicId)) {
+					principal = new YubicoPrincipal(publicId);
+					/* Don't just return here, we want to "consume" all OTPs if 
+					 * more than one is provided.
+					 */
+					validated = true;
+				}
 			}
-			log.info("OTP did NOT verify");
+			if (! validated) {
+				log.info("OTP did NOT verify");
+			}
 		}
-		return false;
+		return validated;
 	}
 
-	private List<String> get_tokens() throws LoginException {
-		//PasswordCallback passCb = new PasswordCallback("Enter OTP: ", false);
+	private boolean is_right_user(String username, String publicId) {
+	    //log.trace("Check if YubiKey {} belongs to user {}", publicId, username);
+	    return true;
+	}
+
+	private List<String> get_tokens(NameCallback nameCb) throws LoginException {
 		MultiValuePasswordCallback mv_passCb = new MultiValuePasswordCallback("Enter authentication tokens: ", false);
 		List<String> result = new ArrayList<String>();
 
 		try {
 			/* Fetch a password using the callbackHandler */
-			callbackHandler.handle(new Callback[] { mv_passCb });
+			callbackHandler.handle(new Callback[] { nameCb, mv_passCb });
 
 			for (char[] c : mv_passCb.getSecrets()) {
 				String s = new String(c);

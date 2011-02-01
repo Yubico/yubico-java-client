@@ -50,8 +50,7 @@ import javax.security.auth.spi.LoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import org.apache.commons.codec.binary.Base64;
-import org.opensaml.xml.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * A JAAS module for verifying OATH-HOTP OTPs (One Time Passwords) by
@@ -174,8 +173,8 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 	private boolean verify_hotp(String userName, String otp) {
 		try {
 			String authString = userName + ":" + otp;
-			String authStringEnc = Base64.encodeBytes(authString.getBytes(), Base64.DONT_BREAK_LINES);
-
+			String authStringEnc = Base64.encodeBase64(authString.getBytes()).toString();
+			
 			URL url = new URL(this.protectedUrl);
 			URLConnection conn = url.openConnection();
 			conn.setRequestProperty("Authorization", "Basic " + authStringEnc);

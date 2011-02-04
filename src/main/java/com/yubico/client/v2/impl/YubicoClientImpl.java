@@ -2,7 +2,9 @@ package com.yubico.client.v2.impl;
 
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -39,7 +41,7 @@ import java.net.URLConnection;
 */
 
 public class YubicoClientImpl extends YubicoClient {
-    private static Logger logger = Logger.getLogger(YubicoClientImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(YubicoClientImpl.class);
 
     public YubicoClientImpl() {}
 

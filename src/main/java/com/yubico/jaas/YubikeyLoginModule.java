@@ -43,7 +43,7 @@ import javax.security.auth.spi.LoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yubico.YubicoClient;
+import com.yubico.client.v1.YubicoClient;
 
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a

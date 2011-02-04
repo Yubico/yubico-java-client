@@ -67,12 +67,14 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 	public static final String OPTION_YUBICO_MIN_LENGTH			= "minLength";
 	public static final String OPTION_YUBICO_MAX_LENGTH			= "maxLength";
 	public static final String OPTION_YUBICO_REQUIRE_ALL_DIGITS	= "requireAllDigits";
+	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 
 	public String protectedUrl;
 	public String expectedOutput = "Authenticated OK";
 	public int minLength = 6;
 	public int maxLength = 12;
 	public boolean requireAllDigits = true;
+	public String idRealm;
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -132,6 +134,10 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 				log.error("Bad value for option {}", OPTION_YUBICO_REQUIRE_ALL_DIGITS);
 			}
 		}
+		/* Realm of principals added after authentication */
+		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
+			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -155,7 +161,7 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 
 			if (verify_hotp(userName, otp)) {				
 				log.info("OATH-HOTP verified successfully");
-				principal = new YubicoPrincipal(userName);
+				principal = new YubicoPrincipal(userName, this.idRealm);
 				return true;
 			}
 			log.info("OATH-HOTP did NOT verify");

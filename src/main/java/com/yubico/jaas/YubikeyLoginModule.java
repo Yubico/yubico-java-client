@@ -60,12 +60,12 @@ import com.yubico.YubicoClient;
  *
  */
 public class YubikeyLoginModule implements LoginModule {
-
 	/* Options */
 	public static final String OPTION_YUBICO_CLIENT_ID			= "clientId";
 	public static final String OPTION_YUBICO_ID2NAME_TEXTFILE	= "id2name_textfile";
 	public static final String OPTION_YUBICO_VERIFY_YK_OWNER	= "verify_yubikey_owner";
 	public static final String OPTION_YUBICO_AUTO_PROVISION		= "auto_provision_owner";
+	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -78,16 +78,20 @@ public class YubikeyLoginModule implements LoginModule {
 	private String id2name_textfile;
 	private boolean verify_yubikey_owner;
 	private boolean auto_provision_owners;
+	private String idRealm;
 
 	private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
 
-	private YubicoPrincipal principal;
+	private ArrayList<YubicoPrincipal> principals = new ArrayList<YubicoPrincipal>();
 
 	/* (non-Javadoc)
 	 * @see javax.security.auth.spi.LoginModule#abort()
 	 */
 	public boolean abort() throws LoginException {
-		subject.getPrincipals().remove(this.principal);
+		log.trace("In abort()");
+		for (YubicoPrincipal p : this.principals) {
+			this.subject.getPrincipals().remove(p);			
+		}
 		return true;
 	}
 
@@ -95,9 +99,23 @@ public class YubikeyLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#commit()
 	 */
 	public boolean commit() throws LoginException {
-		log.debug("In commit()");
-		subject.getPrincipals().add(this.principal);
+		log.trace("In commit()");
+		for (YubicoPrincipal p : this.principals) {
+			log.debug("Committing principal {}", p);
+			this.subject.getPrincipals().add(p);
+		}
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.security.auth.spi.LoginModule#logout()
+	 */
+	public boolean logout() throws LoginException {
+		log.trace("In logout()");
+		for (YubicoPrincipal p : this.principals) {
+			this.subject.getPrincipals().remove(p);	
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)
@@ -134,6 +152,11 @@ public class YubikeyLoginModule implements LoginModule {
 				this.auto_provision_owners = true;
 			}
 		}	
+		
+		/* Realm of principals added after authentication */
+		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
+			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -158,7 +181,7 @@ public class YubikeyLoginModule implements LoginModule {
 				String publicId = this.yc.getPublicId(otp);
 				log.info("OTP verified successfully (YubiKey {})", publicId);
 				if (is_right_user(nameCb.getName(), publicId)) {
-					principal = new YubicoPrincipal(publicId);
+					this.principals.add(new YubicoPrincipal(publicId, this.idRealm));
 					/* Don't just return here, we want to "consume" all OTPs if 
 					 * more than one is provided.
 					 */
@@ -248,15 +271,6 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 
 		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.security.auth.spi.LoginModule#logout()
-	 */
-	public boolean logout() throws LoginException {
-		log.debug("In logout()");
-		subject.getPrincipals().remove(this.principal);
-		return false;
 	}
 
 	/**

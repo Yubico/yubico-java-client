@@ -9,8 +9,18 @@ YubikeyLoginModule :
 
   Parameters :
 
-     clientId	Your Client API key for the validation service. Not actually needed
-     		for validation v1, so set this to 4711.
+     clientId			Your Client API key for the validation service. Not actually
+     				needed for validation v1, so set this to 4711.
+     id2name_textfile		Filename with "public_id<SP>username" info about which user
+     				owns what key.
+     verify_yubikey_owner	default: "true". Only set to "false" in pre-production
+     				environments, otherwise ANY Yubikey will be accepted for ANY
+				user!
+     auto_provision_owner	default: "false". If set to "true", we will automatically
+     				record any new Yubikeys used as belonging to the user that
+				first logged in with them.
+     id_realm			Something to append to the Yubikey public id when we construct
+     				principals (e.g. "@my-validation-service.example.org").
 
   Example configuration :
 
@@ -39,6 +49,9 @@ HTTPOathHotpLoginModule :
      minLength		Default is 6.
      maxLength		Default is 12 (6-8 bytes HOTP and 4 bytes PIN).
      requireAllDigits	Default is "true".
+     id_realm		Something to append to the username when we construct
+     			principals (e.g. "@my-validation-service.example.org").
+
 
   Example configuration :
 

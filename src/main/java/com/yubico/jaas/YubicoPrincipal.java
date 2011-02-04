@@ -39,18 +39,40 @@ import java.security.Principal;
 public class YubicoPrincipal implements Principal {
 	/** The public ID of a Yubikey */
 	private String publicId;
+	/** The realm of this id. Something like a domain name. */
+	private String realm = null;
 	
 	/**
      * Constructor.
      * 
-     * @param newName principal's name
+     * @param id  principal's name - YubiKey public id.
      */
-    public YubicoPrincipal(String s) {
-        this.publicId = s;
+    public YubicoPrincipal(String id) {
+        this.publicId = id;
+    }
+
+	/**
+     * Constructor.
+     * 
+     * @param id  principal's name - YubiKey public id.
+     * @param realm  Realm of id.
+     */
+    public YubicoPrincipal(String id, String realm) {
+        this.publicId = id;
+        this.realm = realm;
     }
 
     /** {@inheritDoc} */
     public String getName() {
+    	if (realm != null) {
+    		return this.publicId + this.realm;    		
+    	}
         return publicId;
     }
+    
+    /** {@inheritDoc} */
+    public String toString() {
+    	return "<YubicoPrincipal>" + getName();
+    }
+    
 }

@@ -34,7 +34,7 @@
 
 // Written by Paul Chen <paul@yubico.com>, March 2008.
 
-package com.yubico;
+package com.yubico.client.v1;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -130,8 +130,8 @@ public class YubicoClient {
 	{
 		if (args.length != 2) {
             System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
-            System.err.println("\nUsage: java com.yubico.YubicoClient Auth_ID OTP");
-            System.err.println("\nEg. java com.yubico.YubicoClient 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
+            System.err.println("\nUsage: java com.yubico.client.v1.YubicoClient Auth_ID OTP");
+            System.err.println("\nEg. java com.yubico.client.v1.YubicoClient 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
             System.err.println("\nTouch Yubikey to generate the OTP. Visit Yubico.com for more details.");
             return;
 		}

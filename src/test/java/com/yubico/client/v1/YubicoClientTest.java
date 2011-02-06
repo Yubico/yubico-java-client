@@ -28,7 +28,7 @@
  *  SUCH DAMAGE.
  */
 
-package com.yubico;
+package com.yubico.client.v1;
 
 import static org.junit.Assert.*;
 

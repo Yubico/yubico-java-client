@@ -1,16 +1,37 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.yubico.java</groupId>
-  <artifactId>yubico-validation-client</artifactId>
-  <version>1.0-shib</version>
-  <name>Yubico OTP validation client</name>
-  <description>Client library written in Java for verifying Yubikey one-time passwords (OTPs).</description>
-  <organization>
-  	<name>Yubico AB</name>
-  	<url>http://www.yubico.com/</url>
-  </organization>
-  <build>
- 	<plugins>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.yubico.java</groupId>
+    <artifactId>yubico-validation-client</artifactId>
+    <version>1.0-shib</version>
+    <name>Yubico OTP validation client</name>
+    <description>Client library written in Java for verifying Yubikey one-time passwords (OTPs).</description>
+    <organization>
+        <name>Yubico AB</name>
+        <url>http://www.yubico.com/</url>
+    </organization>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-api</artifactId>
+        	<version>1.6.1</version>
+        </dependency>
+  	<dependency>
+  		<groupId>commons-codec</groupId>
+  		<artifactId>commons-codec</artifactId>
+  		<version>1.4</version>
+  	</dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -42,27 +63,6 @@
                     </execution>
                 </executions>
             </plugin>
-  	</plugins>
-  </build>
-  <dependencies>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.8.2</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.slf4j</groupId>
-  		<artifactId>slf4j-api</artifactId>
-  		<version>1.6.1</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>commons-codec</groupId>
-  		<artifactId>commons-codec</artifactId>
-  		<version>1.4</version>
-  	</dependency>
-  </dependencies>
+        </plugins>
+    </build>
 </project>

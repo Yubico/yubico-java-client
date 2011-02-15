@@ -63,6 +63,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 */
 	public static final String OPTION_YUBICO_CLIENT_ID			= "clientId";
 	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
+	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -72,6 +73,8 @@ public class YubikeyLoginModule implements LoginModule {
 	private Integer clientId;
 	private YubicoClient yc;
 
+	private boolean soft_fail_on_no_otps;
+
 	private YubikeyToUserMapImpl ykmap;
 	private String idRealm;
 
@@ -79,13 +82,14 @@ public class YubikeyLoginModule implements LoginModule {
 
 	private ArrayList<YubicoPrincipal> principals = new ArrayList<YubicoPrincipal>();
 
+
 	/* (non-Javadoc)
 	 * @see javax.security.auth.spi.LoginModule#abort()
 	 */
 	public boolean abort() throws LoginException {
 		log.trace("In abort()");
 		for (YubicoPrincipal p : this.principals) {
-			this.subject.getPrincipals().remove(p);			
+			this.subject.getPrincipals().remove(p);
 		}
 		return true;
 	}
@@ -108,7 +112,7 @@ public class YubikeyLoginModule implements LoginModule {
 	public boolean logout() throws LoginException {
 		log.trace("In logout()");
 		for (YubicoPrincipal p : this.principals) {
-			this.subject.getPrincipals().remove(p);	
+			this.subject.getPrincipals().remove(p);
 		}
 		return false;
 	}
@@ -131,7 +135,14 @@ public class YubikeyLoginModule implements LoginModule {
 		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
 			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
 		}
-		
+
+		/* Should this JAAS module be ignored when no OTPs are supplied? */
+		if (options.get(OPTION_YUBICO_SOFT_FAIL_NO_OTPS) != null) {
+			if ("true".equals(options.get(OPTION_YUBICO_SOFT_FAIL_NO_OTPS).toString())) {
+				this.soft_fail_on_no_otps = true;
+			}
+		}
+
 		this.ykmap = new YubikeyToUserMapImpl(options);
 	}
 
@@ -149,6 +160,10 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 
 		List<String> otps = get_tokens(nameCb);
+		if (otps.size() == 0 && this.soft_fail_on_no_otps) {
+			log.debug("No OTPs found, and soft-fail is on. Making JAAS ignore this module.");
+			return false;
+		}
 
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
@@ -158,7 +173,7 @@ public class YubikeyLoginModule implements LoginModule {
 				log.info("OTP verified successfully (YubiKey {})", publicId);
 				if (is_right_user(nameCb.getName(), publicId)) {
 					this.principals.add(new YubicoPrincipal(publicId, this.idRealm));
-					/* Don't just return here, we want to "consume" all OTPs if 
+					/* Don't just return here, we want to "consume" all OTPs if
 					 * more than one is provided.
 					 */
 					validated = true;
@@ -168,7 +183,11 @@ public class YubikeyLoginModule implements LoginModule {
 				log.info("OTP did NOT verify");
 			}
 		}
-		return validated;
+		if (validated) {
+			return true;
+		}
+
+		throw new LoginException("YubiKey OTP authentication failed");
 	}
 
 	private boolean is_right_user(String username, String publicId) {

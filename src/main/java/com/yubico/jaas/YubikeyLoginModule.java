@@ -47,7 +47,9 @@ import javax.security.auth.spi.LoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yubico.client.v1.YubicoClient;
+import com.yubico.client.v2.YubicoClient;
+import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.YubicoResponseStatus;
 
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a
@@ -128,7 +130,8 @@ public class YubikeyLoginModule implements LoginModule {
 
 		/* Yubico verification client */
 		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
-		this.yc = new YubicoClient(this.clientId);
+		this.yc = YubicoClient.getClient();
+		this.yc.setClientId(this.clientId);
 
 		/* Realm of principals added after authentication */
 		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
@@ -167,15 +170,20 @@ public class YubikeyLoginModule implements LoginModule {
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
 
-			if (this.yc.verify(otp)) {
-				String publicId = this.yc.getPublicId(otp);
-				log.info("OTP verified successfully (YubiKey {})", publicId);
-				if (is_right_user(nameCb.getName(), publicId)) {
-					this.principals.add(new YubikeyPrincipal(publicId, this.idRealm));
-					/* Don't just return here, we want to "consume" all OTPs if
-					 * more than one is provided.
-					 */
-					validated = true;
+			YubicoResponse ykr = this.yc.verify(otp);
+			if (ykr != null) {
+				if (ykr.getStatus() == YubicoResponseStatus.OK) {
+					String publicId = YubicoClient.getPublicId(otp);
+					log.info("OTP verified successfully (YubiKey id {})", publicId);
+					if (is_right_user(nameCb.getName(), publicId)) {
+						this.principals.add(new YubikeyPrincipal(publicId, this.idRealm));
+						/* Don't just return here, we want to "consume" all OTPs if
+						 * more than one is provided.
+						 */
+						validated = true;
+					}
+				} else {
+					log.debug("OTP validation returned {}", ykr.getStatus().toString());
 				}
 			}
 			if (! validated) {

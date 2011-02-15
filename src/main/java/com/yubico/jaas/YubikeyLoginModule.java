@@ -39,7 +39,6 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
@@ -275,48 +274,5 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 
 		return result;
-	}
-
-	/**
-	 * A class that extends PasswordCallback to keep a list of all values
-	 * set using setPassword(). If the application using this JAAS plugin
-	 * wants to pass us multiple authentication factors, it just calls
-	 * setPassword() more than once in the CallbackHandler.
-	 */
-	public class MultiValuePasswordCallback extends PasswordCallback {
-		private static final long serialVersionUID = 5362005708680822656L;
-		private ArrayList<char[]> secrets = new ArrayList<char[]>();
-
-		public MultiValuePasswordCallback(String prompt, boolean echoOn) {
-			super(prompt, echoOn);
-		}
-
-		/**
-		 * @return Returns all the secrets.
-		 */
-		public List<char[]> getSecrets() {
-			return secrets;
-		}
-
-		/**
-		 * @param password A secret to add to our list.
-		 */
-		public void setPassword(char[] password) {
-			this.secrets.add(password);
-		}
-
-		/**
-		 * Tries to clear all the passwords from memory.
-		 */
-		public void clearPassword() {
-			for (char pw[] : this.secrets) {
-				for (int i = 0; i < pw.length; i++) {
-					pw[i] = 0;
-				}
-			}
-
-			/* Now discard the list. */
-			this.secrets = new ArrayList<char []>();
-		}
 	}
 }

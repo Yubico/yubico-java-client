@@ -53,21 +53,21 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- * A JAAS module for verifying OATH-HOTP OTPs (One Time Passwords) by
- * HTTP basic auth.
+ * A JAAS module for verifying OATH OTPs (One Time Passwords) using
+ * HTTP Basic Auth to a backend server doing the real authentication.
  *
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
-public class HTTPOathHotpLoginModule implements LoginModule {
+public class HttpOathOtpLoginModule implements LoginModule {
 
 	/* Options */
-	public static final String OPTION_YUBICO_PROTECTED_URL		= "protectedUrl";
-	public static final String OPTION_YUBICO_EXPECTED_OUTPUT	= "expectedOutput";
-	public static final String OPTION_YUBICO_MIN_LENGTH			= "minLength";
-	public static final String OPTION_YUBICO_MAX_LENGTH			= "maxLength";
-	public static final String OPTION_YUBICO_REQUIRE_ALL_DIGITS	= "requireAllDigits";
-	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
+	public static final String OPTION_HTTPOATHOTP_PROTECTED_URL			= "protectedUrl";
+	public static final String OPTION_HTTPOATHOTP_EXPECTED_OUTPUT		= "expectedOutput";
+	public static final String OPTION_HTTPOATHOTP_MIN_LENGTH			= "minLength";
+	public static final String OPTION_HTTPOATHOTP_MAX_LENGTH			= "maxLength";
+	public static final String OPTION_HTTPOATHOTP_REQUIRE_ALL_DIGITS	= "requireAllDigits";
+	public static final String OPTION_HTTPOATHOTP_ID_REALM				= "id_realm";
 
 	public String protectedUrl;
 	public String expectedOutput = "Authenticated OK";
@@ -80,7 +80,7 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 	private Subject subject;
 	private CallbackHandler callbackHandler;
 
-	private final Logger log = LoggerFactory.getLogger(HTTPOathHotpLoginModule.class);
+	private final Logger log = LoggerFactory.getLogger(HttpOathOtpLoginModule.class);
 
 	private YubikeyPrincipal principal;
 
@@ -107,36 +107,36 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 	public void initialize(Subject newSubject, CallbackHandler newCallbackHandler,
 			Map<String, ?> sharedState, Map<String, ?> options) {
 
-		log.debug("Initializing HTTPOathHotpLoginModule");
+		log.debug("Initializing HTTP OATH OTP LoginModule");
 
 		this.subject = newSubject;
 		this.callbackHandler = newCallbackHandler;
 
-		this.protectedUrl = options.get(OPTION_YUBICO_PROTECTED_URL).toString();
+		this.protectedUrl = options.get(OPTION_HTTPOATHOTP_PROTECTED_URL).toString();
 
-		if (options.get(OPTION_YUBICO_EXPECTED_OUTPUT) != null) {
-			this.expectedOutput = options.get(OPTION_YUBICO_EXPECTED_OUTPUT).toString();
+		if (options.get(OPTION_HTTPOATHOTP_EXPECTED_OUTPUT) != null) {
+			this.expectedOutput = options.get(OPTION_HTTPOATHOTP_EXPECTED_OUTPUT).toString();
 		}
 
-		if (options.get(OPTION_YUBICO_MIN_LENGTH) != null) {
-			this.minLength = Integer.parseInt(options.get(OPTION_YUBICO_MIN_LENGTH).toString());
+		if (options.get(OPTION_HTTPOATHOTP_MIN_LENGTH) != null) {
+			this.minLength = Integer.parseInt(options.get(OPTION_HTTPOATHOTP_MIN_LENGTH).toString());
 		}
-		if (options.get(OPTION_YUBICO_MAX_LENGTH) != null) {
-			this.maxLength = Integer.parseInt(options.get(OPTION_YUBICO_MAX_LENGTH).toString());
+		if (options.get(OPTION_HTTPOATHOTP_MAX_LENGTH) != null) {
+			this.maxLength = Integer.parseInt(options.get(OPTION_HTTPOATHOTP_MAX_LENGTH).toString());
 		}
-		if (options.get(OPTION_YUBICO_REQUIRE_ALL_DIGITS) != null) {
-			String s = options.get(OPTION_YUBICO_REQUIRE_ALL_DIGITS).toString();
+		if (options.get(OPTION_HTTPOATHOTP_REQUIRE_ALL_DIGITS) != null) {
+			String s = options.get(OPTION_HTTPOATHOTP_REQUIRE_ALL_DIGITS).toString();
 			if (s.equals("true")) {
 				this.requireAllDigits = true;
 			} else if (s.equals("false")) {
 				this.requireAllDigits = false;
 			} else {
-				log.error("Bad value for option {}", OPTION_YUBICO_REQUIRE_ALL_DIGITS);
+				log.error("Bad value for option {}", OPTION_HTTPOATHOTP_REQUIRE_ALL_DIGITS);
 			}
 		}
 		/* Realm of principals added after authentication */
-		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
-			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
+		if (options.get(OPTION_HTTPOATHOTP_ID_REALM) != null) {
+			this.idRealm = options.get(OPTION_HTTPOATHOTP_ID_REALM).toString();
 		}
 	}
 
@@ -151,20 +151,20 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 		}
 
 		NameCallback nameCb = new NameCallback("Enter username: ");
-		
+
 		List<String> otps = get_tokens(nameCb);
-		
+
 		for (String otp : otps) {
 			String userName = nameCb.getName();
 
-			log.trace("Checking OATH-HOTP for user {}", userName);
+			log.trace("Checking OATH OTP for user {}", userName);
 
-			if (verify_hotp(userName, otp)) {				
-				log.info("OATH-HOTP verified successfully");
+			if (verify_otp(userName, otp)) {
+				log.info("OATH OTP verified successfully");
 				principal = new YubikeyPrincipal(userName, this.idRealm);
 				return true;
 			}
-			log.info("OATH-HOTP did NOT verify");
+			log.info("OATH OTP did NOT verify");
 		}
 		return false;
 	}
@@ -176,20 +176,20 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 	 * @param otp
 	 * @return boolean
 	 */
-	private boolean verify_hotp(String userName, String otp) {
+	private boolean verify_otp(String userName, String otp) {
 		try {
 			String authString = userName + ":" + otp;
 			String authStringEnc = Base64.encodeBase64(authString.getBytes()).toString();
-			
+
 			URL url = new URL(this.protectedUrl);
 			URLConnection conn = url.openConnection();
 			conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
 			conn.connect();
-			
+
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					conn.getInputStream()));
 			String inputLine;
-			while ((inputLine = in.readLine()) != null) { 
+			while ((inputLine = in.readLine()) != null) {
 				if (inputLine.contains(expectedOutput)) {
 					return true;
 				}
@@ -224,7 +224,7 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 							result.add(s);
 						} else {
 							log.info("Skipping token, not a valid OATH-HOTP token (non-digits not allowed)");
-						}					
+						}
 					} else {
 						result.add(s);
 					}

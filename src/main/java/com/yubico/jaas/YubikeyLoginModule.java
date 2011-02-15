@@ -48,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yubico.client.v1.YubicoClient;
-import com.yubico.jaas.impl.YubikeyToUserMapImpl;
 
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a
@@ -75,7 +74,7 @@ public class YubikeyLoginModule implements LoginModule {
 
 	private boolean soft_fail_on_no_otps;
 
-	private YubikeyToUserMapImpl ykmap;
+	private YubikeyToUserMap ykmap;
 	private String idRealm;
 
 	private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
@@ -143,7 +142,7 @@ public class YubikeyLoginModule implements LoginModule {
 			}
 		}
 
-		this.ykmap = new YubikeyToUserMapImpl(options);
+		this.ykmap = YubikeyToUserMap.getMap(options);
 	}
 
 	/* (non-Javadoc)

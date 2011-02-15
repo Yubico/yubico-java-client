@@ -93,14 +93,7 @@ public class YubikeyToUserMapImpl extends YubikeyToUserMap {
 		}
 	}
 
-	/*
-	 * Verify that there is a known connection between username and publicId.
-	 * If auto-provisioning is enabled and no connection is found, one is registered.
-	 *
-	 * @param username username to match to YubiKey id
-	 * @publicId modhex encoded public id of a YubiKey (e.g. "vvcccccfhc")
-	 *
-	 */
+	/** {@inheritDoc} */
 	public boolean is_right_user(String username, String publicId) {
 		if (! this.verify_yubikey_owner) {
 			log.debug("YubiKey owner verification disabled, returning 'true'");

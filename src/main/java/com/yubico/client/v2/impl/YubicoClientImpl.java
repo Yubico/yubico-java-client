@@ -43,12 +43,15 @@ import java.net.URLConnection;
 public class YubicoClientImpl extends YubicoClient {
     private static Logger logger = LoggerFactory.getLogger(YubicoClientImpl.class);
 
+    /** {@inheritDoc} */
     public YubicoClientImpl() {}
 
+    /** {@inheritDoc} */
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
     }
 
+    /** {@inheritDoc} */
     public YubicoResponse verify(String otp) {
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
@@ -79,4 +82,3 @@ public class YubicoClientImpl extends YubicoClient {
         }
     }
 }
-

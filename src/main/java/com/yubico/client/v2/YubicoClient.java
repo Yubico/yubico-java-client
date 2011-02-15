@@ -38,24 +38,56 @@ public abstract class YubicoClient {
     protected Integer clientId;
     protected String wsapi_urls[] = {"https://api.yubico.com/wsapi/2.0/verify"};
 
+    /**
+     * Validate an OTP using a webservice call to one or more ykval validation servers.
+     *
+     * @param otp  YubiKey OTP in modhex format
+     * @return  result of the webservice validation operation
+     */
     public abstract YubicoResponse verify( String otp );
 
+    /* @see setClientId() */
     public Integer getClientId() {
         return clientId;
     }
 
+    /**
+     * Set the ykval client identifier, used to identify the client application to
+     * the validation servers. Such validation is only required for non-https-v2.0
+     * validation querys, where the clientId tells the server what API key (shared
+     * secret) to use to validate requests and sign responses.
+     *
+     * You can get a clientId and API key for the YubiCloud validation service at
+     * https://upgrade.yubico.com/getapikey/
+     *
+     * @param clientId  ykval client identifier
+     */
     public void setClientId(Integer clientId) {
         this.clientId = clientId;
     }
 
+    /**
+     * Get the list of URLs that will be used for validating OTPs.
+     * @return list of base URLs
+     */
     public String[] getWsapiUrls() {
 		return wsapi_urls;
 	}
 
+    /**
+     * Configure what URLs to use for validating OTPs. These URLs will have
+     * all the necessary parameters appended to them. Example :
+     * {"https://api.yubico.com/wsapi/2.0/verify"}
+     * @param wsapi  list of base URLs
+     */
 	public void setWsapiUrls(String[] wsapi) {
 		this.wsapi_urls = wsapi;
 	}
 
+	/**
+	 * Instantiate a YubicoClient object.
+	 * @return  client that can be used to validate YubiKey OTPs
+	 */
 	public static YubicoClient getClient() {
         return new YubicoClientImpl();
     }

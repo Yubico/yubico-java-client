@@ -96,7 +96,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#commit()
 	 */
 	public boolean commit() throws LoginException {
-		log.debug("In commit()");
+		log.trace("In commit()");
 		subject.getPrincipals().add(this.principal);
 		return true;
 	}
@@ -107,7 +107,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	public void initialize(Subject newSubject, CallbackHandler newCallbackHandler,
 			Map<String, ?> sharedState, Map<String, ?> options) {
 
-		log.debug("Initializing HTTP OATH OTP LoginModule");
+		log.trace("Initializing HTTP OATH OTP LoginModule");
 
 		this.subject = newSubject;
 		this.callbackHandler = newCallbackHandler;
@@ -144,7 +144,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#login()
 	 */
 	public boolean login() throws LoginException {
-		log.debug("Begin OTP login");
+		log.trace("Begin OTP login");
 
 		if (callbackHandler == null) {
 			throw new LoginException("No callback handler available in login()");
@@ -195,7 +195,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 				}
 			}
 		} catch (Exception ex) {
-			log.error("Failed verifying OATH-HOTP :", ex);
+			log.error("Failed verifying OATH OTP :", ex);
 		}
 		return false;
 	}
@@ -210,20 +210,20 @@ public class HttpOathOtpLoginModule implements LoginModule {
 
 			for (char[] c : mv_passCb.getSecrets()) {
 				String s = new String(c);
-				/* Check that OTP is at least 32 chars before we verify it. User might have entered
+				/* Check that OTP looks like OATH before we verify it. User might have entered
 				 * some other password instead of an OTP, and we don't want to send that, possibly
 				 * in clear text, over the network.
 				 */
 				if (s.length() < this.minLength) {
-					log.info("Skipping token, not a valid OATH-HOTP token (too short, {} < {})", s.length(), this.minLength);
+					log.info("Skipping token, not a valid OATH OTP token (too short, {} < {})", s.length(), this.minLength);
 				} else if (s.length() > this.maxLength) {
-					log.info("Skipping token, not a valid OATH-HOTP token (too long, {} > {})", s.length(), this.maxLength);
+					log.info("Skipping token, not a valid OATH OTP token (too long, {} > {})", s.length(), this.maxLength);
 				} else {
 					if (this.requireAllDigits) {
 						if (s.matches("^[0-9]+$")) {
 							result.add(s);
 						} else {
-							log.info("Skipping token, not a valid OATH-HOTP token (non-digits not allowed)");
+							log.info("Skipping token, not a valid OATH OTP token (non-digits not allowed)");
 						}
 					} else {
 						result.add(s);
@@ -243,7 +243,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#logout()
 	 */
 	public boolean logout() throws LoginException {
-		log.debug("In logout()");
+		log.trace("In logout()");
 		subject.getPrincipals().remove(this.principal);
 		return false;
 	}

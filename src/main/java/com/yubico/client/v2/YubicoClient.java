@@ -3,19 +3,20 @@ package com.yubico.client.v2;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
+   Copyright (c) 2011, Yubico AB.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
-  
+
    * Redistributions of source code must retain the above copyright
      notice, this list of conditions and the following disclaimer.
-  
+
    * Redistributions in binary form must reproduce the above copyright
      notice, this list of conditions and the following
      disclaimer in the documentation and/or other materials provided
      with the distribution.
- 
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
    CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -29,7 +30,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
    THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.
- 
+
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
 */
 
@@ -50,6 +51,20 @@ public abstract class YubicoClient {
         return new YubicoClientImpl();
     }
 
+    /**
+	 * Extract the public ID of a Yubikey from an OTP it generated.
+	 *
+	 * @param otp	The OTP to extract ID from, in modhex format.
+	 *
+	 * @return string	Public ID of Yubikey that generated otp. Between 0 and 12 characters.
+	 */
+	public static String getPublicId(String otp) {
+		Integer len = otp.length();
 
+		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
+		 * (if anything) is the public ID of the Yubikey. The ID can be set to ''
+		 * through personalization.
+		 */
+		return otp.substring(0, len - 32);
+	}
 }
-

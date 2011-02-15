@@ -34,7 +34,7 @@ import java.util.Map;
 import com.yubico.jaas.impl.YubikeyToUserMapImpl;
 
 /**
- * Class to verify that a user is the rightful user of a YubiKey.
+ * Class to verify relationship between a username and a YubiKey.
  *
  * @author Fredrik Thulin <fredrik@yubico.com>
  *

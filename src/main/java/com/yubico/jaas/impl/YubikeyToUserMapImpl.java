@@ -121,7 +121,7 @@ public class YubikeyToUserMapImpl extends YubikeyToUserMap {
 
 		if (ykuser != null) {
 			if (! ykuser.equals(username)) {
-				log.info("YubiKey " + publicId + " registered to user {}, not {}", ykuser, username);
+				log.info("YubiKey " + publicId + " registered to user {}, NOT {}", ykuser, username);
 				return false;
 			}
 			return true;

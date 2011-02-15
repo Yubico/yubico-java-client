@@ -82,7 +82,7 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 
 	private final Logger log = LoggerFactory.getLogger(HTTPOathHotpLoginModule.class);
 
-	private YubicoPrincipal principal;
+	private YubikeyPrincipal principal;
 
 	/* (non-Javadoc)
 	 * @see javax.security.auth.spi.LoginModule#abort()
@@ -161,7 +161,7 @@ public class HTTPOathHotpLoginModule implements LoginModule {
 
 			if (verify_hotp(userName, otp)) {				
 				log.info("OATH-HOTP verified successfully");
-				principal = new YubicoPrincipal(userName, this.idRealm);
+				principal = new YubikeyPrincipal(userName, this.idRealm);
 				return true;
 			}
 			log.info("OATH-HOTP did NOT verify");

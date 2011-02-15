@@ -80,7 +80,7 @@ public class YubikeyLoginModule implements LoginModule {
 
 	private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
 
-	private ArrayList<YubicoPrincipal> principals = new ArrayList<YubicoPrincipal>();
+	private ArrayList<YubikeyPrincipal> principals = new ArrayList<YubikeyPrincipal>();
 
 
 	/* (non-Javadoc)
@@ -88,7 +88,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 */
 	public boolean abort() throws LoginException {
 		log.trace("In abort()");
-		for (YubicoPrincipal p : this.principals) {
+		for (YubikeyPrincipal p : this.principals) {
 			this.subject.getPrincipals().remove(p);
 		}
 		return true;
@@ -99,7 +99,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 */
 	public boolean commit() throws LoginException {
 		log.trace("In commit()");
-		for (YubicoPrincipal p : this.principals) {
+		for (YubikeyPrincipal p : this.principals) {
 			log.debug("Committing principal {}", p);
 			this.subject.getPrincipals().add(p);
 		}
@@ -111,7 +111,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 */
 	public boolean logout() throws LoginException {
 		log.trace("In logout()");
-		for (YubicoPrincipal p : this.principals) {
+		for (YubikeyPrincipal p : this.principals) {
 			this.subject.getPrincipals().remove(p);
 		}
 		return false;
@@ -172,7 +172,7 @@ public class YubikeyLoginModule implements LoginModule {
 				String publicId = this.yc.getPublicId(otp);
 				log.info("OTP verified successfully (YubiKey {})", publicId);
 				if (is_right_user(nameCb.getName(), publicId)) {
-					this.principals.add(new YubicoPrincipal(publicId, this.idRealm));
+					this.principals.add(new YubikeyPrincipal(publicId, this.idRealm));
 					/* Don't just return here, we want to "consume" all OTPs if
 					 * more than one is provided.
 					 */

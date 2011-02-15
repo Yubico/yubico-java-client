@@ -36,7 +36,7 @@ import java.security.Principal;
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
-public class YubicoPrincipal implements Principal {
+public class YubikeyPrincipal implements Principal {
 	/** The public ID of a Yubikey */
 	private String publicId;
 	/** The realm of this id. Something like a domain name. */
@@ -47,7 +47,7 @@ public class YubicoPrincipal implements Principal {
      * 
      * @param id  principal's name - YubiKey public id.
      */
-    public YubicoPrincipal(String id) {
+    public YubikeyPrincipal(String id) {
         this.publicId = id;
     }
 
@@ -57,7 +57,7 @@ public class YubicoPrincipal implements Principal {
      * @param id  principal's name - YubiKey public id.
      * @param realm  Realm of id.
      */
-    public YubicoPrincipal(String id, String realm) {
+    public YubikeyPrincipal(String id, String realm) {
         this.publicId = id;
         this.realm = realm;
     }
@@ -72,7 +72,7 @@ public class YubicoPrincipal implements Principal {
     
     /** {@inheritDoc} */
     public String toString() {
-    	return "<YubicoPrincipal>" + getName();
+    	return "<YubikeyPrincipal>" + getName();
     }
-    
+
 }

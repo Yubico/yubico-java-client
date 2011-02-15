@@ -1,4 +1,4 @@
-These are JAAS-plugins for authentication using Yubikeys (primarily).
+These are JAAS-plugins for authentication using one time password tokens (YubiKeys primarily).
 
 For information about JAAS configuration, see
   http://download.oracle.com/javase/1.5.0/docs/api/javax/security/auth/login/Configuration.html
@@ -21,6 +21,11 @@ YubikeyLoginModule :
 				first logged in with them.
      id_realm			Something to append to the Yubikey public id when we construct
      				principals (e.g. "@my-validation-service.example.org").
+     soft_fail_on_no_otps	default: false. Should the JAAS login module return failure
+     				or asked to be ignored in case no OTPs are provided for
+				validation?
+     wsapi_urls			default: the YubiCloud validation URL. A "|" delimeted list of
+     				ykval wsapi 2.0 URLs to use for OTP validation.
 
   Example configuration :
 
@@ -30,9 +35,9 @@ YubikeyLoginModule :
     };	
   
 
-HTTPOathHotpLoginModule :
+HttpOathOtpLoginModule :
 
-  This JAAS plugin validates OATH-HOTPs using HTTP. The username and password
+  This JAAS plugin validates OATH OTPs using HTTP. The username and password
   entered in your application will be used to attempt a HTTP Basic Auth login
   to an URL you specify, and if that succeeds and the resulting response contains
   an expected string, authentication is granted.
@@ -60,5 +65,3 @@ HTTPOathHotpLoginModule :
 	    protectedUrl = "http://auth.example.com/oath-protected/"
 	    expectedOutput = "User authenticated OK";
     };	
-  
-

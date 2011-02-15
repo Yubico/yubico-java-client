@@ -65,6 +65,7 @@ public class YubikeyLoginModule implements LoginModule {
 	public static final String OPTION_YUBICO_CLIENT_ID			= "clientId";
 	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
+	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -145,6 +146,13 @@ public class YubikeyLoginModule implements LoginModule {
 			}
 		}
 
+		/* User-provided URLs to the Yubico validation service, separated by "|". */
+		if (options.get(OPTION_YUBICO_WSAPI_URLS) != null) {
+			String in = options.get(OPTION_YUBICO_WSAPI_URLS).toString();
+			String l[] = in.split("\\|");
+			this.yc.setWsapiUrls(l);
+		}
+
 		this.ykmap = YubikeyToUserMap.getMap(options);
 	}
 
@@ -162,9 +170,13 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 
 		List<String> otps = get_tokens(nameCb);
-		if (otps.size() == 0 && this.soft_fail_on_no_otps) {
-			log.debug("No OTPs found, and soft-fail is on. Making JAAS ignore this module.");
-			return false;
+		if (otps.size() == 0) {
+			if (this.soft_fail_on_no_otps) {
+
+				log.debug("No OTPs found, and soft-fail is on. Making JAAS ignore this module.");
+				return false;
+			}
+			throw new LoginException("YubiKey OTP authentication failed - no OTPs supplied");
 		}
 
 		for (String otp : otps) {
@@ -172,6 +184,7 @@ public class YubikeyLoginModule implements LoginModule {
 
 			YubicoResponse ykr = this.yc.verify(otp);
 			if (ykr != null) {
+				log.trace("OTP {} verify result : {}", otp, ykr.getStatus().toString());
 				if (ykr.getStatus() == YubicoResponseStatus.OK) {
 					String publicId = YubicoClient.getPublicId(otp);
 					log.info("OTP verified successfully (YubiKey id {})", publicId);
@@ -185,15 +198,17 @@ public class YubikeyLoginModule implements LoginModule {
 				} else {
 					log.debug("OTP validation returned {}", ykr.getStatus().toString());
 				}
-			}
-			if (! validated) {
-				log.info("OTP did NOT verify");
+			} else {
+				log.trace("null YubicoResponse");
 			}
 		}
 		if (validated) {
 			return true;
 		}
-
+	
+		log.info("None out of {} possible YubiKey OTPs for user {} validated successful",
+					otps.size(), nameCb.getName());		
+		
 		throw new LoginException("YubiKey OTP authentication failed");
 	}
 

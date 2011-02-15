@@ -36,6 +36,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
 public abstract class YubicoClient {
     protected Integer clientId;
+    protected String wsapi_urls[] = {"https://api.yubico.com/wsapi/2.0/verify"};
 
     public abstract YubicoResponse verify( String otp );
 
@@ -47,7 +48,15 @@ public abstract class YubicoClient {
         this.clientId = clientId;
     }
 
-    public static YubicoClient getClient() {
+    public String[] getWsapiUrls() {
+		return wsapi_urls;
+	}
+
+	public void setWsapiUrls(String[] wsapi) {
+		this.wsapi_urls = wsapi;
+	}
+
+	public static YubicoClient getClient() {
         return new YubicoClientImpl();
     }
 

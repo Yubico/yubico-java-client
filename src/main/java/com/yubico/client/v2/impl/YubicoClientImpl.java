@@ -52,7 +52,8 @@ public class YubicoClientImpl extends YubicoClient {
     public YubicoResponse verify(String otp) {
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-            URL srv = new URL("https://api.yubico.com/wsapi/2.0/verify?id=" + clientId +
+            /* XXX we only use the first wsapi URL - not a real validation v2.0 client yet */
+            URL srv = new URL(wsapi_urls[0] + "?id=" + clientId +
                     "&otp=" + otp +
                     "&timestamp=1" +
                     "&nonce=" + nonce
@@ -76,9 +77,6 @@ public class YubicoClientImpl extends YubicoClient {
             logger.warn("Got exception when parsing response from server.", e);
             return null;
         }
-
-
-
     }
 }
 

@@ -166,7 +166,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 			}
 			log.info("OATH OTP did NOT verify");
 		}
-		return false;
+		throw new LoginException("OATH OTP verification failed");
 	}
 
 	/**

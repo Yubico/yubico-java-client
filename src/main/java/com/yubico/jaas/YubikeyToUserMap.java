@@ -41,9 +41,21 @@ import com.yubico.jaas.impl.YubikeyToUserMapImpl;
  */
 public abstract class YubikeyToUserMap {
 
+	/*
+	 * Verify that there is a known connection between username and publicId.
+	 * If auto-provisioning is enabled and no connection is found, one is registered.
+	 *
+	 * @param username username to match to YubiKey id
+	 * @publicId modhex encoded public id of a YubiKey (e.g. "vvcccccfhc")
+	 *
+	 */
 	public abstract boolean is_right_user(String username, String publicId);	
 	
-	public static YubikeyToUserMap getMap(Map<String, ?> options) {
+	/**
+	 * @param options  Configuration options
+	 * @return
+	 */
+	public static YubikeyToUserMap getIdToUserMap(Map<String, ?> options) {
 		return new YubikeyToUserMapImpl(options);
 	}
 }

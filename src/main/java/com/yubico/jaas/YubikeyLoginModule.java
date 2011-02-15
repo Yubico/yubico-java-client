@@ -153,14 +153,13 @@ public class YubikeyLoginModule implements LoginModule {
 			this.yc.setWsapiUrls(l);
 		}
 
-		this.ykmap = YubikeyToUserMap.getMap(options);
+		this.ykmap = YubikeyToUserMap.getIdToUserMap(options);
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.security.auth.spi.LoginModule#login()
 	 */
 	public boolean login() throws LoginException {
-		boolean validated = false;
 		NameCallback nameCb = new NameCallback("Enter username: ");
 
 		log.debug("Begin OTP login");
@@ -178,6 +177,25 @@ public class YubikeyLoginModule implements LoginModule {
 			}
 			throw new LoginException("YubiKey OTP authentication failed - no OTPs supplied");
 		}
+
+		if (validate_otps(otps, nameCb)) {
+			return true;
+		}
+
+		log.info("None out of {} possible YubiKey OTPs for user {} validated successful",
+					otps.size(), nameCb.getName());
+
+		throw new LoginException("YubiKey OTP authentication failed");
+	}
+
+	/**
+	 * Try to validate all the OTPs provided.
+	 * @param otps  Possible YubiKey OTPs
+	 * @param nameCb  JAAS callback to get authenticating username
+	 * @return  true if one or more of the OTPs validated OK, otherwise false
+	 */
+	private boolean validate_otps(List<String> otps, NameCallback nameCb) {
+		boolean validated = false;
 
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
@@ -202,21 +220,34 @@ public class YubikeyLoginModule implements LoginModule {
 				log.trace("null YubicoResponse");
 			}
 		}
-		if (validated) {
-			return true;
-		}
-	
-		log.info("None out of {} possible YubiKey OTPs for user {} validated successful",
-					otps.size(), nameCb.getName());		
-		
-		throw new LoginException("YubiKey OTP authentication failed");
+
+		return validated;
 	}
 
+	/**
+	 * After validation of an OTP, check that it came from a YubiKey that actually
+	 * belongs to the user trying to authenticate.
+	 *
+	 * @param username  Username to match against YubiKey publicId.
+	 * @param publicId  The public ID of the authenticated YubiKey.
+	 * @return true if the username matched the YubiKey, false otherwise
+	 */
 	private boolean is_right_user(String username, String publicId) {
 		log.debug("Check if YubiKey {} belongs to user {}", publicId, username);
 		return this.ykmap.is_right_user(username, publicId);
 	}
 
+	/**
+	 * Get username and token(s) from the application, using the
+	 * javax.security.auth.callback.CallbackHandler passed to our initialize()
+	 * function.
+	 *
+	 * The tokens returned have been identified as plausible YubiKey OTPs.
+	 *
+	 * @param nameCb
+	 * @return list of possible YubiKey OTPs
+	 * @throws LoginException
+	 */
 	private List<String> get_tokens(NameCallback nameCb) throws LoginException {
 		MultiValuePasswordCallback mv_passCb = new MultiValuePasswordCallback("Enter authentication tokens: ", false);
 		List<String> result = new ArrayList<String>();

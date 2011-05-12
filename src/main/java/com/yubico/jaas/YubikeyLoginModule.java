@@ -65,6 +65,7 @@ public class YubikeyLoginModule implements LoginModule {
 	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
 	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
+        public static final String OPTION_YUBICO_USERMAP_CLASS = "usermap_class";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -152,7 +153,24 @@ public class YubikeyLoginModule implements LoginModule {
 			this.yc.setWsapiUrls(l);
 		}
 
-		this.ykmap = YubikeyToUserMap.getIdToUserMap(options);
+		/* Instantiate the specified usermap implementation. */
+                String usermap_class_name = null;
+                if (options.get(OPTION_YUBICO_USERMAP_CLASS) != null) {
+                    usermap_class_name = options.get(OPTION_YUBICO_USERMAP_CLASS).toString();
+                } else {
+                    usermap_class_name = "com.yubico.jaas.impl.YubikeyToUserMapImpl"; // Default implementation
+                }
+                try {
+                    log.debug("Trying to instantiate {}",usermap_class_name);
+                    this.ykmap = (YubikeyToUserMap) Class.forName(usermap_class_name).newInstance();
+                    this.ykmap.setOptions(options);
+                } catch (ClassNotFoundException ex) {
+                    log.error("Could not create usermap from class " + usermap_class_name, ex);
+                } catch (InstantiationException ex) {
+                    log.error("Could not create usermap from class " + usermap_class_name, ex);
+                } catch (IllegalAccessException ex) {
+                    log.error("Could not create usermap from class " + usermap_class_name, ex);
+                }
 	}
 
 	/* (non-Javadoc)

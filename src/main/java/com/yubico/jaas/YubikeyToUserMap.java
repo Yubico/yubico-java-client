@@ -31,15 +31,15 @@ package com.yubico.jaas;
 
 import java.util.Map;
 
-import com.yubico.jaas.impl.YubikeyToUserMapImpl;
-
 /**
- * Class to verify relationship between a username and a YubiKey.
+ * Interface to verify relationship between a username and a YubiKey.
+ * Classes implementing this interface MUST have a nullary constructor
+ * for {@link java.lang.Class.newInstance()} to work.
  *
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
-public abstract class YubikeyToUserMap {
+public interface YubikeyToUserMap {
 
 	/*
 	 * Verify that there is a known connection between username and publicId.
@@ -49,13 +49,12 @@ public abstract class YubikeyToUserMap {
 	 * @publicId modhex encoded public id of a YubiKey (e.g. "vvcccccfhc")
 	 *
 	 */
-	public abstract boolean is_right_user(String username, String publicId);	
+    public boolean is_right_user(String username, String publicId);
 	
 	/**
+     * Sets configuration options received from JAAS.
+     *
 	 * @param options  Configuration options
-	 * @return
 	 */
-	public static YubikeyToUserMap getIdToUserMap(Map<String, ?> options) {
-		return new YubikeyToUserMapImpl(options);
-	}
+    public void setOptions(Map<String, ?> options);
 }

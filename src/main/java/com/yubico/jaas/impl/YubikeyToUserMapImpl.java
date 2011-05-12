@@ -39,7 +39,6 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yubico.jaas.YubikeyLoginModule;
 import com.yubico.jaas.YubikeyToUserMap;
 
 /**
@@ -59,19 +58,18 @@ import com.yubico.jaas.YubikeyToUserMap;
  * @author Fredrik Thulin <fredrik@yubico.com>
  *
  */
-public class YubikeyToUserMapImpl extends YubikeyToUserMap {
+public class YubikeyToUserMapImpl implements YubikeyToUserMap {
 	/* Options for this class */
 	public static final String OPTION_YUBICO_AUTO_PROVISION		= "auto_provision_owner";
 	public static final String OPTION_YUBICO_ID2NAME_TEXTFILE	= "id2name_textfile";
 	public static final String OPTION_YUBICO_VERIFY_YK_OWNER	= "verify_yubikey_owner";
-
 	private String id2name_textfile;
 	private boolean auto_provision_owners = false;
 	private boolean verify_yubikey_owner = true;
+    private final Logger log = LoggerFactory.getLogger(YubikeyToUserMapImpl.class);
 
-	private final Logger log = LoggerFactory.getLogger(YubikeyLoginModule.class);
-
-	public YubikeyToUserMapImpl(Map<String, ?> options) {
+    /** {@inheritDoc} */
+    public final void setOptions(Map<String, ?> options) {
 		/* Is verification of YubiKey owners enabled? */
 		this.verify_yubikey_owner = true;
 		if (options.get(OPTION_YUBICO_VERIFY_YK_OWNER) != null) {

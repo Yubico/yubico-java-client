@@ -59,121 +59,123 @@ import com.yubico.jaas.YubikeyToUserMap;
  *
  */
 public class YubikeyToUserMapImpl implements YubikeyToUserMap {
-    /* Options for this class */
-    public static final String OPTION_YUBICO_AUTO_PROVISION = "auto_provision_owner";
-    public static final String OPTION_YUBICO_ID2NAME_TEXTFILE = "id2name_textfile";
-    public static final String OPTION_YUBICO_VERIFY_YK_OWNER = "verify_yubikey_owner";
-    private String id2name_textfile;
-    private boolean auto_provision_owners = false;
-    private boolean verify_yubikey_owner = true;
-    private final Logger log = LoggerFactory.getLogger(YubikeyToUserMapImpl.class);
+	/* Options for this class */
+	public static final String OPTION_YUBICO_AUTO_PROVISION		= "auto_provision_owner";
+	public static final String OPTION_YUBICO_ID2NAME_TEXTFILE	= "id2name_textfile";
+	public static final String OPTION_YUBICO_VERIFY_YK_OWNER	= "verify_yubikey_owner";
 
-    /** {@inheritDoc} */
-    public final void setOptions(Map<String, ?> options) {
-        /* Is verification of YubiKey owners enabled? */
-        this.verify_yubikey_owner = true;
-        if (options.get(OPTION_YUBICO_VERIFY_YK_OWNER) != null) {
-            if ("false".equals(options.get(OPTION_YUBICO_VERIFY_YK_OWNER).toString())) {
-                this.verify_yubikey_owner = false;
-            }
-        }
+	private String id2name_textfile;
+	private boolean auto_provision_owners = false;
+	private boolean verify_yubikey_owner = true;
 
-        /* id2name text file */
-        if (options.get(OPTION_YUBICO_ID2NAME_TEXTFILE) != null) {
-            this.id2name_textfile = options.get(OPTION_YUBICO_ID2NAME_TEXTFILE).toString();
-        }
+	private final Logger log = LoggerFactory.getLogger(YubikeyToUserMapImpl.class);
 
-        /* should we automatically assign new yubikeys to users? */
-        if (options.get(OPTION_YUBICO_AUTO_PROVISION) != null) {
-            if ("true".equals(options.get(OPTION_YUBICO_AUTO_PROVISION).toString())) {
-                this.auto_provision_owners = true;
-            }
-        }
-    }
+	/** {@inheritDoc} */
+	public final void setOptions(Map<String, ?> options) {
+		/* Is verification of YubiKey owners enabled? */
+		this.verify_yubikey_owner = true;
+		if (options.get(OPTION_YUBICO_VERIFY_YK_OWNER) != null) {
+			if ("false".equals(options.get(OPTION_YUBICO_VERIFY_YK_OWNER).toString())) {
+				this.verify_yubikey_owner = false;
+			}
+		}
 
-    /** {@inheritDoc} */
-    public boolean is_right_user(String username, String publicId) {
-        if (! this.verify_yubikey_owner) {
-            log.debug("YubiKey owner verification disabled, returning 'true'");
-            return true;
-        }
-        if (this.id2name_textfile == null) {
-            log.debug("No id2name configuration. Defaulting to {}.", this.verify_yubikey_owner);
-            return this.verify_yubikey_owner;
-        }
+		/* id2name text file */
+		if (options.get(OPTION_YUBICO_ID2NAME_TEXTFILE) != null) {
+			this.id2name_textfile = options.get(OPTION_YUBICO_ID2NAME_TEXTFILE).toString();
+		}
 
-        String ykuser;
-        try {
-            ykuser = get_username_for_id(publicId, this.id2name_textfile);
-        } catch (FileNotFoundException ex) {
-            log.error("Yubikey to username textfile {} not found", this.id2name_textfile);
-            return false;
-        }
+		/* should we automatically assign new yubikeys to users? */
+		if (options.get(OPTION_YUBICO_AUTO_PROVISION) != null) {
+			if ("true".equals(options.get(OPTION_YUBICO_AUTO_PROVISION).toString())) {
+				this.auto_provision_owners = true;
+			}
+		}
+	}
 
-        if (ykuser != null) {
-            if (! ykuser.equals(username)) {
-                log.info("YubiKey " + publicId + " registered to user {}, NOT {}", ykuser, username);
-                return false;
-            }
-            return true;
-        } else {
-            if (this.auto_provision_owners) {
-                log.info("Registering new YubiKey " + publicId + " as belonging to {}", username);
+	/** {@inheritDoc} */
+	public boolean is_right_user(String username, String publicId) {
+		if (! this.verify_yubikey_owner) {
+			log.debug("YubiKey owner verification disabled, returning 'true'");
+			return true;
+		}
+		if (this.id2name_textfile == null) {
+			log.debug("No id2name configuration. Defaulting to {}.", this.verify_yubikey_owner);
+			return this.verify_yubikey_owner;
+		}
 
-                add_yubikey_to_user(publicId, username, this.id2name_textfile);
-                return true;
-            }
-            log.debug("No record of YubiKey {} found. Returning 'false'.", publicId);
-            return false;
-        }
-    }
+		String ykuser;
+		try {
+			ykuser = get_username_for_id(publicId, this.id2name_textfile);
+		} catch (FileNotFoundException ex) {
+			log.error("Yubikey to username textfile {} not found", this.id2name_textfile);
+			return false;
+		}
 
-    /**
-     * Given publicId "vvcccccfhc", scans filename for a line like "yk.vvcccccfhc.user = alice"
-     * and returns "alice" if found. Null is returned in case there is no matching line in file.
-     *
-     * @param publicId
-     * @param filename
-     * @return String username
-     * @throws FileNotFoundException
-     */
-    private String get_username_for_id(String publicId, String filename) throws FileNotFoundException {
-        Scanner sc = null;
-        File file = new File(filename);
-        try {
-            sc = new Scanner(file);
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                if (line.startsWith("yk." + publicId + ".user")) {
-                    String ykuser = line.split("=")[1].trim();
+		if (ykuser != null) {
+			if (! ykuser.equals(username)) {
+				log.info("YubiKey " + publicId + " registered to user {}, NOT {}", ykuser, username);
+				return false;
+			}
+			return true;
+		} else {
+			if (this.auto_provision_owners) {
+				log.info("Registering new YubiKey " + publicId + " as belonging to {}", username);
 
-                    return ykuser;
-                }
-            }
-        } finally {
-            if (sc != null) {
-                sc.close();
-            }
-        }
-        return null;
-    }
+				add_yubikey_to_user(publicId, username, this.id2name_textfile);
+				return true;
+			}
+			log.debug("No record of YubiKey {} found. Returning 'false'.", publicId);
+			return false;
+		}
+	}
 
-    /**
-     * Stores an association between username and YubiKey publicId in filename.
-     *
-     * @param publicId
-     * @param username
-     * @param filename
-     */
-    private void add_yubikey_to_user(String publicId, String username, String filename) {
-        try {
-            File file = new File(filename);
-            FileWriter writer = new FileWriter(file, true);
-            writer.write("yk." + publicId + ".user = " + username
-                    + System.getProperty("line.separator"));
-            writer.close();
-        } catch (IOException ex) {
-            log.error("Failed appending entry to file {}", filename, ex);
-        }
-    }
+	/**
+	 * Given publicId "vvcccccfhc", scans filename for a line like "yk.vvcccccfhc.user = alice"
+	 * and returns "alice" if found. Null is returned in case there is no matching line in file.
+	 *
+	 * @param publicId
+	 * @param filename
+	 * @return String username
+	 * @throws FileNotFoundException
+	 */
+	private String get_username_for_id(String publicId, String filename) throws FileNotFoundException {
+		Scanner sc = null;
+		File file = new File(filename);
+		try {
+			sc = new Scanner(file);
+			while (sc.hasNextLine()) {
+				String line = sc.nextLine();
+				if (line.startsWith("yk." + publicId + ".user")) {
+					String ykuser = line.split("=")[1].trim();
+
+					return ykuser;
+				}
+			}
+		} finally {
+			if (sc != null) {
+				sc.close();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Stores an association between username and YubiKey publicId in filename.
+	 *
+	 * @param publicId
+	 * @param username
+	 * @param filename
+	 */
+	private void add_yubikey_to_user(String publicId, String username, String filename) {
+		try {
+			File file = new File(filename);
+			FileWriter writer = new FileWriter(file, true);
+			writer.write("yk." + publicId + ".user = " + username
+					+ System.getProperty("line.separator"));
+			writer.close();
+		} catch (IOException ex) {
+			log.error("Failed appending entry to file {}", filename, ex);
+		}
+	}
 }

@@ -65,16 +65,20 @@ public class YubicoClientImpl extends YubicoClient {
             YubicoResponse response = new YubicoResponseImpl(conn.getInputStream());
 
             // Verify the result
-            if(!otp.equals(response.getOtp())) {
-                logger.warn("OTP mismatch in response, is there a man-in-the-middle?");
-                return null;
+            if (response.getOtp() != null) {
+            	if(!otp.equals(response.getOtp())) {
+                    logger.warn("OTP mismatch in response, is there a man-in-the-middle?");
+                    return null;
+                }
             }
-
-            if(!nonce.equals(response.getNonce())) {
-                logger.warn("Nonce mismatch in response, is there a man-in-the-middle?");
-                return null;
+            
+            if (response.getNonce() != null) {
+            	if(!nonce.equals(response.getNonce())) {
+                    logger.warn("Nonce mismatch in response, is there a man-in-the-middle?");
+                    return null;
+                }
             }
-
+            
             return response;
         } catch (Exception e) {
             logger.warn("Got exception when parsing response from server.", e);

@@ -56,7 +56,6 @@ public class YubicoClientTest {
         String otp="kaka";
         YubicoResponse response = client.verify(otp);
         assertNotNull(response);
-        assertEquals(otp, response.getOtp());
         assertTrue(response.getStatus() == YubicoResponseStatus.BAD_OTP);
     }
 

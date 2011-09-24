@@ -52,14 +52,6 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testBadOTP() {
-        String otp="kaka";
-        YubicoResponse response = client.verify(otp);
-        assertNotNull(response);
-        assertTrue(response.getStatus() == YubicoResponseStatus.BAD_OTP);
-    }
-
-    @Test
     public void testReplayedOTP() {
         String otp="cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         YubicoResponse response = client.verify(otp);

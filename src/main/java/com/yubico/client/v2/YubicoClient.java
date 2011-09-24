@@ -119,4 +119,30 @@ public abstract class YubicoClient {
 		 */
 		return otp.substring(0, len - 32);
 	}
+	
+	private static final Integer OTP_MIN_LEN = 32;
+	private static final Integer OTP_MAX_LEN = 48;
+	/**
+	 * Determines whether a given OTP is of the correct length
+	 * and only contains printable characters, as per the recommendation.
+	 * 
+	 * @see http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients
+	 * 
+	 * @param otp The OTP to validate
+	 * 
+	 * @return boolean Returns true if it's valid; false otherwise
+	 * 
+	 */
+	public static boolean isValidOTPFormat(String otp) {
+		int len = otp.length();
+		boolean isPrintable = true;
+		for (int i = 0; i < len; i++) {
+			char c = otp.charAt(i);
+			if (c < 0x20 || c > 0x7E) {
+				isPrintable = false;
+				break;
+			}
+		}
+		return isPrintable && (OTP_MIN_LEN <= len && len <= OTP_MAX_LEN);
+	}
 }

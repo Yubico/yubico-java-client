@@ -58,6 +58,9 @@ public class YubicoClientImpl extends YubicoClient {
 
     /** {@inheritDoc} */
     public YubicoResponse verify(String otp) {
+    	if (!isValidOTPFormat(otp)) {
+    		throw new IllegalArgumentException("The OTP is not a valid format");
+    	}
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
             

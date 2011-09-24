@@ -131,8 +131,7 @@ public class YubikeyLoginModule implements LoginModule {
 
 		/* Yubico verification client */
 		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
-		this.yc = YubicoClient.getClient();
-		this.yc.setClientId(this.clientId);
+		this.yc = YubicoClient.getClient(this.clientId);
 
 		/* Realm of principals added after authentication */
 		if (options.get(OPTION_YUBICO_ID_REALM) != null) {

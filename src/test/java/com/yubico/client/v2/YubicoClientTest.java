@@ -42,8 +42,7 @@ public class YubicoClientTest {
 
     @Before
     public void setup() {
-        client=YubicoClient.getClient();
-        client.setClientId(4711);
+        client=YubicoClient.getClient(4711);
     }
 
     @Test

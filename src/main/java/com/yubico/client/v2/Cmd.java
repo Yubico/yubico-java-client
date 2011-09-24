@@ -46,8 +46,7 @@ public class Cmd {
         int authId = Integer.parseInt(args[0]);
         String otp = args[1];
 
-        YubicoClient yc = YubicoClient.getClient();
-        yc.setClientId(authId);
+        YubicoClient yc = YubicoClient.getClient(authId);
         YubicoResponse response = yc.verify(otp);
 
         if(response!=null && response.getStatus() == YubicoResponseStatus.OK) {

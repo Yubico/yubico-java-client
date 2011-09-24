@@ -47,9 +47,6 @@ public class YubicoClientImpl extends YubicoClient {
     private static Logger logger = LoggerFactory.getLogger(YubicoClientImpl.class);
 
     /** {@inheritDoc} */
-    public YubicoClientImpl() {}
-
-    /** {@inheritDoc} */
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
     }

@@ -99,8 +99,8 @@ public abstract class YubicoClient {
 	 * Instantiate a YubicoClient object.
 	 * @return  client that can be used to validate YubiKey OTPs
 	 */
-	public static YubicoClient getClient() {
-        return new YubicoClientImpl();
+	public static YubicoClient getClient(Integer clientId) {
+        return new YubicoClientImpl(clientId);
     }
 
     /**

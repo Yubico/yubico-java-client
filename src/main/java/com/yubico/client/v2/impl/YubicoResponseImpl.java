@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.TreeMap;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
@@ -50,6 +52,8 @@ public class YubicoResponseImpl implements YubicoResponse {
     private String sl;
     private String otp;
     private String nonce;
+    
+    private Map<String, String> keyValueMap = new TreeMap<String, String>();
 
     public YubicoResponseImpl(InputStream inStream) throws IOException {
         if(inStream == null) {
@@ -92,10 +96,16 @@ public class YubicoResponseImpl implements YubicoResponse {
 
             if("nonce".equals(key))
                 this.setNonce(val);
+            
+            keyValueMap.put(key, val);
         }
         in.close();
     }
 
+    public Map<String, String> getKeyValueMap() {
+    	return keyValueMap;
+    }
+    
     public String toString() {
         return otp + ":" + status;
     }

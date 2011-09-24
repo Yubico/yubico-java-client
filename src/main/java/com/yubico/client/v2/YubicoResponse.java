@@ -1,5 +1,7 @@
 package com.yubico.client.v2;
 
+import java.util.Map;
+
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -41,4 +43,5 @@ public interface YubicoResponse {
     String getSl();
     String getOtp();
     public String getNonce();
+    public Map<String, String> getKeyValueMap();
 }

@@ -1,5 +1,6 @@
 package com.yubico.client.v2.impl;
 
+import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
@@ -50,20 +53,54 @@ public class YubicoClientImpl extends YubicoClient {
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
     }
+    
+    public YubicoClientImpl(Integer id, String key) {
+    	this.clientId = id;
+    	setKey(key);
+    }
 
     /** {@inheritDoc} */
     public YubicoResponse verify(String otp) {
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
+            
+            Map<String, String> paramsMap = new TreeMap<String, String>();
+            paramsMap.put("id", clientId.toString());
+            paramsMap.put("nonce", nonce);
+            paramsMap.put("timestamp", "1");
+            paramsMap.put("otp", otp);
+            
+            StringBuffer paramStr = new StringBuffer();
+        	for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+        		if (paramStr.length() > 0) { paramStr.append("&"); }
+        		paramStr.append(entry.getKey()).append("=").append(entry.getValue());
+        	}
+            
+            if (key != null) {
+            	String s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
+            	paramStr.append("&h=").append(s);
+            }
+            
             /* XXX we only use the first wsapi URL - not a real validation v2.0 client yet */
-            URL srv = new URL(wsapi_urls[0] + "?id=" + clientId +
-                    "&otp=" + otp +
-                    "&timestamp=1" +
-                    "&nonce=" + nonce
-            );
+            URL srv = new URL(wsapi_urls[0] + "?" + paramStr.toString());
             URLConnection conn = srv.openConnection();
             YubicoResponse response = new YubicoResponseImpl(conn.getInputStream());
 
+            // Verify the signature
+            if (key != null) {
+            	StringBuffer keyValueStr = new StringBuffer();
+            	for (Map.Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
+            		if ("h".equals(entry.getKey())) { continue; }
+            		if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
+            		keyValueStr.append(entry.getKey()).append("=").append(entry.getValue());
+            	}
+            	String signature = Signature.calculate(keyValueStr.toString(), key).trim();
+            	if (!response.getH().equals(signature)) {
+            		logger.warn("Signatures do not match");
+            		return null;
+            	}
+            }
+            
             // Verify the result
             if (response.getOtp() != null) {
             	if(!otp.equals(response.getOtp())) {

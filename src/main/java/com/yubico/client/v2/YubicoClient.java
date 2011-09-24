@@ -1,5 +1,7 @@
 package com.yubico.client.v2;
 
+import org.apache.commons.codec.binary.Base64;
+
 import com.yubico.client.v2.impl.YubicoClientImpl;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
@@ -36,6 +38,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
 public abstract class YubicoClient {
     protected Integer clientId;
+    protected String key;
     protected String wsapi_urls[] = {"https://api.yubico.com/wsapi/2.0/verify"};
 
     /**
@@ -66,6 +69,14 @@ public abstract class YubicoClient {
         this.clientId = clientId;
     }
 
+    public void setKey(String key) {
+    	this.key = new String(Base64.decodeBase64(key));
+    }
+    
+    public String getKey() {
+    	return this.key;
+    }
+    
     /**
      * Get the list of URLs that will be used for validating OTPs.
      * @return list of base URLs

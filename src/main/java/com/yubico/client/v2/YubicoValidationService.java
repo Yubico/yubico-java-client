@@ -8,6 +8,12 @@ import java.util.List;
 
 import com.yubico.client.v2.impl.YubicoResponseImpl;
 
+/*
+ * Fires off a number of validation requests to each specified URL 
+ * in parallel.
+ * 
+ * @author Simon Buckle <simon@webteq.eu>
+ */
 public class YubicoValidationService {
 
 final ResponseLatch<YubicoResponse> result = new ResponseLatch<YubicoResponse>();

@@ -68,28 +68,17 @@ public class YubicoClientImpl extends YubicoClient {
     	}
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-            
-            Map<String, String> paramsMap = new TreeMap<String, String>();
-            paramsMap.put("id", clientId.toString());
-            paramsMap.put("nonce", nonce);
-            paramsMap.put("timestamp", "1");
-            paramsMap.put("otp", otp);
-            
-            StringBuffer paramStr = new StringBuffer();
-        	for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
-        		if (paramStr.length() > 0) { paramStr.append("&"); }
-        		paramStr.append(entry.getKey()).append("=").append(entry.getValue());
-        	}
-            
+        	String paramStr = String.format("id=%d&nonce=%s&otp=%s&timestamp=%s", clientId, nonce, otp, "1");
+        	
             if (key != null) {
             	String s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
-            	paramStr.append("&h=").append(s);
+            	paramStr += "&h="; paramStr += s;
             }
             
             String[] wsapiUrls = this.getWsapiUrls();
             List<String> validationUrls = new ArrayList<String>();
             for (int i = 0, len = wsapiUrls.length; i < len; i++) {
-            	validationUrls.add(wsapiUrls[i] + "?" + paramStr.toString());
+            	validationUrls.add(wsapiUrls[i] + "?" + paramStr);
             }
             
             YubicoResponse response = new YubicoValidationService().fetch(validationUrls);

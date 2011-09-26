@@ -69,33 +69,25 @@ public class YubicoResponseImpl implements YubicoResponse {
             String key=inputLine.substring(0,ix);
             String val=inputLine.substring(ix+1);
 
-            if("h".equals(key))
+            if ("h".equals(key)) {
                 this.setH(val);
-
-            if("t".equals(key))
-                this.setT(val);
-
-            if("otp".equals(key))
-                this.setOtp(val);
-
-            if("status".equals(key))  {
+            } else if ("t".equals(key)) {
+            	this.setT(val);
+            } else if ("otp".equals(key)) {
+            	this.setOtp(val);
+            } else if ("status".equals(key))  {
                 this.setStatus(YubicoResponseStatus.valueOf(val));
-            }
-
-            if("timestamp".equals(key))
+            } else if ("timestamp".equals(key)) {
                 this.setTimestamp(val);
-
-            if("sessioncounter".equals(key))
+            } else if ("sessioncounter".equals(key)) {
                 this.setSessioncounter(val);
-
-            if("sessionuse".equals(key))
+            } else if ("sessionuse".equals(key)) {
                 this.setSessionuse(val);
-
-            if("sl".equals(key))
+            } else if ("sl".equals(key)) {
                 this.setSl(val);
-
-            if("nonce".equals(key))
+            } else if ("nonce".equals(key)) {
                 this.setNonce(val);
+            }
             
             keyValueMap.put(key, val);
         }

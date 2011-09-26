@@ -34,12 +34,20 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
    SUCH DAMAGE.
 
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
+   
+   Modified by Simon Buckle <simon@webteq.eu>, September 2011.
 */
 
 public abstract class YubicoClient {
     protected Integer clientId;
     protected String key;
-    protected String wsapi_urls[] = {"https://api.yubico.com/wsapi/2.0/verify"};
+    protected String wsapi_urls[] = {
+    		"https://api.yubico.com/wsapi/2.0/verify",
+    		"https://api2.yubico.com/wsapi/2.0/verify",
+    		"https://api3.yubico.com/wsapi/2.0/verify",
+    		"https://api4.yubico.com/wsapi/2.0/verify",
+    		"https://api5.yubico.com/wsapi/2.0/verify"
+    		};
 
     /**
      * Validate an OTP using a webservice call to one or more ykval validation servers.

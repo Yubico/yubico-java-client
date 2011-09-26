@@ -3,12 +3,15 @@ package com.yubico.client.v2.impl;
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.YubicoValidationService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -41,6 +44,8 @@ import java.util.TreeMap;
    SUCH DAMAGE.
  
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
+   
+   Modified by Simon Buckle <simon@webteq.eu>, September 2011.
 */
 
 public class YubicoClientImpl extends YubicoClient {
@@ -81,11 +86,14 @@ public class YubicoClientImpl extends YubicoClient {
             	paramStr.append("&h=").append(s);
             }
             
-            /* XXX we only use the first wsapi URL - not a real validation v2.0 client yet */
-            URL srv = new URL(wsapi_urls[0] + "?" + paramStr.toString());
-            URLConnection conn = srv.openConnection();
-            YubicoResponse response = new YubicoResponseImpl(conn.getInputStream());
-
+            String[] wsapiUrls = this.getWsapiUrls();
+            List<String> validationUrls = new ArrayList<String>();
+            for (int i = 0, len = wsapiUrls.length; i < len; i++) {
+            	validationUrls.add(wsapiUrls[i] + "?" + paramStr.toString());
+            }
+            
+            YubicoResponse response = new YubicoValidationService().fetch(validationUrls);
+            
             // Verify the signature
             if (key != null) {
             	StringBuffer keyValueStr = new StringBuffer();

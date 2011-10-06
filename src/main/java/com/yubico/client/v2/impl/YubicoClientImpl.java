@@ -3,6 +3,7 @@ package com.yubico.client.v2.impl;
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
 
 import org.slf4j.Logger;
@@ -99,15 +100,15 @@ public class YubicoClientImpl extends YubicoClient {
             }
             
             // Verify the result
-            if (response.getOtp() != null) {
-            	if(!otp.equals(response.getOtp())) {
+            //
+            // NONCE/OTP fields are not returned to the client when sending error codes.
+            // If there is an error response, don't need to check them.
+            if (!isError(response.getStatus())) {
+            	if (response.getOtp() == null || !otp.equals(response.getOtp())) {
                     logger.warn("OTP mismatch in response, is there a man-in-the-middle?");
                     return null;
                 }
-            }
-            
-            if (response.getNonce() != null) {
-            	if(!nonce.equals(response.getNonce())) {
+            	if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
                     logger.warn("Nonce mismatch in response, is there a man-in-the-middle?");
                     return null;
                 }
@@ -118,5 +119,20 @@ public class YubicoClientImpl extends YubicoClient {
             logger.warn("Got exception when parsing response from server.", e);
             return null;
         }
+    }
+    
+    /**
+     * Function is used to determine if the response status is an error or not.
+     * 
+     * @param status
+     * @return boolean
+     */
+    private boolean isError(YubicoResponseStatus status) 
+    {
+    	return (YubicoResponseStatus.BACKEND_ERROR.equals(status) || 
+    			YubicoResponseStatus.BAD_OTP.equals(status) || 
+    			YubicoResponseStatus.BAD_SIGNATURE.equals(status) ||
+    			YubicoResponseStatus.NO_SUCH_CLIENT.equals(status) ||
+    			YubicoResponseStatus.MISSING_PARAMETER.equals(status));
     }
 }

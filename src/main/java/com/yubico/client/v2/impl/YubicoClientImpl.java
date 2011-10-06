@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
+   Copyright (c) 2011, Simon Buckle.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -47,6 +48,7 @@ import java.util.TreeMap;
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
    
    Modified by Simon Buckle <simon@webteq.eu>, September 2011.
+    - Added support for generating and validating signatures
 */
 
 public class YubicoClientImpl extends YubicoClient {
@@ -99,8 +101,6 @@ public class YubicoClientImpl extends YubicoClient {
             	}
             }
             
-            // Verify the result
-            //
             // NONCE/OTP fields are not returned to the client when sending error codes.
             // If there is an error response, don't need to check them.
             if (!isError(response.getStatus())) {

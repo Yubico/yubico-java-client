@@ -6,6 +6,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
    Copyright (c) 2011, Yubico AB.  All rights reserved.
+   Copyright (c) 2011, Simon Buckle.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -34,8 +35,6 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
    SUCH DAMAGE.
 
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
-   
-   Modified by Simon Buckle <simon@webteq.eu>, September 2011.
 */
 
 public abstract class YubicoClient {
@@ -135,6 +134,8 @@ public abstract class YubicoClient {
 	 * and only contains printable characters, as per the recommendation.
 	 * 
 	 * @see http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients
+	 * 
+	 * @author Simon Buckle <simon@webteq.eu>
 	 * 
 	 * @param otp The OTP to validate
 	 * 

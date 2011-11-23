@@ -33,6 +33,12 @@
                 <artifactId>vt-ldap</artifactId>
                 <version>3.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>security</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

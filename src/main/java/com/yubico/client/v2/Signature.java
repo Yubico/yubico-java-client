@@ -40,11 +40,11 @@ import org.apache.commons.codec.binary.Base64;
 public class Signature {
 
 	private final static String HMAC_SHA1 = "HmacSHA1";
-	
-	public static String calculate(String data, String key) 
+
+	public static String calculate(String data, byte[] key)
 	throws SignatureException {
 		try {
-			SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1);
+			SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 	        Mac mac = Mac.getInstance(HMAC_SHA1);
 	        mac.init(signingKey);        
 	        byte[] raw = mac.doFinal(data.getBytes("UTF-8"));

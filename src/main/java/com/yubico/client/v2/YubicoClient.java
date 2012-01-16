@@ -39,7 +39,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
 public abstract class YubicoClient {
     protected Integer clientId;
-    protected String key;
+    protected byte[] key;
     protected String wsapi_urls[] = {
     		"https://api.yubico.com/wsapi/2.0/verify",
     		"https://api2.yubico.com/wsapi/2.0/verify",
@@ -77,11 +77,11 @@ public abstract class YubicoClient {
     }
 
     public void setKey(String key) {
-    	this.key = new String(Base64.decodeBase64(key));
+        this.key = Base64.decodeBase64(key);
     }
     
     public String getKey() {
-    	return this.key;
+        return Base64.encodeBase64String(this.key);
     }
     
     /**

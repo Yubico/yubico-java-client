@@ -38,11 +38,19 @@ import static org.junit.Assert.*;
 
 public class YubicoClientTest {
 
-    private YubicoClient client=null;
+    private YubicoClient client = null;
+
+    /*
+     * API key for signing/verifying request/response. Don't reuse this one (or
+     * you will have zero security), get your own at
+     * https://upgrade.yubico.com/getapikey/
+     */
+    private final int clientId = 7062;
+    private final String apiKey = "eIN3m78e8BRHXPGDVV3lQUm4yVw=";
 
     @Before
     public void setup() {
-        client=YubicoClient.getClient(4711);
+        client = YubicoClient.getClient(this.clientId);
     }
 
     @Test
@@ -60,11 +68,29 @@ public class YubicoClientTest {
     
     @Test
     public void testReplayedOTP() {
-        String otp="cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+        String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         YubicoResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(otp, response.getOtp());
         assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
+    }
+
+    @Test
+    public void testSignature() {
+        String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+        client.setKey(this.apiKey);
+        YubicoResponse response = client.verify(otp);
+        assertNotNull(response);
+        assertEquals(otp, response.getOtp());
+        assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
+    }
+
+    @Test
+    public void testBadSignature() {
+        String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+        client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
+        YubicoResponse response = client.verify(otp);
+        assertNull(response);
     }
 
 }

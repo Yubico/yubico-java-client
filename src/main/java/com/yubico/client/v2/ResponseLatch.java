@@ -32,12 +32,20 @@ package com.yubico.client.v2;
 */
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class ResponseLatch<T> {
 
 	private T value = null;
 	private final CountDownLatch done = new CountDownLatch(1);
+	private long timeout;
+	private TimeUnit unit;
 	
+	public ResponseLatch(long timeout, TimeUnit unit) {
+		this.timeout = timeout;
+		this.unit = unit;
+	}
+
 	public boolean isSet() {
 		return (done.getCount() == 0);
 	}
@@ -50,7 +58,7 @@ public class ResponseLatch<T> {
 	}
 	
 	public T getValue() throws InterruptedException {
-		done.await();
+		done.await(timeout, unit);
 		synchronized (this) {
 			return value;
 		}

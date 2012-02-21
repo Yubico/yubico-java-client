@@ -5,6 +5,7 @@ import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
+import com.yubico.client.v2.YubicoValidationTimeout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,9 @@ public class YubicoClientImpl extends YubicoClient {
             }
             
             YubicoResponse response = new YubicoValidationService().fetch(validationUrls);
+            if(response == null) {
+            	throw new YubicoValidationTimeout("Timeout reached while waiting for valid answer.");
+            }
             
             // Verify the signature
             if (key != null) {

@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.yubico.client.v2.impl.YubicoResponseImpl;
 
@@ -46,7 +47,7 @@ import com.yubico.client.v2.impl.YubicoResponseImpl;
  */
 public class YubicoValidationService {
 
-final ResponseLatch<YubicoResponse> result = new ResponseLatch<YubicoResponse>();
+final ResponseLatch<YubicoResponse> result = new ResponseLatch<YubicoResponse>(1L, TimeUnit.MINUTES);
 	
 	public YubicoResponse fetch(List<String> urls) throws InterruptedException {
 		for (int i = 0, len = urls.size(); i < len; i++) {

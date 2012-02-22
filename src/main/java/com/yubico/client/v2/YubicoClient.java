@@ -40,6 +40,7 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
+    protected String sync;
     protected String wsapi_urls[] = {
     		"https://api.yubico.com/wsapi/2.0/verify",
     		"https://api2.yubico.com/wsapi/2.0/verify",
@@ -82,6 +83,14 @@ public abstract class YubicoClient {
     
     public String getKey() {
         return Base64.encodeBase64String(this.key);
+    }
+    
+    public void setSync(String sync) {
+    	this.sync = sync;
+    }
+    
+    public String getSync() {
+    	return sync;
     }
     
     /**

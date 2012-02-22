@@ -64,6 +64,12 @@ public class YubicoClientImpl extends YubicoClient {
     	this.clientId = id;
     	setKey(key);
     }
+    
+    public YubicoClientImpl(Integer id, String key, String sync) {
+    	this.clientId = id;
+    	setKey(key);
+    	setSync(sync);
+    }
 
     /** {@inheritDoc} */
     public YubicoResponse verify(String otp) {
@@ -72,8 +78,12 @@ public class YubicoClientImpl extends YubicoClient {
     	}
         try {
             String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-        	String paramStr = String.format("id=%d&nonce=%s&otp=%s&timestamp=%s", clientId, nonce, otp, "1");
-        	
+            String syncParam = "";
+            if(sync != null) {
+            	syncParam = String.format("&sl=%s", sync);
+            }
+            String paramStr = String.format("id=%d&nonce=%s&otp=%s%s&timestamp=%s", clientId, nonce, otp, syncParam, "1");
+        	        	
             if (key != null) {
             	String s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
             	paramStr += "&h="; paramStr += s;

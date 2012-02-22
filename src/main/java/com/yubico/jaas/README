@@ -26,6 +26,8 @@ YubikeyLoginModule :
 				validation?
      wsapi_urls			default: the YubiCloud validation URL. A "|" delimeted list of
      				ykval wsapi 2.0 URLs to use for OTP validation.
+     sync_policy 		default: none, let the server decide. a value between 0 and 100
+     				indicating the percentage of syncronization required by the client.
 
   Example configuration :
 

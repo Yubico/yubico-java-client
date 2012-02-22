@@ -65,7 +65,8 @@ public class YubikeyLoginModule implements LoginModule {
 	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
 	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
-        public static final String OPTION_YUBICO_USERMAP_CLASS = "usermap_class";
+	public static final String OPTION_YUBICO_USERMAP_CLASS      = "usermap_class";
+	public static final String OPTION_YUBICO_SYNC_POLICY        = "sync_policy";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -150,6 +151,10 @@ public class YubikeyLoginModule implements LoginModule {
 			String in = options.get(OPTION_YUBICO_WSAPI_URLS).toString();
 			String l[] = in.split("\\|");
 			this.yc.setWsapiUrls(l);
+		}
+		
+		if (options.get(OPTION_YUBICO_SYNC_POLICY) != null) {
+			this.yc.setSync(options.get(OPTION_YUBICO_SYNC_POLICY).toString());
 		}
 
 		/* Instantiate the specified usermap implementation. */

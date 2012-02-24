@@ -46,7 +46,7 @@
     <scm>
       <url>scm:git:git://github.com/Yubico/yubico-java-client.git</url>
       <connection>scm:git:git://github.com/Yubico/yubico-java-client.git</connection>
-      <developerConnection>scm:git:git@github.com:Yubico/yubico-java-client.git</developerConnection>
+      <developerConnection>scm:git:ssh://git@github.com/Yubico/yubico-java-client.git</developerConnection>
     </scm>
 
     <dependencies>

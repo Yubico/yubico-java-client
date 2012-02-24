@@ -10,6 +10,20 @@
         <url>http://www.yubico.com/</url>
     </organization>
     <url>https://github.com/Yubico/yubico-java-client</url>
+    <packaging>jar</packaging>
+
+    <developers>
+      <developer>
+        <id>fredrik</id>
+        <name>Frerik Thulin</name>
+        <email>fredrik@yubico.com</email>
+      </developer>
+      <developer>
+        <id>klas</id>
+        <name>Klas Lindfors</name>
+        <email>klas@yubico.com</email>
+      </developer>
+    </developers>
 
     <licenses>
       <license>
@@ -19,6 +33,7 @@
     </licenses>
 
     <scm>
+      <url>scm:git:git://github.com/Yubico/yubico-java-client.git</url>
       <connection>scm:git:git://github.com/Yubico/yubico-java-client.git</connection>
       <developerConnection>scm:git:git@github.com:Yubico/yubico-java-client.git</developerConnection>
     </scm>

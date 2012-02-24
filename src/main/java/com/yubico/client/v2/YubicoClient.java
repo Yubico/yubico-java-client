@@ -78,11 +78,11 @@ public abstract class YubicoClient {
     }
 
     public void setKey(String key) {
-        this.key = Base64.decodeBase64(key);
+        this.key = Base64.decodeBase64(key.getBytes());
     }
     
     public String getKey() {
-        return Base64.encodeBase64String(this.key);
+        return new String(Base64.encodeBase64(this.key));
     }
     
     public void setSync(String sync) {

@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.yubico.java</groupId>
+    <groupId>com.yubico</groupId>
     <artifactId>yubico-validation-client</artifactId>
     <version>2.0RC4-SNAPSHOT</version>
     <name>Yubico OTP validation client</name>
@@ -10,7 +10,7 @@
         <url>http://www.yubico.com/</url>
     </organization>
     <url>https://github.com/Yubico/yubico-java-client</url>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <developers>
       <developer>
@@ -25,17 +25,6 @@
       </developer>
     </developers>
 
-    <contributors>
-      <contributor>
-        <name>Linus Widströmer</name>
-        <email>linus.widstromer@it.su.se</email>
-      </contributor>
-      <contributor>
-        <name>Simon Buckle</name>
-        <email>simon@webteq.eu</email>
-      </contributor>
-    </contributors>
-
     <licenses>
       <license>
         <name>BSD-license</name>
@@ -49,6 +38,12 @@
       <developerConnection>scm:git:ssh://git@github.com/Yubico/yubico-java-client.git</developerConnection>
     </scm>
 
+    <modules>
+      <module>v1client</module>
+      <module>v2client</module>
+      <module>jaas</module>
+    </modules>
+
     <distributionManagement>
       <repository>
         <id>sonatype-nexus-staging</id>
@@ -61,30 +56,6 @@
         <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
       </snapshotRepository>
     </distributionManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-api</artifactId>
-        	<version>1.6.1</version>
-        </dependency>
-  	<dependency>
-  		<groupId>commons-codec</groupId>
-  		<artifactId>commons-codec</artifactId>
-  		<version>1.4</version>
-  	</dependency>
-        <dependency>
-                <groupId>edu.vt.middleware</groupId>
-                <artifactId>vt-ldap</artifactId>
-                <version>3.3.3</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

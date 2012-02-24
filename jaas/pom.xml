@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>yubico-jaas-module</artifactId>
+  <name>Yubico JAAS module</name>
+  <description>JAAS module for verifying YubiKey OTPs</description>
+  <url>https://github.com/Yubico/yubico-java-client</url>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>com.yubico</groupId>
+    <artifactId>yubico-validation-client</artifactId>
+    <version>2.0RC4-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>yubico-validation-client2</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.vt.middleware</groupId>
+      <artifactId>vt-ldap</artifactId>
+      <version>3.3.3</version>
+    </dependency>
+  </dependencies>
+</project>

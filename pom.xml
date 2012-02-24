@@ -25,6 +25,17 @@
       </developer>
     </developers>
 
+    <contributors>
+      <contributor>
+        <name>Linus Widströmer</name>
+        <email>linus.widstromer@it.su.se</email>
+      </contributor>
+      <contributor>
+        <name>Simon Buckle</name>
+        <email>simon@webteq.eu</email>
+      </contributor>
+    </contributors>
+
     <licenses>
       <license>
         <name>BSD-license</name>

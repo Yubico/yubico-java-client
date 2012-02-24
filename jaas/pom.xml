@@ -11,6 +11,12 @@
     <version>2.0RC5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
+  <contributors>
+    <contributor>
+      <name>Etienne Dysli</name>
+      <email>etienne.dysli@unil.ch</email>
+    </contributor>
+  </contributors>
 
   <dependencies>
     <dependency>

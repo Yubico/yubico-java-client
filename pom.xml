@@ -10,6 +10,19 @@
         <name>Yubico AB</name>
         <url>http://www.yubico.com/</url>
     </organization>
+    <url>https://github.com/Yubico/yubico-java-client</url>
+
+    <licenses>
+      <license>
+        <name>BSD-license</name>
+        <comments>Revised 2-clause BSD license</comments>
+      </license>
+    </licenses>
+
+    <scm>
+      <connection>scm:git:git://github.com/Yubico/yubico-java-client.git</connection>
+      <developerConnection>scm:git:git@github.com:Yubico/yubico-java-client.git</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>

@@ -1,21 +1,18 @@
 package com.yubico.client.v2.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
 import com.yubico.client.v2.YubicoValidationTimeout;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
    Copyright (c) 2011, Simon Buckle.  All rights reserved.

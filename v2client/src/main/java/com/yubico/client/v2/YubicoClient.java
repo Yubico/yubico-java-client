@@ -57,7 +57,10 @@ public abstract class YubicoClient {
      */
     public abstract YubicoResponse verify( String otp );
 
-    /* @see setClientId() */
+    /**
+     * Get the ykval client identifier uset do identify the applicaiton.
+     * @return ykval client identifier
+     * @see setClientId() */
     public Integer getClientId() {
         return clientId;
     }
@@ -77,18 +80,35 @@ public abstract class YubicoClient {
         this.clientId = clientId;
     }
 
+    /**
+     * Set api key to be used for signing requests
+     * @param key ykval client key
+     */
     public void setKey(String key) {
         this.key = Base64.decodeBase64(key.getBytes());
     }
     
+    /**
+     * Get the api key that is used for signing requests
+     * @return ykval client key
+     */
     public String getKey() {
         return new String(Base64.encodeBase64(this.key));
     }
     
+    /**
+     * Set the sync percentage required for a successful auth.
+     * Default is to let the server decide.
+     * @param sync percentage or strings 'secure' or 'fast'
+     */
     public void setSync(String sync) {
     	this.sync = sync;
     }
     
+    /**
+     * Get the sync percentage required for a successful auth.
+     * @return sync percentage or strings 'secure' or 'fast'
+     */
     public String getSync() {
     	return sync;
     }

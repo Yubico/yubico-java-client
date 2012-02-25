@@ -1,15 +1,15 @@
 package com.yubico.client.v2.impl;
 
-import com.yubico.client.v2.YubicoResponse;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import org.junit.Test;
+
+import com.yubico.client.v2.YubicoResponse;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
@@ -47,7 +47,8 @@ public class YubicoResponseImplTest {
     @Test
     public void testParserForNullArg() {
         try {
-            YubicoResponse response = new YubicoResponseImpl(null);
+            @SuppressWarnings("unused")
+			YubicoResponse response = new YubicoResponseImpl(null);
             fail("Expected an IOException to be thrown.");
         } catch (IOException ioe) {
         }

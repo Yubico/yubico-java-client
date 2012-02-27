@@ -83,6 +83,7 @@ public abstract class YubicoClient {
     /**
      * Set api key to be used for signing requests
      * @param key ykval client key
+     * @see setClientId()
      */
     public void setKey(String key) {
         this.key = Base64.decodeBase64(key.getBytes());
@@ -91,6 +92,7 @@ public abstract class YubicoClient {
     /**
      * Get the api key that is used for signing requests
      * @return ykval client key
+     * @see setClientId()
      */
     public String getKey() {
         return new String(Base64.encodeBase64(this.key));

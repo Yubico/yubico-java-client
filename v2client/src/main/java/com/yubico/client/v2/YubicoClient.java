@@ -53,7 +53,7 @@ public abstract class YubicoClient {
      * Validate an OTP using a webservice call to one or more ykval validation servers.
      *
      * @param otp  YubiKey OTP in modhex format
-     * @return  result of the webservice validation operation
+     * @return  result of the webservice validation operation, null on failure
      */
     public abstract YubicoResponse verify( String otp );
 

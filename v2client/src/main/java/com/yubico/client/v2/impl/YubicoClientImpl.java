@@ -1,20 +1,5 @@
-package com.yubico.client.v2.impl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.yubico.client.v2.Signature;
-import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
-import com.yubico.client.v2.YubicoValidationService;
-import com.yubico.client.v2.YubicoValidationTimeout;
-
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
+
    Copyright (c) 2011, Simon Buckle.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -48,6 +33,22 @@ import com.yubico.client.v2.YubicoValidationTimeout;
    Modified by Simon Buckle <simon@webteq.eu>, September 2011.
     - Added support for generating and validating signatures
 */
+
+package com.yubico.client.v2.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.yubico.client.v2.Signature;
+import com.yubico.client.v2.YubicoClient;
+import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.YubicoResponseStatus;
+import com.yubico.client.v2.YubicoValidationService;
+import com.yubico.client.v2.YubicoValidationTimeout;
 
 public class YubicoClientImpl extends YubicoClient {
     private static Logger logger = LoggerFactory.getLogger(YubicoClientImpl.class);

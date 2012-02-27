@@ -1,5 +1,3 @@
-package com.yubico.client.v2;
-
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -30,6 +28,8 @@ package com.yubico.client.v2;
  
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
 */
+
+package com.yubico.client.v2;
 
 public class Cmd {
 

@@ -1,9 +1,3 @@
-package com.yubico.client.v2;
-
-import org.apache.commons.codec.binary.Base64;
-
-import com.yubico.client.v2.impl.YubicoClientImpl;
-
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
    Copyright (c) 2011, Yubico AB.  All rights reserved.
    Copyright (c) 2011, Simon Buckle.  All rights reserved.
@@ -36,6 +30,12 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
 */
+
+package com.yubico.client.v2;
+
+import org.apache.commons.codec.binary.Base64;
+
+import com.yubico.client.v2.impl.YubicoClientImpl;
 
 public abstract class YubicoClient {
     protected Integer clientId;

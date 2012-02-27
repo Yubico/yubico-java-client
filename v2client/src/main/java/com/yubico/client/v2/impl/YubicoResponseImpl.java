@@ -1,15 +1,3 @@
-package com.yubico.client.v2.impl;
-
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.TreeMap;
-
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -40,6 +28,18 @@ import java.util.TreeMap;
  
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
 */
+
+package com.yubico.client.v2.impl;
+
+import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.YubicoResponseStatus;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class YubicoResponseImpl implements YubicoResponse {
 

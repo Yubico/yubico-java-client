@@ -1,19 +1,26 @@
 This is a validation client for use with the Yubico validation API version 2. To pull in the dependency in a maven project do:
 
- <dependency>
-   <groupId>com.yubico</groupId>
-   <artifactId>yubico-validation-client2</artifactId>
-   <validationersion>2.0RC4</version>
- </dependency>
+```xml
+<dependency>
+  <groupId>com.yubico</groupId>
+  <artifactId>yubico-validation-client2</artifactId>
+  <validationersion>2.0RC4</version>
+</dependency>
+```
 
 Basic usage would be:
 
- YubicoClient client = YubicoClient.getClient(CLIENT_ID);
- YubicoResponse response = client.verify(otp);
- if(response != null && response.getStatus() == YubicoResponseStatus.OK) {
-   // otp verified successfully
- }
+```java
+YubicoClient client = YubicoClient.getClient(CLIENT_ID);
+YubicoResponse response = client.verify(otp);
+if(response != null && response.getStatus() == YubicoResponseStatus.OK) {
+  // otp verified successfully
+}
+```
 
 After verifying the OTP you should make sure that it belongs to the
 correct user. For generic login cases the JAAS module can be easier to
 implement.
+
+For more complete descriptions of methods and failure states, please see
+the javadoc.

@@ -135,36 +135,36 @@ public class YubikeyLoginModule implements LoginModule {
 		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
 		this.yc = YubicoClient.getClient(this.clientId);
 		
-		if(options.get(OPTION_YUBICO_CLIENT_KEY) != null) {
+		if(options.containsKey(OPTION_YUBICO_CLIENT_KEY)) {
 			yc.setKey(options.get(OPTION_YUBICO_CLIENT_KEY).toString());
 		}
 
 		/* Realm of principals added after authentication */
-		if (options.get(OPTION_YUBICO_ID_REALM) != null) {
+		if (options.containsKey(OPTION_YUBICO_ID_REALM)) {
 			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
 		}
 
 		/* Should this JAAS module be ignored when no OTPs are supplied? */
-		if (options.get(OPTION_YUBICO_SOFT_FAIL_NO_OTPS) != null) {
+		if (options.containsKey(OPTION_YUBICO_SOFT_FAIL_NO_OTPS)) {
 			if ("true".equals(options.get(OPTION_YUBICO_SOFT_FAIL_NO_OTPS).toString())) {
 				this.soft_fail_on_no_otps = true;
 			}
 		}
 
 		/* User-provided URLs to the Yubico validation service, separated by "|". */
-		if (options.get(OPTION_YUBICO_WSAPI_URLS) != null) {
+		if (options.containsKey(OPTION_YUBICO_WSAPI_URLS)) {
 			String in = options.get(OPTION_YUBICO_WSAPI_URLS).toString();
 			String l[] = in.split("\\|");
 			this.yc.setWsapiUrls(l);
 		}
 		
-		if (options.get(OPTION_YUBICO_SYNC_POLICY) != null) {
+		if (options.containsKey(OPTION_YUBICO_SYNC_POLICY)) {
 			this.yc.setSync(options.get(OPTION_YUBICO_SYNC_POLICY).toString());
 		}
 
 		/* Instantiate the specified usermap implementation. */
                 String usermap_class_name = null;
-                if (options.get(OPTION_YUBICO_USERMAP_CLASS) != null) {
+                if (options.containsKey(OPTION_YUBICO_USERMAP_CLASS)) {
                     usermap_class_name = options.get(OPTION_YUBICO_USERMAP_CLASS).toString();
                 } else {
                     usermap_class_name = "com.yubico.jaas.impl.YubikeyToUserMapImpl"; // Default implementation

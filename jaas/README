@@ -6,13 +6,13 @@ For information about JAAS configuration, see
 YubikeyLoginModule :
 
 This JAAS plugin authenticates OTPs against the online Yubico validation
-servers.
+servers. Client id and API key can be fetched from
+https://upgrade.yubico.com/getapikey/
 
  Parameters :
 
-   clientId             Your Client API key for the validation service. Not
-                        actually needed for validation v1, so set this to
-                        4711.
+   clientId             Your Client API id for the validation service.
+   clientKey            Your Client API key for the validaiton service.
    id2name_textfile     Filename with "public_id<SP>username" info about which
                         user owns what key.
    verify_yubikey_owner default: "true". Only set to "false" in pre-production

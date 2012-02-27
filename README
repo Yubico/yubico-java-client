@@ -1,0 +1,20 @@
+This is java clients from Yubico for validation of YubiKey OTPs. It's
+constructed of three submodules:
+
+* v1client for the Yubico validation API version 1
+* v2client for the Yubico validation API version 2
+* jaas that is a JAAS module, using v2client
+
+By default all parts use the Yubico YubiCloud validation platform, but can
+be configured for another validaiton server. To use YubiCloud you need a
+client id and an API key that can be fetched from
+https://upgrade.yubico.com/getapikey/.
+
+All artifacts are published in the Maven Central Repository under the
+groupId com.yubico with artifactId:
+
+* v1client -> yubico-validation-client1
+* v2client -> yubico-validation-client2
+* jaas -> yubico-jaas-module
+
+See README under each submodule for specific usage.

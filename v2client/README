@@ -7,7 +7,7 @@ pull in the dependency in a maven project do:
    <version>2.0RC4</version>
  </dependency>
 
-A very simplified implementation would be:
+A simplified implementation would be:
 
  // otp is the modhex otp from the yubikey
  // client_id is the clientId from https://upgrade.yubico.com/getapikey/
@@ -27,6 +27,16 @@ funcitonality.
 
 For generic login cases the JAAS module can be easier to implement than using
 the client API directly.
+
+The validation client depends on slf4j-api for logging, to get the actual logs
+and not receive warnings on STDOUT you will need to depend on a slf4j logger
+binding, for example slf4j-log4j with the following maven configuration:
+
+ <dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>slf4j-log4j</artifactId>
+  <version>1.6.1</version>
+ </dependency>
 
 For more complete descriptions of methods and failure states, please see
 the javadoc.

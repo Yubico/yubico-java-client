@@ -62,6 +62,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 * Note that the options map is shared with other classes, like YubikeyToUserMap.
 	 */
 	public static final String OPTION_YUBICO_CLIENT_ID			= "clientId";
+	public static final String OPTION_YUBICO_CLIENT_KEY         = "clientKey";
 	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
 	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
 	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
@@ -133,6 +134,10 @@ public class YubikeyLoginModule implements LoginModule {
 		/* Yubico verification client */
 		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
 		this.yc = YubicoClient.getClient(this.clientId);
+		
+		if(options.get(OPTION_YUBICO_CLIENT_KEY) != null) {
+			yc.setKey(options.get(OPTION_YUBICO_CLIENT_KEY).toString());
+		}
 
 		/* Realm of principals added after authentication */
 		if (options.get(OPTION_YUBICO_ID_REALM) != null) {

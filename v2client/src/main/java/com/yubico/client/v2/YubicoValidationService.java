@@ -1,6 +1,7 @@
 package com.yubico.client.v2;
 
 /* 	Copyright (c) 2011, Simon Buckle.  All rights reserved.
+	Copyright (c) 2012, Yubico AB. All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
@@ -30,13 +31,19 @@ package com.yubico.client.v2;
 
 	Written by Simon Buckle <simon@webteq.eu>, September 2011.
 */
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import com.yubico.client.v2.exceptions.YubicoReplayedRequestException;
+import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.impl.YubicoResponseImpl;
 
 /*
@@ -46,40 +53,43 @@ import com.yubico.client.v2.impl.YubicoResponseImpl;
  * @author Simon Buckle <simon@webteq.eu>
  */
 public class YubicoValidationService {
-
-final ResponseLatch<YubicoResponse> result = new ResponseLatch<YubicoResponse>(1L, TimeUnit.MINUTES);
-	
-	public YubicoResponse fetch(List<String> urls) throws InterruptedException {
-		for (int i = 0, len = urls.size(); i < len; i++) {
-			Runnable task = new VerifyTask(urls.get(i));
-			new Thread(task).start();
+	public YubicoResponse fetch(List<String> urls) throws YubicoValidationException {
+		ExecutorService pool = Executors.newFixedThreadPool(urls.size());
+		
+	    List<Callable<YubicoResponse>> tasks = new ArrayList<Callable<YubicoResponse>>();
+	    for(String url : urls) {
+	    	tasks.add(new VerifyTask(url));
+	    }
+	    YubicoResponse response = null;
+		try {
+			response = pool.invokeAny(tasks, 1L, TimeUnit.MINUTES);
+		} catch (ExecutionException e) {
+			throw new YubicoValidationException("Exception while executing validation.", e.getCause());
+		} catch (TimeoutException e) {
+			throw new YubicoValidationException("Timeout waiting for validation server response.", e);
+		} catch (InterruptedException e) {
+			throw new YubicoValidationException("Validation interrupted.", e);
 		}
-		return result.getValue();
+	    return response;
 	}
 	
-	class VerifyTask implements Runnable {
-		private final String uri;
-		
-		public VerifyTask(String uri) {
-			this.uri = uri;
+	class VerifyTask implements Callable<YubicoResponse> {
+		private final String url;
+		public VerifyTask(String url) {
+			this.url = url;
 		}
 		
-		public void run() {
-			try {
-				URL url = new URL(uri);
-				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-				conn.setConnectTimeout(15000); // 15 second timeout
-				YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());
-				// @see http://forum.yubico.com/viewtopic.php?f=3&t=701
-				if (!YubicoResponseStatus.REPLAYED_REQUEST.equals(resp.getStatus())) {
-					result.setValue(resp);
-				}
-			} catch (SocketTimeoutException e) {
-				System.out.println("Connection timed out");
-			} catch (IOException e) {
-				System.out.println(e);
+		public YubicoResponse call() throws Exception {
+			URL url = new URL(this.url);
+			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.setConnectTimeout(15000); // 15 second timeout
+			conn.setReadTimeout(15000); // for both read and connect
+			YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());
+			// @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+			if (YubicoResponseStatus.REPLAYED_REQUEST.equals(resp.getStatus())) {
+				throw new YubicoReplayedRequestException("Replayed request.");
 			}
-		}
-		
+			return resp;
+		}	
 	}
 }

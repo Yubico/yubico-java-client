@@ -36,6 +36,7 @@ package com.yubico.client.v2;
 import org.apache.commons.codec.binary.Base64;
 
 import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 
 public abstract class YubicoClient {
@@ -55,8 +56,10 @@ public abstract class YubicoClient {
      *
      * @param otp  YubiKey OTP in modhex format
      * @return  result of the webservice validation operation, null on failure
+     * @throws YubicoValidationException for validation errors, like unreachable servers
+     * @throws YubicoValidationFailure for validation failures, like non matching otps in request and response
      */
-    public abstract YubicoResponse verify( String otp ) throws YubicoValidationException;
+    public abstract YubicoResponse verify( String otp ) throws YubicoValidationException, YubicoValidationFailure;
 
     /**
      * Get the ykval client identifier uset do identify the applicaiton.

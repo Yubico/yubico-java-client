@@ -47,6 +47,7 @@ import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
 import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 public class YubicoClientImpl extends YubicoClient {
     /** {@inheritDoc} */
@@ -66,7 +67,7 @@ public class YubicoClientImpl extends YubicoClient {
     }
 
     /** {@inheritDoc} */
-    public YubicoResponse verify(String otp) throws YubicoValidationException {
+    public YubicoResponse verify(String otp) throws YubicoValidationException, YubicoValidationFailure {
     	if (!isValidOTPFormat(otp)) {
     		throw new IllegalArgumentException("The OTP is not a valid format");
     	}
@@ -110,7 +111,7 @@ public class YubicoClientImpl extends YubicoClient {
 				throw new YubicoValidationException("Failed to calculate the response signature.", e);
 			}
     		if (!response.getH().equals(signature)) {
-    			throw new YubicoValidationException("Signatures do not match");
+    			throw new YubicoValidationFailure("Signatures do not match");
     		}
     	}
 
@@ -118,10 +119,10 @@ public class YubicoClientImpl extends YubicoClient {
     	// If there is an error response, don't need to check them.
     	if (!isError(response.getStatus())) {
     		if (response.getOtp() == null || !otp.equals(response.getOtp())) {
-    			throw new YubicoValidationException("OTP mismatch in response, is there a man-in-the-middle?");
+    			throw new YubicoValidationFailure("OTP mismatch in response, is there a man-in-the-middle?");
     		}
     		if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
-    			throw new YubicoValidationException("Nonce mismatch in response, is there a man-in-the-middle?");
+    			throw new YubicoValidationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
     		}
     	}
 

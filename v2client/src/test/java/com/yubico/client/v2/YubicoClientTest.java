@@ -1,6 +1,7 @@
 package com.yubico.client.v2;
 
 import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testBadOTP() throws YubicoValidationException {	 	
+    public void testBadOTP() throws YubicoValidationException, YubicoValidationFailure {	 	
     	String otp="11111111111111111111111111111111111"; 
     	YubicoResponse response = client.verify(otp);
         assertNotNull(response); 	
@@ -68,7 +69,7 @@ public class YubicoClientTest {
     }
     
     @Test
-    public void testReplayedOTP() throws YubicoValidationException {
+    public void testReplayedOTP() throws YubicoValidationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         YubicoResponse response = client.verify(otp);
         assertNotNull(response);
@@ -77,7 +78,7 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testSignature() throws YubicoValidationException {
+    public void testSignature() throws YubicoValidationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey(this.apiKey);
         YubicoResponse response = client.verify(otp);
@@ -87,14 +88,15 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testBadSignature() {
+    public void testBadSignature() throws YubicoValidationException   {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
         YubicoResponse response = null;
         boolean caught = false;
 		try {
 			response = client.verify(otp);
-		} catch (YubicoValidationException e) {
+		} catch (YubicoValidationFailure e) {
+			assertTrue(e.getMessage().startsWith("Signatures do not match"));
 			caught = true;
 			assertNull(response);
 		}

@@ -40,19 +40,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
-import com.yubico.client.v2.YubicoValidationTimeout;
+import com.yubico.client.v2.exceptions.YubicoSignatureException;
+import com.yubico.client.v2.exceptions.YubicoValidationException;
 
 public class YubicoClientImpl extends YubicoClient {
-    private static Logger logger = LoggerFactory.getLogger(YubicoClientImpl.class);
-
     /** {@inheritDoc} */
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
@@ -70,67 +66,66 @@ public class YubicoClientImpl extends YubicoClient {
     }
 
     /** {@inheritDoc} */
-    public YubicoResponse verify(String otp) {
+    public YubicoResponse verify(String otp) throws YubicoValidationException {
     	if (!isValidOTPFormat(otp)) {
     		throw new IllegalArgumentException("The OTP is not a valid format");
     	}
-        try {
-            String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-            String syncParam = "";
-            if(sync != null) {
-            	syncParam = String.format("&sl=%s", sync);
-            }
-            String paramStr = String.format("id=%d&nonce=%s&otp=%s%s&timestamp=%s", clientId, nonce, otp, syncParam, "1");
-        	        	
-            if (key != null) {
-            	String s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
-            	paramStr += "&h="; paramStr += s;
-            }
-            
-            String[] wsapiUrls = this.getWsapiUrls();
-            List<String> validationUrls = new ArrayList<String>();
-            for (int i = 0, len = wsapiUrls.length; i < len; i++) {
-            	validationUrls.add(wsapiUrls[i] + "?" + paramStr);
-            }
-            
-            YubicoResponse response = new YubicoValidationService().fetch(validationUrls);
-            if(response == null) {
-            	throw new YubicoValidationTimeout("Timeout reached while waiting for valid answer.");
-            }
-            
-            // Verify the signature
-            if (key != null) {
-            	StringBuffer keyValueStr = new StringBuffer();
-            	for (Map.Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
-            		if ("h".equals(entry.getKey())) { continue; }
-            		if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
-            		keyValueStr.append(entry.getKey()).append("=").append(entry.getValue());
-            	}
-            	String signature = Signature.calculate(keyValueStr.toString(), key).trim();
-            	if (!response.getH().equals(signature)) {
-            		logger.warn("Signatures do not match");
-            		return null;
-            	}
-            }
-            
-            // NONCE/OTP fields are not returned to the client when sending error codes.
-            // If there is an error response, don't need to check them.
-            if (!isError(response.getStatus())) {
-            	if (response.getOtp() == null || !otp.equals(response.getOtp())) {
-                    logger.warn("OTP mismatch in response, is there a man-in-the-middle?");
-                    return null;
-                }
-            	if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
-                    logger.warn("Nonce mismatch in response, is there a man-in-the-middle?");
-                    return null;
-                }
-            }
-            
-            return response;
-        } catch (Exception e) {
-            logger.warn("Got exception when parsing response from server.", e);
-            return null;
-        }
+    	String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
+    	String syncParam = "";
+    	if(sync != null) {
+    		syncParam = String.format("&sl=%s", sync);
+    	}
+    	String paramStr = String.format("id=%d&nonce=%s&otp=%s%s&timestamp=%s", clientId, nonce, otp, syncParam, "1");
+
+    	if (key != null) {
+    		String s;
+			try {
+				s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
+			} catch (YubicoSignatureException e) {
+				throw new YubicoValidationException("Failed signing of request", e);
+			}
+    		paramStr += "&h="; paramStr += s;
+    	}
+
+    	String[] wsapiUrls = this.getWsapiUrls();
+    	List<String> validationUrls = new ArrayList<String>();
+    	for (int i = 0, len = wsapiUrls.length; i < len; i++) {
+    		validationUrls.add(wsapiUrls[i] + "?" + paramStr);
+    	}
+
+    	YubicoResponse response = new YubicoValidationService().fetch(validationUrls);
+
+    	// Verify the signature
+    	if (key != null) {
+    		StringBuffer keyValueStr = new StringBuffer();
+    		for (Map.Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
+    			if ("h".equals(entry.getKey())) { continue; }
+    			if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
+    			keyValueStr.append(entry.getKey()).append("=").append(entry.getValue());
+    		}
+    		String signature;
+			try {
+				signature = Signature.calculate(keyValueStr.toString(), key).trim();
+			} catch (YubicoSignatureException e) {
+				throw new YubicoValidationException("Failed to calculate the response signature.", e);
+			}
+    		if (!response.getH().equals(signature)) {
+    			throw new YubicoValidationException("Signatures do not match");
+    		}
+    	}
+
+    	// NONCE/OTP fields are not returned to the client when sending error codes.
+    	// If there is an error response, don't need to check them.
+    	if (!isError(response.getStatus())) {
+    		if (response.getOtp() == null || !otp.equals(response.getOtp())) {
+    			throw new YubicoValidationException("OTP mismatch in response, is there a man-in-the-middle?");
+    		}
+    		if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
+    			throw new YubicoValidationException("Nonce mismatch in response, is there a man-in-the-middle?");
+    		}
+    	}
+
+    	return response;
     }
     
     /**

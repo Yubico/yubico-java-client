@@ -1,5 +1,6 @@
 package com.yubico.client.v2;
 
+import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +60,7 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testBadOTP() {	 	
+    public void testBadOTP() throws YubicoValidationException {	 	
     	String otp="11111111111111111111111111111111111"; 
     	YubicoResponse response = client.verify(otp);
         assertNotNull(response); 	
@@ -67,7 +68,7 @@ public class YubicoClientTest {
     }
     
     @Test
-    public void testReplayedOTP() {
+    public void testReplayedOTP() throws YubicoValidationException {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         YubicoResponse response = client.verify(otp);
         assertNotNull(response);
@@ -76,7 +77,7 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testSignature() {
+    public void testSignature() throws YubicoValidationException {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey(this.apiKey);
         YubicoResponse response = client.verify(otp);
@@ -89,8 +90,15 @@ public class YubicoClientTest {
     public void testBadSignature() {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
-        YubicoResponse response = client.verify(otp);
+        YubicoResponse response = null;
+        boolean caught = false;
+		try {
+			response = client.verify(otp);
+		} catch (YubicoValidationException e) {
+			caught = true;
+			assertNull(response);
+		}
+		assertTrue(caught);
         assertNull(response);
     }
-
 }

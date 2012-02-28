@@ -31,6 +31,10 @@ package com.yubico.client.v2;
 	Written by Simon Buckle <simon@webteq.eu>, September 2011.
 */
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -46,13 +50,19 @@ public class Signature {
 			throws YubicoSignatureException {
 		try {
 			SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
-	        Mac mac = Mac.getInstance(HMAC_SHA1);
-	        mac.init(signingKey);        
-	        byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
-	        // Base64 encode the result;
-	        return Base64.encodeBase64String(raw);
-		} catch (Exception e) {
-			throw new YubicoSignatureException("Failed to generate signature: ", e);
+			Mac mac = Mac.getInstance(HMAC_SHA1);
+			mac.init(signingKey);        
+			byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
+			// Base64 encode the result;
+			return Base64.encodeBase64String(raw);
+		} catch (NoSuchAlgorithmException e) {
+			throw new YubicoSignatureException("No such algorithm (HMAC_SHA1?)", e);
+		} catch (InvalidKeyException e) {
+			throw new YubicoSignatureException("Invalid key in signature.", e);
+		} catch (IllegalStateException e) {
+			throw new YubicoSignatureException("Illegal state in signature", e);
+		} catch (UnsupportedEncodingException e) {
+			throw new YubicoSignatureException("Unsupported encoding (utf8?)", e);
 		}
 	}
 }

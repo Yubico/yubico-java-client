@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
+import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a
@@ -219,14 +221,24 @@ public class YubikeyLoginModule implements LoginModule {
 	 * @param otps  Possible YubiKey OTPs
 	 * @param nameCb  JAAS callback to get authenticating username
 	 * @return  true if one or more of the OTPs validated OK, otherwise false
+	 * @throws LoginException for exceptions during validation, logging real exception at warn level
 	 */
-	private boolean validate_otps(List<String> otps, NameCallback nameCb) {
+	private boolean validate_otps(List<String> otps, NameCallback nameCb) throws LoginException {
 		boolean validated = false;
 
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
 
-			YubicoResponse ykr = this.yc.verify(otp);
+			YubicoResponse ykr;
+			try {
+				ykr = this.yc.verify(otp);
+			} catch (YubicoValidationException e) {
+				log.warn("Errors during validation: ", e);
+				throw new LoginException("Errors during validation: " + e.getMessage());
+			} catch (YubicoValidationFailure e) {
+				log.warn("Something went very wrong during authentication: ", e);
+				throw new LoginException("Something went very wrong during authentication: " + e.getMessage());
+			}
 			if (ykr != null) {
 				log.trace("OTP {} verify result : {}", otp, ykr.getStatus().toString());
 				if (ykr.getStatus() == YubicoResponseStatus.OK) {
@@ -242,8 +254,6 @@ public class YubikeyLoginModule implements LoginModule {
 				} else {
 					log.debug("OTP validation returned {}", ykr.getStatus().toString());
 				}
-			} else {
-				log.trace("null YubicoResponse");
 			}
 		}
 

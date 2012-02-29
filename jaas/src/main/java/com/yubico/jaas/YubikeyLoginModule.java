@@ -282,9 +282,8 @@ public class YubikeyLoginModule implements LoginModule {
 	 *
 	 * @param nameCb
 	 * @return list of possible YubiKey OTPs
-	 * @throws LoginException
 	 */
-	private List<String> get_tokens(NameCallback nameCb) throws LoginException {
+	private List<String> get_tokens(NameCallback nameCb) {
 		MultiValuePasswordCallback mv_passCb = new MultiValuePasswordCallback("Enter authentication tokens: ", false);
 		List<String> result = new ArrayList<String>();
 

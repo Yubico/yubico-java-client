@@ -104,15 +104,15 @@ public class YubicoClientImpl extends YubicoClient {
     			if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
     			keyValueStr.append(entry.getKey()).append("=").append(entry.getValue());
     		}
-    		String signature;
 			try {
-				signature = Signature.calculate(keyValueStr.toString(), key).trim();
+				String signature = Signature.calculate(keyValueStr.toString(), key).trim();
+				if (!response.getH().equals(signature)) {
+	    			throw new YubicoValidationFailure("Signatures do not match");
+	    		}
 			} catch (YubicoSignatureException e) {
 				throw new YubicoValidationException("Failed to calculate the response signature.", e);
 			}
-    		if (!response.getH().equals(signature)) {
-    			throw new YubicoValidationFailure("Signatures do not match");
-    		}
+    		
     	}
 
     	// NONCE/OTP fields are not returned to the client when sending error codes.

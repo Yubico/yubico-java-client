@@ -53,8 +53,8 @@ public class Signature {
 			Mac mac = Mac.getInstance(HMAC_SHA1);
 			mac.init(signingKey);        
 			byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
-			// Base64 encode the result;
-			return Base64.encodeBase64String(raw);
+			// Base64 encode the result, use old API call to work on android
+			return new String(Base64.encodeBase64(raw));
 		} catch (NoSuchAlgorithmException e) {
 			throw new YubicoSignatureException("No such algorithm (HMAC_SHA1?)", e);
 		} catch (InvalidKeyException e) {

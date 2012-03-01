@@ -32,16 +32,16 @@
 package com.yubico.client.v2;
 
 public enum YubicoResponseStatus {
-    OK,	/**The OTP is valid. */
-    BAD_OTP,	/**The OTP is invalid format. */
-    REPLAYED_OTP,	/**The OTP has already been seen by the service. */
-    BAD_SIGNATURE,	/**The HMAC signature verification failed. */
-    MISSING_PARAMETER,	/**The request lacks a parameter. */
-    NO_SUCH_CLIENT,	/**The request id does not exist. */
-    OPERATION_NOT_ALLOWED,	/**The request id is not allowed to verify OTPs. */
-    BACKEND_ERROR,	/**Unexpected error in our server. Please contact us if you see this error. */
-    NOT_ENOUGH_ANSWERS ,	/**Server could not get requested number of syncs during before timeout */
-    REPLAYED_REQUEST	/**Server has seen the OTP/Nonce combination before */
+	/**The OTP is valid. */ OK,
+	/**The OTP is invalid format. */ BAD_OTP,
+	/**The OTP has already been seen by the service. */ REPLAYED_OTP,
+	/**The HMAC signature verification failed. */ BAD_SIGNATURE,
+	/**The request lacks a parameter. */ MISSING_PARAMETER,
+	/**The request id does not exist. */ NO_SUCH_CLIENT,
+	/**The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
+	/**Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
+	/**Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,	
+	/**Server has seen the OTP/Nonce combination before */ REPLAYED_REQUEST
 
 }
 

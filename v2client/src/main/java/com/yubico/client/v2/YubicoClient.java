@@ -39,6 +39,19 @@ import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 
+/**
+ * Base class for doing YubiKey validations using version 2 of the validation protocol. Example usage would be:
+ * <pre>
+ *  YubicoClient client = YubicoClient.getClient(CLIENT_ID);
+ *  YubicoResponse response = client.verify(otp);
+ *  if(response.getStatus() == YubicoResponseStatus.OK) {
+ *    return true;
+ *  } else {
+ *    return false;
+ *  }
+ *  </pre>
+ */
+
 public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;

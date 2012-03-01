@@ -106,6 +106,8 @@ public class YubicoClientImpl extends YubicoClient {
 			try {
 				String signature = Signature.calculate(keyValueStr.toString(), key).trim();
 				if (!response.getH().equals(signature)) {
+					// if we input a key not matching our clientId, we'll get this error here,
+					//  as the server signs the response with our real key.
 	    			throw new YubicoValidationFailure("Signatures do not match");
 	    		}
 			} catch (YubicoSignatureException e) {

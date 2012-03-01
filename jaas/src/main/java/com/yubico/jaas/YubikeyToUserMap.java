@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Interface to verify relationship between a username and a YubiKey.
  * Classes implementing this interface MUST have a nullary constructor
- * for {@link java.lang.Class.newInstance()} to work.
+ * for {@link java.lang.Class#newInstance()} to work.
  *
  * @author Fredrik Thulin <fredrik@yubico.com>
  *

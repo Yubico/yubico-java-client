@@ -34,7 +34,7 @@ package com.yubico.client.v2.exceptions;
  * meaning that both nonce and OTP has been seen before. It's expected that some of
  * the incoming answers will be just this.
  * 
- * @see {@link http://forum.yubico.com/viewtopic.php?f=3&t=701}
+ * @see <a href="http://forum.yubico.com/viewtopic.php?f=3&t=701">http://forum.yubico.com/viewtopic.php?f=3&t=701</a>
  */
 
 public class YubicoReplayedRequestException extends Exception {

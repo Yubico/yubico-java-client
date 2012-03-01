@@ -64,7 +64,8 @@ public abstract class YubicoClient {
     /**
      * Get the ykval client identifier uset do identify the applicaiton.
      * @return ykval client identifier
-     * @see setClientId() */
+     * @see YubicoClient#setClientId(Integer)
+     */
     public Integer getClientId() {
         return clientId;
     }
@@ -87,7 +88,7 @@ public abstract class YubicoClient {
     /**
      * Set api key to be used for signing requests
      * @param key ykval client key
-     * @see setClientId()
+     * @see YubicoClient#setClientId(Integer)
      */
     public void setKey(String key) {
         this.key = Base64.decodeBase64(key.getBytes());
@@ -96,7 +97,7 @@ public abstract class YubicoClient {
     /**
      * Get the api key that is used for signing requests
      * @return ykval client key
-     * @see setClientId()
+     * @see YubicoClient#setClientId(Integer)
      */
     public String getKey() {
         return new String(Base64.encodeBase64(this.key));
@@ -168,7 +169,8 @@ public abstract class YubicoClient {
 	 * Determines whether a given OTP is of the correct length
 	 * and only contains printable characters, as per the recommendation.
 	 * 
-	 * @see http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients
+	 * @see <a href="http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients"
+	 *   http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients</a>
 	 * 
 	 * @author Simon Buckle <simon@webteq.eu>
 	 * 

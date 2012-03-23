@@ -109,4 +109,16 @@ public class YubicoClientTest {
     	String otp = new String(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06});
     	assertFalse(YubicoClient.isValidOTPFormat(otp));
     }
+    
+    @Test
+    public void testShortOTP() {
+    	String otp = "cccccc";
+    	assertFalse(YubicoClient.isValidOTPFormat(otp));
+    }
+    
+    @Test
+    public void testLongOTP() {
+    	String otp = "cccccccccccccccccccccccccccccccccccccccccccccccccc";
+    	assertFalse(YubicoClient.isValidOTPFormat(otp));
+    }
 }

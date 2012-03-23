@@ -89,8 +89,8 @@ public class YubicoClientImpl extends YubicoClient {
 
     	String[] wsapiUrls = this.getWsapiUrls();
     	List<String> validationUrls = new ArrayList<String>();
-    	for (int i = 0, len = wsapiUrls.length; i < len; i++) {
-    		validationUrls.add(wsapiUrls[i] + "?" + paramStr);
+    	for(String wsapiUrl : wsapiUrls) {
+    		validationUrls.add(wsapiUrl + "?" + paramStr);
     	}
 
     	YubicoResponse response = new YubicoValidationService().fetch(validationUrls);

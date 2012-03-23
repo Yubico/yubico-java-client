@@ -195,8 +195,7 @@ public abstract class YubicoClient {
 	public static boolean isValidOTPFormat(String otp) {
 		int len = otp.length();
 		boolean isPrintable = true;
-		for (int i = 0; i < len; i++) {
-			char c = otp.charAt(i);
+		for (char c : otp.toCharArray()) {
 			if (c < 0x20 || c > 0x7E) {
 				isPrintable = false;
 				break;

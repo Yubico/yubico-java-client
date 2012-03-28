@@ -46,13 +46,22 @@ import com.yubico.client.v2.exceptions.YubicoReplayedRequestException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.impl.YubicoResponseImpl;
 
-/*
+/**
  * Fires off a number of validation requests to each specified URL 
  * in parallel.
  * 
  * @author Simon Buckle <simon@webteq.eu>
  */
 public class YubicoValidationService {
+	/**
+	 * Fires off a validation request to each url in the list, returning the first one
+	 * that is not {@link YubicoResponseStatus#REPLAYED_REQUEST}
+	 * 
+	 * @param urls a list of validation urls to be contacted
+	 * @return {@link YubicoResponse} object from the first server response that's not
+	 * {@link YubicoResponseStatus#REPLAYED_REQUEST}
+	 * @throws YubicoValidationException if validation fails on all urls
+	 */
 	public YubicoResponse fetch(List<String> urls) throws YubicoValidationException {
 		ExecutorService pool = Executors.newFixedThreadPool(urls.size());
 		

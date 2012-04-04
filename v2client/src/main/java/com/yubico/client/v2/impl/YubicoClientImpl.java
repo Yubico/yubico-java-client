@@ -50,6 +50,9 @@ import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 public class YubicoClientImpl extends YubicoClient {
+	public YubicoClientImpl() {
+	}
+	
     public YubicoClientImpl(Integer id) {
         this.clientId=id;
     }

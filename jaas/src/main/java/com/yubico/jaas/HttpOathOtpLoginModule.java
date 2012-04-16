@@ -177,7 +177,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	private boolean verify_otp(String userName, String otp) {
 		try {
 			String authString = userName + ":" + otp;
-			String authStringEnc = Base64.encodeBase64(authString.getBytes()).toString();
+			String authStringEnc = Base64.encodeBase64URLSafeString(authString.getBytes());
 
 			URL url = new URL(this.protectedUrl);
 			URLConnection conn = url.openConnection();

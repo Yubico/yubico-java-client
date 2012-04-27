@@ -91,6 +91,7 @@ public class YubicoValidationService {
 		public YubicoResponse call() throws Exception {
 			URL url = new URL(this.url);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.setRequestProperty("User-Agent", "yubico-java-client version:" + Version.version());
 			conn.setConnectTimeout(15000); // 15 second timeout
 			conn.setReadTimeout(15000); // for both read and connect
 			YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());

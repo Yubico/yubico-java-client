@@ -63,6 +63,8 @@ public abstract class YubicoClient {
     		"https://api4.yubico.com/wsapi/2.0/verify",
     		"https://api5.yubico.com/wsapi/2.0/verify"
     		};
+    
+    protected String userAgent;
 
     /**
      * Validate an OTP using a webservice call to one or more ykval validation servers.
@@ -149,6 +151,22 @@ public abstract class YubicoClient {
      */
 	public void setWsapiUrls(String[] wsapi) {
 		this.wsapi_urls = wsapi;
+	}
+	
+	/**
+	 * Set user agent to be used in request to validation server
+	 * @param userAgent the user agent used in requests
+	 */
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+	
+	/**
+	 * Get the previously set user agent to be used for requests
+	 * @return the user agent that will be used in requests
+	 */
+	public String getUserAgent() {
+		return userAgent;
 	}
 
 	/**

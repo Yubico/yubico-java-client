@@ -58,16 +58,17 @@ public class YubicoValidationService {
 	 * that is not {@link YubicoResponseStatus#REPLAYED_REQUEST}
 	 * 
 	 * @param urls a list of validation urls to be contacted
+	 * @param userAgent userAgent to send in request, if null one will be generated
 	 * @return {@link YubicoResponse} object from the first server response that's not
 	 * {@link YubicoResponseStatus#REPLAYED_REQUEST}
 	 * @throws YubicoValidationException if validation fails on all urls
 	 */
-	public YubicoResponse fetch(List<String> urls) throws YubicoValidationException {
+	public YubicoResponse fetch(List<String> urls, String userAgent) throws YubicoValidationException {
 		ExecutorService pool = Executors.newFixedThreadPool(urls.size());
 		
 	    List<Callable<YubicoResponse>> tasks = new ArrayList<Callable<YubicoResponse>>();
 	    for(String url : urls) {
-	    	tasks.add(new VerifyTask(url));
+	    	tasks.add(new VerifyTask(url, userAgent));
 	    }
 	    YubicoResponse response = null;
 		try {
@@ -84,14 +85,21 @@ public class YubicoValidationService {
 	
 	class VerifyTask implements Callable<YubicoResponse> {
 		private final String url;
-		public VerifyTask(String url) {
+		private final String userAgent;
+		
+		public VerifyTask(String url, String userAgent) {
 			this.url = url;
+			this.userAgent = userAgent;
 		}
 		
 		public YubicoResponse call() throws Exception {
 			URL url = new URL(this.url);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-			conn.setRequestProperty("User-Agent", "yubico-java-client version:" + Version.version());
+			if(userAgent == null) {
+				conn.setRequestProperty("User-Agent", "yubico-java-client version:" + Version.version());
+			} else {
+				conn.setRequestProperty("User-Agent", userAgent);
+			}
 			conn.setConnectTimeout(15000); // 15 second timeout
 			conn.setReadTimeout(15000); // for both read and connect
 			YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());

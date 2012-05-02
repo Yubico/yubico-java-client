@@ -87,12 +87,11 @@ public class YubicoClientTest {
         assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
     }
 
-    @Test(expected=YubicoValidationFailure.class)
     public void testBadSignature() throws YubicoValidationException, YubicoValidationFailure   {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
-        client.verify(otp);
-        fail("YubicoValidationFailure should've been thrown");
+        YubicoResponse response = client.verify(otp);
+        assertEquals(YubicoResponseStatus.BAD_SIGNATURE, response.getStatus());
     }
     
     @Test

@@ -36,9 +36,13 @@
 
 package com.yubico.client.v2.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
@@ -73,21 +77,37 @@ public class YubicoClientImpl extends YubicoClient {
     	if (!isValidOTPFormat(otp)) {
     		throw new IllegalArgumentException("The OTP is not a valid format");
     	}
+    	Map<String,String> requestMap = new TreeMap<String, String>();
     	String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
-    	String syncParam = "";
+    	requestMap.put("nonce", nonce);
+    	requestMap.put("id", clientId.toString());
+    	requestMap.put("otp", otp);
+    	requestMap.put("timestamp", "1");
     	if(sync != null) {
-    		syncParam = String.format("&sl=%s", sync);
+    		requestMap.put("sl", sync);
     	}
-    	String paramStr = String.format("id=%d&nonce=%s&otp=%s%s&timestamp=%s", clientId, nonce, otp, syncParam, "1");
-
+    	String paramStr = "";
+    	for(Entry<String,String> entry : requestMap.entrySet()) {
+    		if(!paramStr.isEmpty()) {
+    			paramStr += "&";
+    		}
+    		try {
+				paramStr += entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new YubicoValidationException("Failed to encode parameter.", e);
+			}
+    	}
+    	
     	if (key != null) {
     		String s;
 			try {
-				s = Signature.calculate(paramStr.toString(), key).replaceAll("\\+", "%2B");
+				s = URLEncoder.encode(Signature.calculate(paramStr.toString(), key), "UTF-8");
 			} catch (YubicoSignatureException e) {
 				throw new YubicoValidationException("Failed signing of request", e);
+			} catch (UnsupportedEncodingException e) {
+				throw new YubicoValidationException("Failed to encode signature", e);
 			}
-    		paramStr += "&h="; paramStr += s;
+    		paramStr += "&h=" + s;
     	}
 
     	String[] wsapiUrls = this.getWsapiUrls();

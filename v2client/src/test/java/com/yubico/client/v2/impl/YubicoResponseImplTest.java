@@ -98,6 +98,7 @@ public class YubicoResponseImplTest {
             assertEquals("42", response.getSessioncounter());
             assertEquals("foo", response.getSl());
             assertEquals("666", response.getSessionuse());
+            assertEquals("cccccccfhcbe", response.getPublicId());
 
         } catch (IOException ioe) {
             fail("Encountered an exception");

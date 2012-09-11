@@ -110,4 +110,11 @@ public interface YubicoResponse {
      * @return map of all values
      */
     public Map<String, String> getKeyValueMap();
+    
+    /**
+     * Returns the public id of the returned OTP
+     * 
+     * @return public id
+     */
+    public String getPublicId();
 }

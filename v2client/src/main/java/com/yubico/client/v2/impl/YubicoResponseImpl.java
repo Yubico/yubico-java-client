@@ -31,6 +31,7 @@
 
 package com.yubico.client.v2.impl;
 
+import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
 
@@ -174,4 +175,7 @@ public class YubicoResponseImpl implements YubicoResponse {
         this.nonce = nonce;
     }
 
+	public String getPublicId() {
+		return YubicoClient.getPublicId(otp);
+	}
 }

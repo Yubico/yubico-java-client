@@ -8,6 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
+   Copyright (c) 2012, Yubico AB. All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions

@@ -1,5 +1,5 @@
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
-   Copyright (c) 2011, Yubico AB.  All rights reserved.
+   Copyright (c) 2011-2012, Yubico AB.  All rights reserved.
    Copyright (c) 2011, Simon Buckle.  All rights reserved.
 
    Redistribution and use in source and binary forms, with or without

@@ -31,16 +31,19 @@ package com.yubico.client.v2;
 
 	Written by Simon Buckle <simon@webteq.eu>, September 2011.
 */
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import com.yubico.client.v2.exceptions.YubicoReplayedRequestException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
@@ -53,6 +56,17 @@ import com.yubico.client.v2.impl.YubicoResponseImpl;
  * @author Simon Buckle <simon@webteq.eu>
  */
 public class YubicoValidationService {
+	private ExecutorCompletionService<YubicoResponse> completionService;
+	
+	/**
+	 * Sets up thread pool for validation requests.
+	 */
+	public YubicoValidationService() {
+		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, 100, 250L,
+				TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>());
+	    completionService = new ExecutorCompletionService<YubicoResponse>(pool);
+	}
+
 	/**
 	 * Fires off a validation request to each url in the list, returning the first one
 	 * that is not {@link YubicoResponseStatus#REPLAYED_REQUEST}
@@ -64,22 +78,43 @@ public class YubicoValidationService {
 	 * @throws YubicoValidationException if validation fails on all urls
 	 */
 	public YubicoResponse fetch(List<String> urls, String userAgent) throws YubicoValidationException {
-		ExecutorService pool = Executors.newFixedThreadPool(urls.size());
-		
-	    List<Callable<YubicoResponse>> tasks = new ArrayList<Callable<YubicoResponse>>();
+	    List<Future<YubicoResponse>> tasks = new ArrayList<Future<YubicoResponse>>();
 	    for(String url : urls) {
-	    	tasks.add(new VerifyTask(url, userAgent));
+	    	tasks.add(completionService.submit(new VerifyTask(url, userAgent)));
 	    }
 	    YubicoResponse response = null;
 		try {
-			response = pool.invokeAny(tasks, 1L, TimeUnit.MINUTES);
-		} catch (ExecutionException e) {
-			throw new YubicoValidationException("Exception while executing validation.", e.getCause());
-		} catch (TimeoutException e) {
-			throw new YubicoValidationException("Timeout waiting for validation server response.", e);
+			Future<YubicoResponse> futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
+			while(futureResponse != null) {
+				try {
+					tasks.remove(futureResponse);
+					response = futureResponse.get();
+					break;
+				} catch (CancellationException ignored) {
+					// this would be thrown by old cancelled calls.
+				} catch (ExecutionException e) {
+					/**
+					 * Replayed Request 
+					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+					 */
+					if(!e.getCause().getClass().equals(YubicoReplayedRequestException.class)) {
+						throw new YubicoValidationException(
+								"Exception while executing validation.", e.getCause());
+					}
+				}
+				futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
+			}
+			if(futureResponse == null || response == null) {
+				throw new YubicoValidationException("Validation timeout.");
+			}
 		} catch (InterruptedException e) {
 			throw new YubicoValidationException("Validation interrupted.", e);
 		}
+	    
+		for(Future<YubicoResponse> task : tasks) {
+			task.cancel(true);
+		}
+		
 	    return response;
 	}
 	

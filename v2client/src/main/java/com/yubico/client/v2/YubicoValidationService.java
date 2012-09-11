@@ -108,7 +108,7 @@ public class YubicoValidationService {
 			URL url = new URL(this.url);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			if(userAgent == null) {
-				conn.setRequestProperty("User-Agent", "yubico-java-client version:" + Version.version());
+				conn.setRequestProperty("User-Agent", "yubico-java-client/" + Version.version());
 			} else {
 				conn.setRequestProperty("User-Agent", userAgent);
 			}

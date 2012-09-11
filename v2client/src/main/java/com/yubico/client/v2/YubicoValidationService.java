@@ -83,15 +83,27 @@ public class YubicoValidationService {
 	    return response;
 	}
 	
+	/**
+	 * Inner class for doing requests to validation server.
+	 */
 	class VerifyTask implements Callable<YubicoResponse> {
 		private final String url;
 		private final String userAgent;
 		
+		/**
+		 * Set up a VerifyTask for the Yubico Validation protocol v2
+		 * @param url the url to be used
+		 * @param userAgent the userAgent to be sent to the server, or NULL and one is calculated
+		 */
 		public VerifyTask(String url, String userAgent) {
 			this.url = url;
 			this.userAgent = userAgent;
 		}
 		
+		/**
+		 * Do the validation query for previous URL.
+		 * @throws Exception {@link IOException} or {@link YubicoReplayedRequestException}
+		 */
 		public YubicoResponse call() throws Exception {
 			URL url = new URL(this.url);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();

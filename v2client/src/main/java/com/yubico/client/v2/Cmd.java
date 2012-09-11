@@ -56,7 +56,7 @@ public class Cmd {
         }
 
         System.out.println("\n* Last response: " + response);
-        System.out.println("\n");
+        System.exit(0);
 
     } // End of main
 

@@ -111,4 +111,13 @@ public class YubicoClientTest {
     	String otp = "cccccccccccccccccccccccccccccccccccccccccccccccccc";
     	assertFalse(YubicoClient.isValidOTPFormat(otp));
     }
+    
+    @Test
+    public void testTwoQueries() throws YubicoValidationException, YubicoValidationFailure {
+    	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+    	YubicoResponse response = client.verify(otp);
+    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response.getStatus());
+    	YubicoResponse response2 = client.verify(otp);
+    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response2.getStatus());
+    }
 }

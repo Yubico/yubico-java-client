@@ -83,6 +83,7 @@ public class YubicoValidationService {
 	    }
 	    YubicoResponse response = null;
 		try {
+			Throwable savedException = null;
 			Future<YubicoResponse> futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
 			while(futureResponse != null) {
 				try {
@@ -101,13 +102,18 @@ public class YubicoValidationService {
 				} catch (CancellationException ignored) {
 					// this would be thrown by old cancelled calls.
 				} catch (ExecutionException e) {
-					throw new YubicoValidationException(
-							"Exception while executing validation.", e.getCause());
+					// tuck the real exception away and use it if we don't get any valid answers.
+					savedException = e.getCause();
 				}
 				futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
 			}
 			if(futureResponse == null || response == null) {
-				throw new YubicoValidationException("Validation timeout.");
+				if(savedException != null) {
+					throw new YubicoValidationException(
+							"Exception while executing validation.", savedException);
+				} else {
+					throw new YubicoValidationException("Validation timeout.");
+				}
 			}
 		} catch (InterruptedException e) {
 			throw new YubicoValidationException("Validation interrupted.", e);

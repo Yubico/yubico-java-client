@@ -45,7 +45,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.yubico.client.v2.exceptions.YubicoReplayedRequestException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.impl.YubicoResponseImpl;
 
@@ -89,18 +88,21 @@ public class YubicoValidationService {
 				try {
 					tasks.remove(futureResponse);
 					response = futureResponse.get();
-					break;
+					/**
+					 * If the response returned is REPLAYED_REQUEST keep looking at responses
+					 * and hope we get something else. REPLAYED_REQUEST will be returned if a
+					 * validation server got sync before it parsed our query (otp and nonce is
+					 * the same).
+					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+					 */
+					if(!response.getStatus().equals(YubicoResponseStatus.REPLAYED_REQUEST)) {
+						break;
+					}
 				} catch (CancellationException ignored) {
 					// this would be thrown by old cancelled calls.
 				} catch (ExecutionException e) {
-					/**
-					 * Replayed Request 
-					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
-					 */
-					if(!e.getCause().getClass().equals(YubicoReplayedRequestException.class)) {
-						throw new YubicoValidationException(
-								"Exception while executing validation.", e.getCause());
-					}
+					throw new YubicoValidationException(
+							"Exception while executing validation.", e.getCause());
 				}
 				futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
 			}
@@ -150,10 +152,6 @@ public class YubicoValidationService {
 			conn.setConnectTimeout(15000); // 15 second timeout
 			conn.setReadTimeout(15000); // for both read and connect
 			YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());
-			// @see http://forum.yubico.com/viewtopic.php?f=3&t=701
-			if (YubicoResponseStatus.REPLAYED_REQUEST.equals(resp.getStatus())) {
-				throw new YubicoReplayedRequestException("Replayed request.");
-			}
 			return resp;
 		}	
 	}

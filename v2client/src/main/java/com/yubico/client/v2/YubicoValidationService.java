@@ -139,7 +139,7 @@ public class YubicoValidationService {
 		
 		/**
 		 * Do the validation query for previous URL.
-		 * @throws Exception {@link IOException} or {@link YubicoReplayedRequestException}
+		 * @throws Exception should not be anything but {@link IOException}
 		 */
 		public YubicoResponse call() throws Exception {
 			URL url = new URL(this.url);

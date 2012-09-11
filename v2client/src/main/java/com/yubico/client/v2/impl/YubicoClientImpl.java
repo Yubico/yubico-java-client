@@ -56,21 +56,24 @@ import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 public class YubicoClientImpl extends YubicoClient {
+	private YubicoValidationService validationService;
+	
 	public YubicoClientImpl() {
+		validationService = new YubicoValidationService();
 	}
 	
     public YubicoClientImpl(Integer id) {
+    	this();
         this.clientId=id;
     }
     
     public YubicoClientImpl(Integer id, String key) {
-    	this.clientId = id;
+    	this(id);
     	setKey(key);
     }
     
     public YubicoClientImpl(Integer id, String key, String sync) {
-    	this.clientId = id;
-    	setKey(key);
+    	this(id, key);
     	setSync(sync);
     }
 
@@ -118,7 +121,7 @@ public class YubicoClientImpl extends YubicoClient {
     		validationUrls.add(wsapiUrl + "?" + paramStr);
     	}
 
-    	YubicoResponse response = new YubicoValidationService().fetch(validationUrls, userAgent);
+    	YubicoResponse response = validationService.fetch(validationUrls, userAgent);
 
     	// Verify the signature
     	if (key != null) {

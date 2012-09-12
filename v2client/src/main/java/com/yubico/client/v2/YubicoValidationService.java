@@ -83,10 +83,12 @@ public class YubicoValidationService {
 	    }
 	    YubicoResponse response = null;
 		try {
+			int tasksDone = 0;
 			Throwable savedException = null;
 			Future<YubicoResponse> futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
 			while(futureResponse != null) {
 				try {
+					tasksDone++;
 					tasks.remove(futureResponse);
 					response = futureResponse.get();
 					/**
@@ -101,9 +103,13 @@ public class YubicoValidationService {
 					}
 				} catch (CancellationException ignored) {
 					// this would be thrown by old cancelled calls.
+					tasksDone--;
 				} catch (ExecutionException e) {
 					// tuck the real exception away and use it if we don't get any valid answers.
 					savedException = e.getCause();
+				}
+				if(tasksDone >= urls.size()) {
+					break;
 				}
 				futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
 			}

@@ -34,6 +34,7 @@ package com.yubico.client.v2.impl;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
 import com.yubico.client.v2.YubicoResponseStatus;
+import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class YubicoResponseImpl implements YubicoResponse {
     
     private Map<String, String> keyValueMap = new TreeMap<String, String>();
 
-    public YubicoResponseImpl(InputStream inStream) throws IOException {
+    public YubicoResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
         if(inStream == null) {
             throw new IOException("InputStream argument was null");
         }
@@ -93,6 +94,10 @@ public class YubicoResponseImpl implements YubicoResponse {
             keyValueMap.put(key, val);
         }
         in.close();
+        
+        if(status == null) {
+        	throw new YubicoInvalidResponse("Invalid response, contains no status.");
+        }
     }
 
     public Map<String, String> getKeyValueMap() {

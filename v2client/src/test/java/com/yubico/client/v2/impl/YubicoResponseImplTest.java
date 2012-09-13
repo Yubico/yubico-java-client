@@ -6,10 +6,12 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
 import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
 
@@ -45,7 +47,7 @@ import com.yubico.client.v2.YubicoResponse;
 public class YubicoResponseImplTest {
 
     @Test
-    public void testParserForNullArg() {
+    public void testParserForNullArg() throws YubicoInvalidResponse {
         try {
             @SuppressWarnings("unused")
 			YubicoResponse response = new YubicoResponseImpl(null);
@@ -55,7 +57,7 @@ public class YubicoResponseImplTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws YubicoInvalidResponse {
         String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
                             "t=2011-01-26T11:48:21Z0323\n" +
                             "otp=cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd\n" +
@@ -76,7 +78,7 @@ public class YubicoResponseImplTest {
     }
 
     @Test
-    public void testParser() {
+    public void testParser() throws YubicoInvalidResponse {
         String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
                             "t=2011-01-26T11:48:21Z0323\n" +
                             "otp=cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd\n" +
@@ -104,7 +106,16 @@ public class YubicoResponseImplTest {
             fail("Encountered an exception");
         }
     }
-
-
+    
+    @Test(expected=YubicoInvalidResponse.class)
+    public void testBrokenResponse() throws YubicoInvalidResponse {
+    	String testData = 	"foo=bar\n" +
+    						"kaka=blahonga\n";
+    	try {
+    		new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+    	} catch (IOException ioe) {
+    		fail("Encountered an exception");
+    	}
+    }
 }
 

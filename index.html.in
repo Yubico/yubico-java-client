@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="yubico-java-client : Client library written in Java for verifying Yubikey one-time passwords (OTPs)" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>yubico-java-client</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Yubico/yubico-java-client">View on GitHub</a>
+
+          <h1 id="project_title">yubico-java-client</h1>
+          <h2 id="project_tagline">Client library written in Java for verifying Yubikey one-time passwords (OTPs)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Yubico/yubico-java-client/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Yubico/yubico-java-client/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+      <ul>
+        <li><a href="http://search.maven.org/#browse%7C1090624444">Releases</a></li>
+        <li><a href="apidocs/">Api Documentation</a></li>
+        <li><a href="jaas.html">JAAS module</a></li>
+        <li><a href="v1client.hml">version 1 client</a></li>
+        <li><a href="v2client.hml">version 2 client</a></li>
+      </ul>
+

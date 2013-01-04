@@ -1,0 +1,6 @@
+com.yubico.client.v1
+com.yubico.client.v2
+com.yubico.client.v2.exceptions
+com.yubico.client.v2.impl
+com.yubico.jaas
+com.yubico.jaas.impl

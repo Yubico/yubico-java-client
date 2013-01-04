@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="yubico-java-client : Client library written in Java for verifying Yubikey one-time passwords (OTPs)" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>yubico-java-client</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Yubico/yubico-java-client">View on GitHub</a>
+
+          <h1 id="project_title">yubico-java-client</h1>
+          <h2 id="project_tagline">Client library written in Java for verifying Yubikey one-time passwords (OTPs)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Yubico/yubico-java-client/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Yubico/yubico-java-client/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+      <ul>
+        <li><a href="http://search.maven.org/#browse%7C-550380464">Releases</a></li>
+      </ul>
+
+<div class="paragraph"><p>This is a validation client for use with the Yubico validation API version 2. To
+pull in the dependency in a maven project do:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;dependency&gt;
+  &lt;groupId&gt;com.yubico&lt;/groupId&gt;
+  &lt;artifactId&gt;yubico-validation-client2&lt;/artifactId&gt;
+  &lt;version&gt;2.0RC4&lt;/version&gt;
+&lt;/dependency&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>A simplified implementation would be:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>// otp is the modhex otp from the yubikey
+// client_id is the clientId from https://upgrade.yubico.com/getapikey/
+boolean validate(String otp, int client_id) {
+   YubicoClient client = YubicoClient.getClient(client_id);
+   YubicoResponse response = client.verify(otp);
+   if(response != null &amp;&amp; response.getStatus() == YubicoResponseStatus.OK) {
+     return true;
+   }
+   return false;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>After verifying the OTP you should make sure that the publicId part belongs to
+the correct user. This can be done by keeping a mapping of username to
+public id, for instance as the JAAS module does with it&#8217;s user map
+funcitonality.</p></div>
+<div class="paragraph"><p>For generic login cases the JAAS module can be easier to implement than using
+the client API directly.</p></div>
+<div class="paragraph"><p>The validation client depends on slf4j-api for logging, to get the actual logs
+and not receive warnings on STDOUT you will need to depend on a slf4j logger
+binding, for example slf4j-log4j with the following maven configuration:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;dependency&gt;
+ &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+ &lt;artifactId&gt;slf4j-log4j&lt;/artifactId&gt;
+ &lt;version&gt;1.6.1&lt;/version&gt;
+&lt;/dependency&gt;</tt></pre>
+</div></div>
+<div class="paragraph"><p>For more complete descriptions of methods and failure states, please see
+the javadoc.</p></div>
+</div></body></html>

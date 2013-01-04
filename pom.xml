@@ -9,15 +9,10 @@
         <name>Yubico AB</name>
         <url>http://www.yubico.com/</url>
     </organization>
-    <url>https://github.com/Yubico/yubico-java-client</url>
+    <url>http://yubico.github.com/yubico-java-client/</url>
     <packaging>pom</packaging>
 
     <developers>
-      <developer>
-        <id>fredrik</id>
-        <name>Frerik Thulin</name>
-        <email>fredrik@yubico.com</email>
-      </developer>
       <developer>
         <id>klas</id>
         <name>Klas Lindfors</name>

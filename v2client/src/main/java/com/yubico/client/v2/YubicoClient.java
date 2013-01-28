@@ -73,6 +73,7 @@ public abstract class YubicoClient {
      * @return  result of the webservice validation operation, null on failure
      * @throws YubicoValidationException for validation errors, like unreachable servers
      * @throws YubicoValidationFailure for validation failures, like non matching otps in request and response
+     * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
      */
     public abstract YubicoResponse verify( String otp ) throws YubicoValidationException, YubicoValidationFailure;
 
@@ -183,8 +184,15 @@ public abstract class YubicoClient {
 	 * @param otp	The OTP to extract ID from, in modhex format.
 	 *
 	 * @return string	Public ID of Yubikey that generated otp. Between 0 and 12 characters.
+	 * 
+	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings. 
 	 */
 	public static String getPublicId(String otp) {
+		if ((otp == null) || (otp.length() < OTP_MIN_LEN)){
+			//not a valid OTP format, throw an exception
+			throw new IllegalArgumentException("The OTP is too short to be valid");
+		}
+		
 		Integer len = otp.length();
 
 		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
@@ -211,6 +219,9 @@ public abstract class YubicoClient {
 	 * 
 	 */
 	public static boolean isValidOTPFormat(String otp) {
+		if (otp == null){
+			return false; //null strings aren't valid OTPs
+		}		
 		int len = otp.length();
 		boolean isPrintable = true;
 		for (char c : otp.toCharArray()) {

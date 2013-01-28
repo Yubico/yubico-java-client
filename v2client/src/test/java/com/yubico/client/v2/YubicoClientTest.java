@@ -144,4 +144,22 @@ public class YubicoClientTest {
     	YubicoResponse response = client.verify(otp);
     	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response.getStatus());
     }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullOTPPublicId() {    	
+    	YubicoClient.getPublicId(null);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testEmptyOTPPublicId() {
+        YubicoClient.getPublicId("");
+    }
+    
+    @Test
+    public void testValidOTPPublicId() {
+    	String testOtp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+    	String testPublicId = "cccccccfhcbe";
+    	String resultPublicId = YubicoClient.getPublicId(testOtp);
+    	assertEquals(testPublicId, resultPublicId);
+    }
 }

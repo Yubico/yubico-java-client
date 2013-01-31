@@ -8,7 +8,13 @@ asciidoc -s -o $STAGING_DIR/jaas.html jaas/README
 asciidoc -s -o $STAGING_DIR/v1client.html v1client/ReadMe.txt
 asciidoc -s -o $STAGING_DIR/v2client.html v2client/README
 
-mvn javadoc:aggregate
+#Add support for mvn3
+MVN=mvn
+if ! command -v mvn >/dev/null 2>&1 && command -v mvn3 >/dev/null 2>&1 ; then
+    MVN=mvn3
+fi
+
+$MVN javadoc:aggregate
 cp -r target/site/apidocs $STAGING_DIR/apidocs
 
 git checkout gh-pages
@@ -29,7 +35,6 @@ git add index.html
 git add jaas.html
 git add v1client.html
 git add v2client.html
-git commit -m "updated page with new README"
 git add apidocs
-git commit -m "updated javadocs"
+git commit -m "updated page with new README and javadocs"
 git checkout master

@@ -1,0 +1,8 @@
+Author: Yubico
+Basename: yubico-java-client
+Homepage: http://opensource.yubico.com/yubico-java-client/
+License: BSD-2-Clause
+Name: yubico-java-client
+Project: yubico-java-client
+Summary: Client library written in Java for verifying Yubikey one-time passwords (OTPs).
+Travis: https://travis-ci.org/Yubico/yubico-java-client

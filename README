@@ -1,12 +1,12 @@
-This is java clients from Yubico for validation of YubiKey OTPs. It's
-constructed of three submodules:
+These are java clients from Yubico for the validation of YubiKey OTPs.
+They are constructed of three submodules:
 
 * v1client for the Yubico validation API version 1
 * v2client for the Yubico validation API version 2
 * jaas that is a JAAS module, using v2client
 
 By default all parts use the Yubico YubiCloud validation platform, but can
-be configured for another validaiton server. To use YubiCloud you need a
+be configured for another validation server. To use YubiCloud you need a
 client id and an API key that can be fetched from
 https://upgrade.yubico.com/getapikey/.
 

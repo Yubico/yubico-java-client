@@ -38,7 +38,6 @@ public class YubicoSignatureException extends Exception {
 	
 	public YubicoSignatureException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

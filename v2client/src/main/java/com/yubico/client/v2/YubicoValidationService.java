@@ -55,7 +55,7 @@ import com.yubico.client.v2.impl.YubicoResponseImpl;
  * @author Simon Buckle <simon@webteq.eu>
  */
 public class YubicoValidationService {
-	private ExecutorCompletionService<YubicoResponse> completionService;
+	private final ExecutorCompletionService<YubicoResponse> completionService;
 	
 	/**
 	 * Sets up thread pool for validation requests.
@@ -163,8 +163,7 @@ public class YubicoValidationService {
 			}
 			conn.setConnectTimeout(15000); // 15 second timeout
 			conn.setReadTimeout(15000); // for both read and connect
-			YubicoResponse resp = new YubicoResponseImpl(conn.getInputStream());
-			return resp;
+            return new YubicoResponseImpl(conn.getInputStream());
 		}	
 	}
 }

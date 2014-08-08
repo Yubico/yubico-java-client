@@ -55,7 +55,7 @@ public class YubicoResponseImpl implements YubicoResponse {
     private String otp;
     private String nonce;
     
-    private Map<String, String> keyValueMap = new TreeMap<String, String>();
+    private final Map<String, String> keyValueMap = new TreeMap<String, String>();
 
     public YubicoResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
         if(inStream == null) {

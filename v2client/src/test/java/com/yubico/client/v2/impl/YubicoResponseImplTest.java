@@ -48,8 +48,7 @@ public class YubicoResponseImplTest {
     @Test
     public void testParserForNullArg() throws YubicoInvalidResponse {
         try {
-            @SuppressWarnings("unused")
-			YubicoResponse response = new YubicoResponseImpl(null);
+			new YubicoResponseImpl(null);
             fail("Expected an IOException to be thrown.");
         } catch (IOException ioe) {
         }

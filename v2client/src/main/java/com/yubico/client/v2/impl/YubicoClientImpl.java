@@ -56,7 +56,7 @@ import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 public class YubicoClientImpl extends YubicoClient {
-	private YubicoValidationService validationService;
+	private final YubicoValidationService validationService;
 	
 	public YubicoClientImpl() {
 		validationService = new YubicoValidationService();
@@ -106,7 +106,7 @@ public class YubicoClientImpl extends YubicoClient {
     	if (key != null) {
     		String s;
 			try {
-				s = URLEncoder.encode(Signature.calculate(paramStr.toString(), key), "UTF-8");
+				s = URLEncoder.encode(Signature.calculate(paramStr, key), "UTF-8");
 			} catch (YubicoSignatureException e) {
 				throw new YubicoValidationException("Failed signing of request", e);
 			} catch (UnsupportedEncodingException e) {
@@ -125,7 +125,7 @@ public class YubicoClientImpl extends YubicoClient {
 
     	// Verify the signature
     	if (key != null) {
-    		StringBuffer keyValueStr = new StringBuffer();
+    		StringBuilder keyValueStr = new StringBuilder();
     		for (Map.Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
     			if ("h".equals(entry.getKey())) { continue; }
     			if (keyValueStr.length() > 0) { keyValueStr.append("&"); }

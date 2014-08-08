@@ -37,9 +37,6 @@ package com.yubico.client.v2.exceptions;
 public class YubicoInvalidResponse extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public YubicoInvalidResponse() {
-	}
-
 	public YubicoInvalidResponse(String message) {
 		super(message);
 	}

@@ -135,7 +135,7 @@ public class YubicoValidationService {
 	/**
 	 * Inner class for doing requests to validation server.
 	 */
-	class VerifyTask implements Callable<YubicoResponse> {
+	static class VerifyTask implements Callable<YubicoResponse> {
 		private final String url;
 		private final String userAgent;
 		

@@ -33,11 +33,10 @@
 
 package com.yubico.client.v2;
 
-import org.apache.commons.codec.binary.Base64;
-
 import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Base class for doing YubiKey validations using version 2 of the validation protocol. Example usage would be:
@@ -64,21 +63,21 @@ public abstract class YubicoClient {
     		"https://api5.yubico.com/wsapi/2.0/verify"
     		};
     
-    protected String userAgent;
+    protected String userAgent = "yubico-java-client/" + Version.version();
 
     /**
      * Validate an OTP using a webservice call to one or more ykval validation servers.
      *
-     * @param otp  YubiKey OTP in modhex format
+     * @param otp  YubiKey OTP
      * @return  result of the webservice validation operation, null on failure
      * @throws YubicoValidationException for validation errors, like unreachable servers
-     * @throws YubicoValidationFailure for validation failures, like non matching otps in request and response
+     * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
      * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
      */
-    public abstract YubicoResponse verify( String otp ) throws YubicoValidationException, YubicoValidationFailure;
+    public abstract YubicoResponse verify(String otp) throws YubicoValidationException, YubicoValidationFailure;
 
     /**
-     * Get the ykval client identifier uset do identify the applicaiton.
+     * Get the ykval client identifier used to identify the application.
      * @return ykval client identifier
      * @see YubicoClient#setClientId(Integer)
      */
@@ -89,7 +88,7 @@ public abstract class YubicoClient {
     /**
      * Set the ykval client identifier, used to identify the client application to
      * the validation servers. Such validation is only required for non-https-v2.0
-     * validation querys, where the clientId tells the server what API key (shared
+     * validation queries, where the clientId tells the server what API key (shared
      * secret) to use to validate requests and sign responses.
      *
      * You can get a clientId and API key for the YubiCloud validation service at
@@ -207,11 +206,9 @@ public abstract class YubicoClient {
 	/**
 	 * Determines whether a given OTP is of the correct length
 	 * and only contains printable characters, as per the recommendation.
-	 * 
+	 *
 	 * @see <a href="http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients"
 	 *   http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients</a>
-	 * 
-	 * @author Simon Buckle <simon@webteq.eu>
 	 * 
 	 * @param otp The OTP to validate
 	 * 
@@ -220,16 +217,14 @@ public abstract class YubicoClient {
 	 */
 	public static boolean isValidOTPFormat(String otp) {
 		if (otp == null){
-			return false; //null strings aren't valid OTPs
+			return false;
 		}		
 		int len = otp.length();
-		boolean isPrintable = true;
 		for (char c : otp.toCharArray()) {
 			if (c < 0x20 || c > 0x7E) {
-				isPrintable = false;
-				break;
+				return false;
 			}
 		}
-		return isPrintable && (OTP_MIN_LEN <= len && len <= OTP_MAX_LEN);
+		return OTP_MIN_LEN <= len && len <= OTP_MAX_LEN;
 	}
 }

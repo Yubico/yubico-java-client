@@ -40,11 +40,8 @@ package com.yubico.client.v2.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
@@ -83,7 +80,7 @@ public class YubicoClientImpl extends YubicoClient {
     		throw new IllegalArgumentException("The OTP is not a valid format");
     	}
     	Map<String,String> requestMap = new TreeMap<String, String>();
-    	String nonce=java.util.UUID.randomUUID().toString().replaceAll("-","");
+    	String nonce = UUID.randomUUID().toString().replaceAll("-","");
     	requestMap.put("nonce", nonce);
     	requestMap.put("id", clientId.toString());
     	requestMap.put("otp", otp);
@@ -91,58 +88,22 @@ public class YubicoClientImpl extends YubicoClient {
     	if(sync != null) {
     		requestMap.put("sl", sync);
     	}
-    	String paramStr = "";
-    	for(Entry<String,String> entry : requestMap.entrySet()) {
-    		if(!paramStr.isEmpty()) {
-    			paramStr += "&";
-    		}
-    		try {
-				paramStr += entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				throw new YubicoValidationException("Failed to encode parameter.", e);
-			}
-    	}
-    	
+        String queryString = toQueryString(requestMap);
     	if (key != null) {
-    		String s;
-			try {
-				s = URLEncoder.encode(Signature.calculate(paramStr, key), "UTF-8");
-			} catch (YubicoSignatureException e) {
-				throw new YubicoValidationException("Failed signing of request", e);
-			} catch (UnsupportedEncodingException e) {
-				throw new YubicoValidationException("Failed to encode signature", e);
-			}
-    		paramStr += "&h=" + s;
-    	}
+            queryString = sign(queryString);
+        }
+
 
     	String[] wsapiUrls = this.getWsapiUrls();
     	List<String> validationUrls = new ArrayList<String>();
     	for(String wsapiUrl : wsapiUrls) {
-    		validationUrls.add(wsapiUrl + "?" + paramStr);
+    		validationUrls.add(wsapiUrl + "?" + queryString);
     	}
 
     	YubicoResponse response = validationService.fetch(validationUrls, userAgent);
 
-    	// Verify the signature
     	if (key != null) {
-    		StringBuilder keyValueStr = new StringBuilder();
-    		for (Map.Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
-    			if ("h".equals(entry.getKey())) { continue; }
-    			if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
-    			keyValueStr.append(entry.getKey()).append("=").append(entry.getValue());
-    		}
-			try {
-				String signature = Signature.calculate(keyValueStr.toString(), key).trim();
-				if (!response.getH().equals(signature) &&
-						!response.getStatus().equals(YubicoResponseStatus.BAD_SIGNATURE)) {
-					// don't throw a ValidationFailure if the server said bad signature, in that
-					//  case we probably have the wrong key/id and want to check it.
-	    			throw new YubicoValidationFailure("Signatures do not match");
-	    		}
-			} catch (YubicoSignatureException e) {
-				throw new YubicoValidationException("Failed to calculate the response signature.", e);
-			}
-    		
+            verifySignature(response);
     	}
 
     	// NONCE/OTP fields are not returned to the client when sending error codes.
@@ -155,10 +116,58 @@ public class YubicoClientImpl extends YubicoClient {
     			throw new YubicoValidationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
     		}
     	}
-
     	return response;
     }
-    
+
+    private void verifySignature(YubicoResponse response) throws YubicoValidationFailure, YubicoValidationException {
+        StringBuilder keyValueStr = new StringBuilder();
+        for (Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
+            if ("h".equals(entry.getKey())) { continue; }
+            if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
+            keyValueStr
+                .append(entry.getKey())
+                .append("=")
+                .append(entry.getValue());
+        }
+        try {
+            String signature = Signature.calculate(keyValueStr.toString(), key).trim();
+            if (!response.getH().equals(signature) &&
+                    !response.getStatus().equals(YubicoResponseStatus.BAD_SIGNATURE)) {
+                // don't throw a ValidationFailure if the server said bad signature, in that
+                //  case we probably have the wrong key/id and want to check it.
+                throw new YubicoValidationFailure("Signatures do not match");
+            }
+        } catch (YubicoSignatureException e) {
+            throw new YubicoValidationException("Failed to calculate the response signature.", e);
+        }
+    }
+
+    private String sign(String queryString) throws YubicoValidationException {
+        try {
+            queryString += "&h=" + URLEncoder.encode(Signature.calculate(queryString, key), "UTF-8");
+        } catch (YubicoSignatureException e) {
+            throw new YubicoValidationException("Failed signing of request", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new YubicoValidationException("Failed to encode signature", e);
+        }
+        return queryString;
+    }
+
+    private static String toQueryString(Map<String, String> requestMap) throws YubicoValidationException {
+        String paramStr = "";
+        for(Entry<String,String> entry : requestMap.entrySet()) {
+            if(!paramStr.isEmpty()) {
+                paramStr += "&";
+            }
+            try {
+                paramStr += entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new YubicoValidationException("Failed to encode parameter.", e);
+            }
+        }
+        return paramStr;
+    }
+
     /**
      * Function is used to determine if the response status is an error or not.
      * 

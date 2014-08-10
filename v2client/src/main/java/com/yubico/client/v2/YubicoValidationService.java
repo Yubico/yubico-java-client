@@ -31,22 +31,20 @@ package com.yubico.client.v2;
 
 	Written by Simon Buckle <simon@webteq.eu>, September 2011.
 */
+
+import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.impl.YubicoResponseImpl;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import com.yubico.client.v2.exceptions.YubicoValidationException;
-import com.yubico.client.v2.impl.YubicoResponseImpl;
+import static com.yubico.client.v2.YubicoResponseStatus.REPLAYED_REQUEST;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Fires off a number of validation requests to each specified URL 
@@ -62,7 +60,7 @@ public class YubicoValidationService {
 	 */
 	public YubicoValidationService() {
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, 100, 250L,
-				TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>());
+				MILLISECONDS, new SynchronousQueue<Runnable>());
 	    completionService = new ExecutorCompletionService<YubicoResponse>(pool);
 	}
 
@@ -72,7 +70,7 @@ public class YubicoValidationService {
 	 * 
 	 * @param urls a list of validation urls to be contacted
 	 * @param userAgent userAgent to send in request, if null one will be generated
-	 * @return {@link YubicoResponse} object from the first server response that's not
+	 * @return {@link YubicoResponse} object from the first server response that is not
 	 * {@link YubicoResponseStatus#REPLAYED_REQUEST}
 	 * @throws YubicoValidationException if validation fails on all urls
 	 */
@@ -85,7 +83,7 @@ public class YubicoValidationService {
 		try {
 			int tasksDone = 0;
 			Throwable savedException = null;
-			Future<YubicoResponse> futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
+			Future<YubicoResponse> futureResponse = completionService.poll(1L, MINUTES);
 			while(futureResponse != null) {
 				try {
 					tasksDone++;
@@ -98,7 +96,7 @@ public class YubicoValidationService {
 					 * the same).
 					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
 					 */
-					if(!response.getStatus().equals(YubicoResponseStatus.REPLAYED_REQUEST)) {
+					if(!response.getStatus().equals(REPLAYED_REQUEST)) {
 						break;
 					}
 				} catch (CancellationException ignored) {
@@ -111,7 +109,7 @@ public class YubicoValidationService {
 				if(tasksDone >= urls.size()) {
 					break;
 				}
-				futureResponse = completionService.poll(1L, TimeUnit.MINUTES);
+				futureResponse = completionService.poll(1L, MINUTES);
 			}
 			if(futureResponse == null || response == null) {
 				if(savedException != null) {
@@ -156,13 +154,9 @@ public class YubicoValidationService {
 		public YubicoResponse call() throws Exception {
 			URL url = new URL(this.url);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-			if(userAgent == null) {
-				conn.setRequestProperty("User-Agent", "yubico-java-client/" + Version.version());
-			} else {
-				conn.setRequestProperty("User-Agent", userAgent);
-			}
-			conn.setConnectTimeout(15000); // 15 second timeout
-			conn.setReadTimeout(15000); // for both read and connect
+			conn.setRequestProperty("User-Agent", userAgent);
+			conn.setConnectTimeout(15000);
+			conn.setReadTimeout(15000);
             return new YubicoResponseImpl(conn.getInputStream());
 		}	
 	}

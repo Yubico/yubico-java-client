@@ -108,7 +108,7 @@ public class YubicoClientImpl extends YubicoClient {
 
     	// NONCE/OTP fields are not returned to the client when sending error codes.
     	// If there is an error response, don't need to check them.
-    	if (!isError(response.getStatus())) {
+    	if (!response.getStatus().isError()) {
     		if (response.getOtp() == null || !otp.equals(response.getOtp())) {
     			throw new YubicoValidationFailure("OTP mismatch in response, is there a man-in-the-middle?");
     		}
@@ -166,20 +166,5 @@ public class YubicoClientImpl extends YubicoClient {
             }
         }
         return paramStr;
-    }
-
-    /**
-     * Function is used to determine if the response status is an error or not.
-     * 
-     * @param status
-     * @return boolean
-     */
-    private boolean isError(YubicoResponseStatus status) 
-    {
-    	return (YubicoResponseStatus.BACKEND_ERROR.equals(status) || 
-    			YubicoResponseStatus.BAD_OTP.equals(status) || 
-    			YubicoResponseStatus.BAD_SIGNATURE.equals(status) ||
-    			YubicoResponseStatus.NO_SUCH_CLIENT.equals(status) ||
-    			YubicoResponseStatus.MISSING_PARAMETER.equals(status));
     }
 }

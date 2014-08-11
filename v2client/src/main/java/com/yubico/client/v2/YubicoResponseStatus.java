@@ -43,6 +43,15 @@ public enum YubicoResponseStatus {
 	/**Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,	
 	/**Server has seen the OTP/Nonce combination before
 	 * @see <a href="http://forum.yubico.com/viewtopic.php?f=3&t=701">http://forum.yubico.com/viewtopic.php?f=3&t=701</a> */ 
-	REPLAYED_REQUEST
+	REPLAYED_REQUEST;
+
+    public boolean isError()
+    {
+        return this == BACKEND_ERROR ||
+                this == BAD_OTP ||
+                this == BAD_SIGNATURE ||
+                this == NO_SUCH_CLIENT ||
+                this == MISSING_PARAMETER;
+    }
 }
 

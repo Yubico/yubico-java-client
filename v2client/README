@@ -1,6 +1,10 @@
-This is a validation client for use with the Yubico validation API version 2. To
-pull in the dependency in a Maven project, add this to pom.xml:
+A validation client for use with the Yubico validation API (version 2).
 
+== Usage
+
+Add this to your pom.xml:
+
+[source,xml]
  <dependency>
    <groupId>com.yubico</groupId>
    <artifactId>yubico-validation-client2</artifactId>
@@ -9,6 +13,7 @@ pull in the dependency in a Maven project, add this to pom.xml:
 
 A simple implementation would be:
 
+[source,java]
  // otp is the OTP from the Yubikey
  // clientId is the client ID from https://upgrade.yubico.com/getapikey/
  boolean validate(String otp, int clientId) {
@@ -17,23 +22,31 @@ A simple implementation would be:
     return response.getStatus() == YubicoResponseStatus.OK;
  }
 
-After verifying the OTP you should make sure that the publicId part belongs to
-the correct user. This can be done by keeping a mapping of username to
-public id, for instance as the JAAS module does with it's user map
-functionality.
+After validating the OTP you should make sure that the publicId part belongs to
+the correct user. For example:
 
+[source,java]
+YubicoClient.getPublicId(otp)
+    .equals(/* Yubikey ID associated with the user */);
+
+Read more about this https://github.com/Yubico/yubikey-val/wiki/GettingStartedWritingClients#binding-an-otp-to-an-identity[here].
+
+== JAAS
 For generic login cases the JAAS module can be easier to implement than using
 the client API directly.
 
-The validation client depends on slf4j-api for logging, to get the actual logs
+The validation client depends on slf4j-api for logging. To get the actual logs
 and not receive warnings on System.out you will need to depend on a slf4j logger
 binding, for example slf4j-log4j with the following maven configuration:
 
+== Logging
+[source,xml]
  <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-log4j</artifactId>
   <version>1.6.1</version>
  </dependency>
 
+== Read more
 For more complete descriptions of methods and failure states, please see
 the javadoc.

@@ -52,6 +52,9 @@ import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
+import static com.yubico.client.v2.HttpUtils.toQueryString;
+import static com.yubico.client.v2.YubicoResponseStatus.BAD_SIGNATURE;
+
 public class YubicoClientImpl extends YubicoClient {
 	private final YubicoValidationService validationService;
 	
@@ -88,8 +91,15 @@ public class YubicoClientImpl extends YubicoClient {
     	if(sync != null) {
     		requestMap.put("sl", sync);
     	}
-        String queryString = toQueryString(requestMap);
-    	if (key != null) {
+
+        String queryString;
+        try {
+            queryString = toQueryString(requestMap);
+        } catch (UnsupportedEncodingException e) {
+            throw new YubicoValidationException("Failed to encode parameter.", e);
+        }
+
+        if (key != null) {
             queryString = sign(queryString);
         }
 
@@ -132,7 +142,7 @@ public class YubicoClientImpl extends YubicoClient {
         try {
             String signature = Signature.calculate(keyValueStr.toString(), key).trim();
             if (!response.getH().equals(signature) &&
-                    !response.getStatus().equals(YubicoResponseStatus.BAD_SIGNATURE)) {
+                    !response.getStatus().equals(BAD_SIGNATURE)) {
                 // don't throw a ValidationFailure if the server said bad signature, in that
                 //  case we probably have the wrong key/id and want to check it.
                 throw new YubicoValidationFailure("Signatures do not match");
@@ -151,20 +161,5 @@ public class YubicoClientImpl extends YubicoClient {
             throw new YubicoValidationException("Failed to encode signature", e);
         }
         return queryString;
-    }
-
-    private static String toQueryString(Map<String, String> requestMap) throws YubicoValidationException {
-        String paramStr = "";
-        for(Entry<String,String> entry : requestMap.entrySet()) {
-            if(!paramStr.isEmpty()) {
-                paramStr += "&";
-            }
-            try {
-                paramStr += entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new YubicoValidationException("Failed to encode parameter.", e);
-            }
-        }
-        return paramStr;
     }
 }

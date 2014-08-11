@@ -34,15 +34,11 @@ YubicoClient.getPublicId(otp)
 
 Read more about this https://github.com/Yubico/yubikey-val/wiki/GettingStartedWritingClients#binding-an-otp-to-an-identity[here].
 
-== JAAS
-For generic login cases the JAAS module can be easier to implement than using
-the client API directly.
-
+== Logging
 The validation client depends on slf4j-api for logging. To get the actual logs
 and not receive warnings on System.out you will need to depend on a slf4j logger
 binding, for example slf4j-log4j with the following maven configuration:
 
-== Logging
 [source,xml]
  <dependency>
   <groupId>org.slf4j</groupId>

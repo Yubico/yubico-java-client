@@ -1,4 +1,7 @@
 A validation client for use with the Yubico validation API (version 2).
+By default, it uses the Yubico YubiCloud validation platform, but can
+be configured for another validation server. To use YubiCloud you need a
+client ID and an API key that can be fetched from https://upgrade.yubico.com/getapikey.
 
 == Usage
 

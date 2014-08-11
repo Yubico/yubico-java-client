@@ -14,10 +14,7 @@ A simplified implementation would be:
  boolean validate(String otp, int client_id) {
     YubicoClient client = YubicoClient.getClient(client_id);
     YubicoResponse response = client.verify(otp);
-    if(response != null && response.getStatus() == YubicoResponseStatus.OK) {
-      return true;
-    }
-    return false;
+    return response.getStatus() == YubicoResponseStatus.OK;
  }
 
 After verifying the OTP you should make sure that the publicId part belongs to

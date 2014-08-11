@@ -69,7 +69,7 @@ public abstract class YubicoClient {
      * Validate an OTP using a webservice call to one or more ykval validation servers.
      *
      * @param otp  YubiKey OTP
-     * @return  result of the webservice validation operation, null on failure
+     * @return  result of the webservice validation operation
      * @throws YubicoValidationException for validation errors, like unreachable servers
      * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
      * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.

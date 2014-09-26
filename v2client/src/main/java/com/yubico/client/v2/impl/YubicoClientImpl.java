@@ -86,7 +86,7 @@ public class YubicoClientImpl extends YubicoClient {
      * @param sync A value 0 to 100 indicating percentage of syncing required by client, or strings "fast" or "secure"
      *             to use server-configured values; if absent, let the server decide
      */
-    public YubicoClientImpl(Integer clientId, String apiKey, String sync) {
+    public YubicoClientImpl(Integer clientId, String apiKey, Integer sync) {
         this(clientId, apiKey);
         setSync(sync);
     }

@@ -29,11 +29,6 @@
 
 package com.yubico.client.v2.exceptions;
 
-/**
- * YubicoInvalidResponse is thrown from constructor of
- * {@link YubicoResponseImpl} when the response is unparseable.
- *
- */
 public class YubicoInvalidResponse extends Exception {
 	private static final long serialVersionUID = 1L;
 

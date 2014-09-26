@@ -40,7 +40,7 @@ import javax.security.auth.callback.PasswordCallback;
  * wants to pass us multiple authentication factors, it just calls
  * setPassword() more than once in the CallbackHandler.
  * 
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class MultiValuePasswordCallback extends PasswordCallback {

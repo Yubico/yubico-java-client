@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * This implementation uses a LDAP directory to look up the Yubikey's
  * publicId and fetch the associated username.
  *
- * @author Etienne Dysli <etienne.dysli@unil.ch>
+ * @author Etienne Dysli (etienne.dysli@unil.ch)
  */
 public class YubikeyToUserLDAPMap implements YubikeyToUserMap {
     /* Supported JAAS configuration options */

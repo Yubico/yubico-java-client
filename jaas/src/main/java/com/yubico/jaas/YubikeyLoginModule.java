@@ -56,7 +56,7 @@ import com.yubico.client.v2.exceptions.YubicoValidationFailure;
  * A JAAS module for verifying OTPs (One Time Passwords) against a
  * Yubikey Validation Service.
  *
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class YubikeyLoginModule implements LoginModule {
@@ -161,7 +161,7 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 		
 		if (options.containsKey(OPTION_YUBICO_SYNC_POLICY)) {
-			this.yc.setSync(options.get(OPTION_YUBICO_SYNC_POLICY).toString());
+			this.yc.setSync(Integer.parseInt(options.get(OPTION_YUBICO_SYNC_POLICY).toString()));
 		}
 
 		/* Instantiate the specified usermap implementation. */

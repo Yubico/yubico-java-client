@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * A JAAS module for verifying OATH OTPs (One Time Passwords) using
  * HTTP Basic Auth to a backend server doing the real authentication.
  *
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class HttpOathOtpLoginModule implements LoginModule {

@@ -33,7 +33,7 @@ package com.yubico.jaas;
 import java.security.Principal;
 
 /**
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class HttpOathOtpPrincipal implements Principal {

@@ -32,17 +32,16 @@
 package com.yubico.client.v2;
 
 public enum YubicoResponseStatus {
-	/**The OTP is valid. */ OK,
-	/**The OTP is invalid format. */ BAD_OTP,
-	/**The OTP has already been seen by the service. */ REPLAYED_OTP,
-	/**The HMAC signature verification failed. */ BAD_SIGNATURE,
-	/**The request lacks a parameter. */ MISSING_PARAMETER,
-	/**The request id does not exist. */ NO_SUCH_CLIENT,
-	/**The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
-	/**Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
-	/**Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,	
-	/**Server has seen the OTP/Nonce combination before
-	 * @see <a href="http://forum.yubico.com/viewtopic.php?f=3&t=701">http://forum.yubico.com/viewtopic.php?f=3&t=701</a> */ 
+	/* The OTP is valid. */ OK,
+	/* The OTP is invalid format. */ BAD_OTP,
+	/* The OTP has already been seen by the service. */ REPLAYED_OTP,
+	/* The HMAC signature verification failed. */ BAD_SIGNATURE,
+	/* The request lacks a parameter. */ MISSING_PARAMETER,
+	/* The request id does not exist. */ NO_SUCH_CLIENT,
+	/* The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
+	/* Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
+	/* Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,
+	/* Server has seen the OTP/Nonce combination before, see http://forum.yubico.com/viewtopic.php?f=3&t=701 */
 	REPLAYED_REQUEST;
 
     public boolean isError()

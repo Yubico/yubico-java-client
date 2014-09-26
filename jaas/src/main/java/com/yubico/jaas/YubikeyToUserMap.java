@@ -36,7 +36,7 @@ import java.util.Map;
  * Classes implementing this interface MUST have a nullary constructor
  * for {@link java.lang.Class#newInstance()} to work.
  *
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public interface YubikeyToUserMap {

@@ -155,6 +155,8 @@ public abstract class YubicoClient {
 	
 	/**
 	 * Instantiate a YubicoClient object.
+     *
+     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
 	 * @return  client that can be used to validate YubiKey OTPs
 	 */
 	public static YubicoClient getClient(Integer clientId) {
@@ -191,11 +193,7 @@ public abstract class YubicoClient {
 	 * Determines whether a given OTP is of the correct length
 	 * and only contains printable characters, as per the recommendation.
 	 *
-	 * @see <a href="http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients"
-	 *   http://code.google.com/p/yubikey-val-server-php/wiki/GettingStartedWritingClients</a>
-	 * 
 	 * @param otp The OTP to validate
-	 * 
 	 * @return boolean Returns true if it's valid; false otherwise
 	 * 
 	 */

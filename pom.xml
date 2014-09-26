@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yubico</groupId>
     <artifactId>yubico-validation-client</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Yubico OTP validation client</name>
     <description>Client library written in Java for verifying Yubikey one-time passwords (OTPs).</description>
     <organization>

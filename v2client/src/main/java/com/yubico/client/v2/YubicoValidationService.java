@@ -29,7 +29,7 @@ package com.yubico.client.v2;
 	THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 	SUCH DAMAGE.
 
-	Written by Simon Buckle <simon@webteq.eu>, September 2011.
+	Written by Simon Buckle (simon@webteq.eu), September 2011.
 */
 
 import com.yubico.client.v2.exceptions.YubicoValidationException;
@@ -50,7 +50,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  * Fires off a number of validation requests to each specified URL 
  * in parallel.
  * 
- * @author Simon Buckle <simon@webteq.eu>
+ * @author Simon Buckle (simon@webteq.eu)
  */
 public class YubicoValidationService {
 	private final ExecutorCompletionService<YubicoResponse> completionService;

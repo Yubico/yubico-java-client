@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class YubicoClientTest {

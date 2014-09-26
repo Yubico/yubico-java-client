@@ -55,7 +55,7 @@ import com.yubico.jaas.YubikeyToUserMap;
  * tokens are distributed to users, after which the auto provisioning should be
  * turned off again.
  *
- * @author Fredrik Thulin <fredrik@yubico.com>
+ * @author Fredrik Thulin (fredrik@yubico.com)
  *
  */
 public class YubikeyToUserMapImpl implements YubikeyToUserMap {
@@ -132,10 +132,10 @@ public class YubikeyToUserMapImpl implements YubikeyToUserMap {
 	 * Given publicId "vvcccccfhc", scans filename for a line like "yk.vvcccccfhc.user = alice"
 	 * and returns "alice" if found. Null is returned in case there is no matching line in file.
 	 *
-	 * @param publicId
-	 * @param filename
+	 * @param publicId YubiKey public ID to scan for
+	 * @param filename name of the file to scan
 	 * @return String username
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException if the filename does not match an existing file
 	 */
 	private String get_username_for_id(String publicId, String filename) throws FileNotFoundException {
 		Scanner sc = null;
@@ -161,9 +161,9 @@ public class YubikeyToUserMapImpl implements YubikeyToUserMap {
 	/**
 	 * Stores an association between username and YubiKey publicId in filename.
 	 *
-	 * @param publicId
-	 * @param username
-	 * @param filename
+     * @param publicId YubiKey public ID to associate with user
+	 * @param username username to associate with a YubiKey public ID
+     * @param filename name of the file to store to
 	 */
 	private void add_yubikey_to_user(String publicId, String username, String filename) {
 		try {

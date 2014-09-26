@@ -54,7 +54,7 @@ import org.apache.commons.codec.binary.Base64;
 public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
-    protected String sync;
+    protected Integer sync;
     protected String wsapi_urls[] = {
     		"https://api.yubico.com/wsapi/2.0/verify",
     		"https://api2.yubico.com/wsapi/2.0/verify",
@@ -123,16 +123,8 @@ public abstract class YubicoClient {
      * Default is to let the server decide.
      * @param sync percentage or strings 'secure' or 'fast'
      */
-    public void setSync(String sync) {
+    public void setSync(Integer sync) {
     	this.sync = sync;
-    }
-    
-    /**
-     * Get the sync percentage required for a successful auth.
-     * @return sync percentage or strings 'secure' or 'fast'
-     */
-    public String getSync() {
-    	return sync;
     }
     
     /**
@@ -162,14 +154,6 @@ public abstract class YubicoClient {
 	}
 	
 	/**
-	 * Get the previously set user agent to be used for requests
-	 * @return the user agent that will be used in requests
-	 */
-	public String getUserAgent() {
-		return userAgent;
-	}
-
-	/**
 	 * Instantiate a YubicoClient object.
 	 * @return  client that can be used to validate YubiKey OTPs
 	 */
@@ -178,11 +162,11 @@ public abstract class YubicoClient {
     }
 
     /**
-	 * Extract the public ID of a Yubikey from an OTP it generated.
+	 * Extract the public ID of a YubiKey from an OTP it generated.
 	 *
 	 * @param otp	The OTP to extract ID from, in modhex format.
 	 *
-	 * @return string	Public ID of Yubikey that generated otp. Between 0 and 12 characters.
+	 * @return string	Public ID of YubiKey that generated otp. Between 0 and 12 lower-case characters.
 	 * 
 	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings. 
 	 */
@@ -195,10 +179,10 @@ public abstract class YubicoClient {
 		Integer len = otp.length();
 
 		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
-		 * (if anything) is the public ID of the Yubikey. The ID can be set to ''
+		 * (if anything) is the public ID of the YubiKey. The ID can be set to ''
 		 * through personalization.
 		 */
-		return otp.substring(0, len - 32);
+		return otp.substring(0, len - 32).toLowerCase();
 	}
 	
 	private static final Integer OTP_MIN_LEN = 32;

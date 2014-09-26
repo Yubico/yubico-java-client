@@ -2,7 +2,7 @@
 
    Copyright (c) 2011, Simon Buckle.  All rights reserved.
    
-   Copyright (c) 2012, Yubico AB.  All rights reseved.
+   Copyright (c) 2014, Yubico AB.  All rights reseved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -38,59 +38,75 @@
 
 package com.yubico.client.v2.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.Map.Entry;
-
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
 import com.yubico.client.v2.YubicoValidationService;
 import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoValidationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+
 import static com.yubico.client.v2.HttpUtils.toQueryString;
 import static com.yubico.client.v2.YubicoResponseStatus.BAD_SIGNATURE;
 
 public class YubicoClientImpl extends YubicoClient {
-	private final YubicoValidationService validationService;
-	
-	public YubicoClientImpl() {
-		validationService = new YubicoValidationService();
-	}
-	
-    public YubicoClientImpl(Integer id) {
-    	this();
-        this.clientId=id;
-    }
-    
-    public YubicoClientImpl(Integer id, String key) {
-    	this(id);
-    	setKey(key);
-    }
-    
-    public YubicoClientImpl(Integer id, String key, String sync) {
-    	this(id, key);
-    	setSync(sync);
+    private final YubicoValidationService validationService;
+
+    /**
+     * Creates a YubicoClient that will be using the given Client ID.
+     *
+     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+     */
+    public YubicoClientImpl(Integer clientId) {
+        validationService = new YubicoValidationService();
+        this.clientId = clientId;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Creates a YubicoClient that will be using the given Client ID and API key.
+     *
+     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+     * @param apiKey Retrieved from https://upgrade.yubico.com/getapikey
+     */
+    public YubicoClientImpl(Integer clientId, String apiKey) {
+        this(clientId);
+        setKey(apiKey);
+    }
+
+    /**
+     * Creates a YubicoClient that will be using the given Client ID and API key.
+     *
+     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+     * @param apiKey Retrieved from https://upgrade.yubico.com/getapikey
+     * @param sync A value 0 to 100 indicating percentage of syncing required by client, or strings "fast" or "secure"
+     *             to use server-configured values; if absent, let the server decide
+     */
+    public YubicoClientImpl(Integer clientId, String apiKey, String sync) {
+        this(clientId, apiKey);
+        setSync(sync);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public YubicoResponse verify(String otp) throws YubicoValidationException, YubicoValidationFailure {
-    	if (!isValidOTPFormat(otp)) {
-    		throw new IllegalArgumentException("The OTP is not a valid format");
-    	}
-    	Map<String,String> requestMap = new TreeMap<String, String>();
-    	String nonce = UUID.randomUUID().toString().replaceAll("-","");
-    	requestMap.put("nonce", nonce);
-    	requestMap.put("id", clientId.toString());
-    	requestMap.put("otp", otp);
-    	requestMap.put("timestamp", "1");
-    	if(sync != null) {
-    		requestMap.put("sl", sync);
-    	}
+        if (!isValidOTPFormat(otp)) {
+            throw new IllegalArgumentException("The OTP is not a valid format");
+        }
+        Map<String, String> requestMap = new TreeMap<String, String>();
+        String nonce = UUID.randomUUID().toString().replaceAll("-", "");
+        requestMap.put("nonce", nonce);
+        requestMap.put("id", clientId.toString());
+        requestMap.put("otp", otp);
+        requestMap.put("timestamp", "1");
+        if (sync != null) {
+            requestMap.put("sl", sync.toString());
+        }
 
         String queryString;
         try {
@@ -104,40 +120,44 @@ public class YubicoClientImpl extends YubicoClient {
         }
 
 
-    	String[] wsapiUrls = this.getWsapiUrls();
-    	List<String> validationUrls = new ArrayList<String>();
-    	for(String wsapiUrl : wsapiUrls) {
-    		validationUrls.add(wsapiUrl + "?" + queryString);
-    	}
+        String[] wsapiUrls = this.getWsapiUrls();
+        List<String> validationUrls = new ArrayList<String>();
+        for (String wsapiUrl : wsapiUrls) {
+            validationUrls.add(wsapiUrl + "?" + queryString);
+        }
 
-    	YubicoResponse response = validationService.fetch(validationUrls, userAgent);
+        YubicoResponse response = validationService.fetch(validationUrls, userAgent);
 
-    	if (key != null) {
+        if (key != null) {
             verifySignature(response);
-    	}
+        }
 
-    	// NONCE/OTP fields are not returned to the client when sending error codes.
-    	// If there is an error response, don't need to check them.
-    	if (!response.getStatus().isError()) {
-    		if (response.getOtp() == null || !otp.equals(response.getOtp())) {
-    			throw new YubicoValidationFailure("OTP mismatch in response, is there a man-in-the-middle?");
-    		}
-    		if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
-    			throw new YubicoValidationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
-    		}
-    	}
-    	return response;
+        // NONCE/OTP fields are not returned to the client when sending error codes.
+        // If there is an error response, don't need to check them.
+        if (!response.getStatus().isError()) {
+            if (response.getOtp() == null || !otp.equals(response.getOtp())) {
+                throw new YubicoValidationFailure("OTP mismatch in response, is there a man-in-the-middle?");
+            }
+            if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
+                throw new YubicoValidationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
+            }
+        }
+        return response;
     }
 
     private void verifySignature(YubicoResponse response) throws YubicoValidationFailure, YubicoValidationException {
         StringBuilder keyValueStr = new StringBuilder();
         for (Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
-            if ("h".equals(entry.getKey())) { continue; }
-            if (keyValueStr.length() > 0) { keyValueStr.append("&"); }
+            if ("h".equals(entry.getKey())) {
+                continue;
+            }
+            if (keyValueStr.length() > 0) {
+                keyValueStr.append("&");
+            }
             keyValueStr
-                .append(entry.getKey())
-                .append("=")
-                .append(entry.getValue());
+                    .append(entry.getKey())
+                    .append("=")
+                    .append(entry.getValue());
         }
         try {
             String signature = Signature.calculate(keyValueStr.toString(), key).trim();

@@ -63,13 +63,13 @@ public abstract class YubicoClient {
     		"https://api5.yubico.com/wsapi/2.0/verify"
     		};
     
-    protected String userAgent = "yubico-java-client/" + Version.version();
+    protected String userAgent = "yubico-java-client/" + Version.version;
 
     /**
      * Validate an OTP using a webservice call to one or more ykval validation servers.
      *
-     * @param otp  YubiKey OTP
-     * @return  result of the webservice validation operation
+     * @param otp YubiKey OTP
+     * @return result of the webservice validation operation
      * @throws YubicoValidationException for validation errors, like unreachable servers
      * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
      * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.

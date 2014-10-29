@@ -5,3 +5,9 @@ target
 .project
 .classpath
 bin/
+
+### Intellij ###
+# Covers IntelliJ and PyCharm
+
+*.iml
+.idea/

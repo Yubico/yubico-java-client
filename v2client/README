@@ -1,7 +1,8 @@
-A validation client for use with the Yubico validation API (version 2).
+A validation client for use with the Yubico validation API.
 By default, it uses the Yubico YubiCloud validation platform, but can
 be configured for another validation server. To use YubiCloud you need a
-client ID and an API key that can be fetched from https://upgrade.yubico.com/getapikey.
+client ID and an API key that can be fetched from
+https://upgrade.yubico.com/getapikey[upgrade.yubico.com/getapikey].
 
 For more details on how to use YubiKey OTP libraries, visit
 https://developers.yubico.com/OTP[developers.yubico.com/OTP].
@@ -35,7 +36,7 @@ the correct user. For example:
 YubicoClient.getPublicId(otp)
     .equals(/* Yubikey ID associated with the user */);
 
-Read more about this https://github.com/Yubico/yubikey-val/wiki/GettingStartedWritingClients#binding-an-otp-to-an-identity[here].
+Read more about this https://developers.yubico.com/yubikey-val/Getting_Started_Writing_Clients.html[here].
 
 == Logging
 The validation client depends on slf4j-api for logging. To get the actual logs
@@ -51,4 +52,4 @@ binding, for example slf4j-log4j with the following maven configuration:
 
 == Read more
 For more complete descriptions of methods and failure states, please see
-the javadoc.
+the https://developers.yubico.com/yubico-java-client[JavaDoc].

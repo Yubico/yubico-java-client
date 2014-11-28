@@ -42,6 +42,7 @@
       <module>v1client</module>
       <module>v2client</module>
       <module>jaas</module>
+        <module>yubico-demo-server</module>
     </modules>
 
     <distributionManagement>

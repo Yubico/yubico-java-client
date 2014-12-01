@@ -1,5 +1,5 @@
 == yubico-java-client
-This repository contains a Java library, as well as a 
+This repository contains a Java library with an accompanying demo server, as well as a 
 https://github.com/Yubico/yubico-java-client/tree/master/jaas[JAAS module],
 to validate YubiKey OTPs (One-Time Passwords).
 
@@ -38,7 +38,7 @@ the correct user. For example:
 YubicoClient.getPublicId(otp)
     .equals(/* Yubikey ID associated with the user */);
 
-Read more about this https://developers.yubico.com/yubikey-val/Getting_Started_Writing_Clients.html[here].
+For a complete example, see the https://github.com/Yubico/yubico-java-client/tree/master/demo-server[demo server].
 
 === Logging
 The validation client depends on slf4j-api for logging. To get the actual logs

@@ -3,11 +3,8 @@ yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 * Version 2.0.2 (unreleased)
 
 * Version 2.0.1 (released 2013-01-31)
-
-  * YubicoClient.isValidOTPFormat() now returns false on null.
-
-  * YubicoClient.getPublicId() is more explicit in its error handling.
+ ** YubicoClient.isValidOTPFormat() now returns false on null.
+ ** YubicoClient.getPublicId() is more explicit in its error handling.
 
 * Version 2.0RC8 (released 2013-01-04)
-
-** Initial release on github.
+ ** Initial release on github.

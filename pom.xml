@@ -11,6 +11,9 @@
     </organization>
     <url>http://yubico.github.com/yubico-java-client/</url>
     <packaging>pom</packaging>
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <developers>
       <developer>

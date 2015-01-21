@@ -4,3 +4,7 @@ jdk:
   - openjdk6
   - oraclejdk7
   - oraclejdk8
+matrix:
+  include:
+    - jdk: oraclejdk7
+      env: COVERALLS=true

@@ -9,7 +9,7 @@
         <name>Yubico AB</name>
         <url>http://www.yubico.com/</url>
     </organization>
-    <url>http://yubico.github.com/yubico-java-client/</url>
+    <url>https://developers.yubico.com/yubico-java-client/</url>
     <packaging>pom</packaging>
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

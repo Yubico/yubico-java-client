@@ -43,13 +43,13 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import com.yubico.client.v2.ResponseStatus;
+import com.yubico.client.v2.VerificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
-import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 
 /**
@@ -76,7 +76,6 @@ public class YubikeyLoginModule implements LoginModule {
 	private CallbackHandler callbackHandler;
 
 	/* YubicoClient settings */
-	private Integer clientId;
 	private YubicoClient yc;
 
 	private boolean soft_fail_on_no_otps;
@@ -134,13 +133,10 @@ public class YubikeyLoginModule implements LoginModule {
 		this.callbackHandler = newCallbackHandler;
 
 		/* Yubico verification client */
-		this.clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
-		this.yc = YubicoClient.getClient(this.clientId);
+		Integer clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
+        String clientKey = options.get(OPTION_YUBICO_CLIENT_KEY).toString();
+		this.yc = YubicoClient.getClient(clientId, clientKey);
 		
-		if(options.containsKey(OPTION_YUBICO_CLIENT_KEY)) {
-			yc.setKey(options.get(OPTION_YUBICO_CLIENT_KEY).toString());
-		}
-
 		/* Realm of principals added after authentication */
 		if (options.containsKey(OPTION_YUBICO_ID_REALM)) {
 			this.idRealm = options.get(OPTION_YUBICO_ID_REALM).toString();
@@ -229,10 +225,10 @@ public class YubikeyLoginModule implements LoginModule {
 		for (String otp : otps) {
 			log.trace("Checking OTP {}", otp);
 
-			YubicoResponse ykr;
+			VerificationResponse ykr;
 			try {
 				ykr = this.yc.verify(otp);
-			} catch (YubicoValidationException e) {
+			} catch (YubicoVerificationException e) {
 				log.warn("Errors during validation: ", e);
 				throw new LoginException("Errors during validation: " + e.getMessage());
 			} catch (YubicoValidationFailure e) {
@@ -241,7 +237,7 @@ public class YubikeyLoginModule implements LoginModule {
 			}
 			if (ykr != null) {
 				log.trace("OTP {} verify result : {}", otp, ykr.getStatus().toString());
-				if (ykr.getStatus() == YubicoResponseStatus.OK) {
+				if (ykr.getStatus() == ResponseStatus.OK) {
 					String publicId = YubicoClient.getPublicId(otp);
 					log.info("OTP verified successfully (YubiKey id {})", publicId);
 					if (is_right_user(nameCb.getName(), publicId)) {

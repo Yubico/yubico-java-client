@@ -33,22 +33,13 @@
 
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- * Base class for doing YubiKey validations using version 2 of the validation protocol. Example usage would be:
- * <pre>
- *  YubicoClient client = YubicoClient.getClient(CLIENT_ID);
- *  YubicoResponse response = client.verify(otp);
- *  if(response.getStatus() == YubicoResponseStatus.OK) {
- *    return true;
- *  } else {
- *    return false;
- *  }
- *  </pre>
+ * Base class for doing YubiKey validations using version 2 of the validation protocol.
  */
 
 public abstract class YubicoClient {
@@ -70,11 +61,11 @@ public abstract class YubicoClient {
      *
      * @param otp YubiKey OTP
      * @return result of the webservice validation operation
-     * @throws YubicoValidationException for validation errors, like unreachable servers
+     * @throws com.yubico.client.v2.exceptions.YubicoVerificationException for validation errors, like unreachable servers
      * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
      * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
      */
-    public abstract YubicoResponse verify(String otp) throws YubicoValidationException, YubicoValidationFailure;
+    public abstract VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure;
 
     /**
      * Get the ykval client identifier used to identify the application.
@@ -159,8 +150,8 @@ public abstract class YubicoClient {
      * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
 	 * @return  client that can be used to validate YubiKey OTPs
 	 */
-	public static YubicoClient getClient(Integer clientId) {
-        return new YubicoClientImpl(clientId);
+	public static YubicoClient getClient(Integer clientId, String key) {
+        return new YubicoClientImpl(clientId, key);
     }
 
     /**

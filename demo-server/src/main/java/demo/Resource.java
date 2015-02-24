@@ -1,9 +1,9 @@
 package demo;
 
 import com.google.common.collect.HashMultimap;
+import com.yubico.client.v2.ResponseStatus;
+import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -16,8 +16,10 @@ public class Resource {
     public static final String NAVIGATION = "<p>Navigation: <a href='/loginIndex'>Login</a> | <a href='/registerIndex'>Register</a></p>";
 
     // Don't use this client ID in production. Instead, get your own from https://upgrade.yubico.com/getapikey
-    public static final int CLIENT_ID = 1;
-    private final YubicoClient client = YubicoClient.getClient(CLIENT_ID);
+    public static final int CLIENT_ID = 21188;
+    public static final String API_KEY = "p38Z7DuEB/JC/LbDkkjmvMRB5GI=";
+
+    private final YubicoClient client = YubicoClient.getClient(CLIENT_ID, API_KEY);
     private final HashMultimap<String, String> yubikeyIds = HashMultimap.create();
 
     @Path("registerIndex")
@@ -31,8 +33,8 @@ public class Resource {
     @Path("register")
     @POST
     public String register(@FormParam("username") String username, @FormParam("otp") String otp) throws Exception {
-        YubicoResponse response = client.verify(otp);
-        if (response.getStatus() == YubicoResponseStatus.OK) {
+        VerificationResponse response = client.verify(otp);
+        if (response.getStatus() == ResponseStatus.OK) {
             String yubikeyId = YubicoClient.getPublicId(otp);
             yubikeyIds.put(username, yubikeyId);
             return "Successfully registered YubiKey!" + NAVIGATION;
@@ -51,8 +53,8 @@ public class Resource {
     @Path("login")
     @POST
     public String login(@FormParam("username") String username, @FormParam("otp") String otp) throws Exception {
-        YubicoResponse response = client.verify(otp);
-        if (response.getStatus() == YubicoResponseStatus.OK) {
+        VerificationResponse response = client.verify(otp);
+        if (response.getStatus() == ResponseStatus.OK) {
             String yubikeyId = YubicoClient.getPublicId(otp);
             if(yubikeyIds.get(username).contains(yubikeyId)) {
                 return "Success fully logged in " + username + "!" + NAVIGATION;

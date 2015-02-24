@@ -108,6 +108,10 @@ public class VerificationResponseImpl implements VerificationResponse {
         return otp + ":" + status;
     }
 
+    public boolean isOk() {
+        return getStatus() == ResponseStatus.OK;
+    }
+
     public String getH() {
         return h;
     }

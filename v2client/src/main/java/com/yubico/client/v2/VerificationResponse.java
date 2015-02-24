@@ -39,6 +39,13 @@ import java.util.Map;
  */
 public interface VerificationResponse {
 
+    /**
+     * Whether the response status from the server was OK, representing a valid OTP.
+     *
+     * @return true if the response status was OK, false otherwise
+     */
+    boolean isOk();
+
 	/**
 	 * Signature of the response, with the same API key as the request.
 	 * 

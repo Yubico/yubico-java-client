@@ -34,7 +34,7 @@ public class Resource {
     @POST
     public String register(@FormParam("username") String username, @FormParam("otp") String otp) throws Exception {
         VerificationResponse response = client.verify(otp);
-        if (response.getStatus() == ResponseStatus.OK) {
+        if (response.isOk()) {
             String yubikeyId = YubicoClient.getPublicId(otp);
             yubikeyIds.put(username, yubikeyId);
             return "Successfully registered YubiKey!" + NAVIGATION;
@@ -54,7 +54,7 @@ public class Resource {
     @POST
     public String login(@FormParam("username") String username, @FormParam("otp") String otp) throws Exception {
         VerificationResponse response = client.verify(otp);
-        if (response.getStatus() == ResponseStatus.OK) {
+        if (response.isOk()) {
             String yubikeyId = YubicoClient.getPublicId(otp);
             if(yubikeyIds.get(username).contains(yubikeyId)) {
                 return "Success fully logged in " + username + "!" + NAVIGATION;

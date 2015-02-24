@@ -37,8 +37,8 @@ import java.util.Map;
  * Object built from server response, detailing the status of validation.
  *
  */
-public interface YubicoResponse {
-	
+public interface VerificationResponse {
+
 	/**
 	 * Signature of the response, with the same API key as the request.
 	 * 
@@ -56,10 +56,10 @@ public interface YubicoResponse {
     /**
      * Server response to the request.
      * 
-     * @see YubicoResponseStatus
+     * @see ResponseStatus
      * @return response status
      */
-    YubicoResponseStatus getStatus();
+    ResponseStatus getStatus();
     
     /**
      * Returns the internal timestamp from the YubiKey 8hz timer.

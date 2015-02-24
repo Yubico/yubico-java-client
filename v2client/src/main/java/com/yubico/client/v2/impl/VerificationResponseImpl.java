@@ -32,8 +32,8 @@
 package com.yubico.client.v2.impl;
 
 import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.YubicoResponse;
-import com.yubico.client.v2.YubicoResponseStatus;
+import com.yubico.client.v2.VerificationResponse;
+import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 import java.io.BufferedReader;
@@ -43,11 +43,11 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class YubicoResponseImpl implements YubicoResponse {
+public class VerificationResponseImpl implements VerificationResponse {
 
     private String h;
     private String t;
-    private YubicoResponseStatus status;
+    private ResponseStatus status;
     private String timestamp;
     private String sessioncounter;
     private String sessionuse;
@@ -57,7 +57,7 @@ public class YubicoResponseImpl implements YubicoResponse {
     
     private final Map<String, String> keyValueMap = new TreeMap<String, String>();
 
-    public YubicoResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
+    public VerificationResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
         if(inStream == null) {
             throw new IOException("InputStream argument was null");
         }
@@ -78,7 +78,7 @@ public class YubicoResponseImpl implements YubicoResponse {
             } else if ("otp".equals(key)) {
             	this.setOtp(val);
             } else if ("status".equals(key))  {
-                this.setStatus(YubicoResponseStatus.valueOf(val));
+                this.setStatus(ResponseStatus.valueOf(val));
             } else if ("timestamp".equals(key)) {
                 this.setTimestamp(val);
             } else if ("sessioncounter".equals(key)) {
@@ -124,11 +124,11 @@ public class YubicoResponseImpl implements YubicoResponse {
         this.t = t;
     }
 
-    public YubicoResponseStatus getStatus() {
+    public ResponseStatus getStatus() {
         return status;
     }
 
-    public void setStatus(YubicoResponseStatus status) {
+    public void setStatus(ResponseStatus status) {
         this.status = status;
     }
 

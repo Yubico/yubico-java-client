@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import com.yubico.client.v2.YubicoResponse;
+import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
@@ -43,12 +43,12 @@ import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
 */
 
-public class YubicoResponseImplTest {
+public class VerificationResponseImplTest {
 
     @Test
     public void testParserForNullArg() throws YubicoInvalidResponse {
         try {
-			new YubicoResponseImpl(null);
+			new VerificationResponseImpl(null);
             fail("Expected an IOException to be thrown.");
         } catch (IOException ioe) {
         }
@@ -67,7 +67,7 @@ public class YubicoResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            YubicoResponse response = new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
             assertTrue(response.toString().contains("REPLAYED_OTP"));
             assertTrue(response.toString().contains("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd"));
         } catch (IOException ioe) {
@@ -88,7 +88,7 @@ public class YubicoResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            YubicoResponse response = new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
             assertEquals("2011-01-26T11:48:21Z0323",response.getT());
             assertEquals("lPuwrWh8/5ZuRBN1q+v7/pCOfYo=", response.getH());
             assertEquals("REPLAYED_OTP", response.getStatus().toString());
@@ -110,7 +110,7 @@ public class YubicoResponseImplTest {
     	String testData = 	"foo=bar\n" +
     						"kaka=blahonga\n";
     	try {
-    		new YubicoResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+    		new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
     	} catch (IOException ioe) {
     		fail("Encountered an exception");
     	}

@@ -31,7 +31,7 @@
 
 package com.yubico.client.v2;
 
-public enum YubicoResponseStatus {
+public enum ResponseStatus {
 	/* The OTP is valid. */ OK,
 	/* The OTP is invalid format. */ BAD_OTP,
 	/* The OTP has already been seen by the service. */ REPLAYED_OTP,

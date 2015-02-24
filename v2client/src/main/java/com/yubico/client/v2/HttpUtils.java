@@ -1,7 +1,5 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoValidationException;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;

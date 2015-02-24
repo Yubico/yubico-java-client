@@ -1,6 +1,7 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoValidationException;
+import com.yubico.client.v2.exceptions.YubicoSignatureException;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 import org.junit.Before;
@@ -48,52 +49,52 @@ public class YubicoClientTest {
      * you will have zero security), get your own at
      * https://upgrade.yubico.com/getapikey/
      */
-    private final int clientId = 7062;
-    private final String apiKey = "eIN3m78e8BRHXPGDVV3lQUm4yVw=";
+    private final int clientId = 21188;
+    private final String apiKey = "p38Z7DuEB/JC/LbDkkjmvMRB5GI=";
 
     @Before
     public void setup() {
-        client = YubicoClient.getClient(this.clientId);
+        client = YubicoClient.getClient(this.clientId, apiKey);
     }
 
     @Test
-    public void verifyContruct() {
+    public void verifyConstruct() {
         assertTrue(client instanceof YubicoClientImpl);
     }
 
-    @Test
-    public void testBadOTP() throws YubicoValidationException, YubicoValidationFailure {	 	
-    	String otp="11111111111111111111111111111111111"; 
-    	YubicoResponse response = client.verify(otp);
-        assertNotNull(response); 	
-        assertTrue(response.getStatus() == YubicoResponseStatus.BAD_OTP);
+    // YubiCloud is known to reply with bad signatures when given a bad OTP.
+    // See https://github.com/Yubico/yubikey-val/issues/8
+    @Test(expected = YubicoValidationFailure.class)
+    public void testBadOTP() throws YubicoVerificationException, YubicoValidationFailure {
+    	String otp="11111111111111111111111111111111111";
+        client.verify(otp);
     }
     
     @Test
-    public void testReplayedOTP() throws YubicoValidationException, YubicoValidationFailure {
+    public void testReplayedOTP() throws YubicoVerificationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-        YubicoResponse response = client.verify(otp);
+        VerificationResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(otp, response.getOtp());
-        assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
+        assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
 
     @Test
-    public void testSignature() throws YubicoValidationException, YubicoValidationFailure {
+    public void testSignature() throws YubicoVerificationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey(this.apiKey);
-        YubicoResponse response = client.verify(otp);
+        VerificationResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(otp, response.getOtp());
-        assertTrue(response.getStatus() == YubicoResponseStatus.REPLAYED_OTP);
+        assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
 
     @Test
-    public void testBadSignature() throws YubicoValidationException, YubicoValidationFailure   {
+    public void testBadSignature() throws YubicoVerificationException, YubicoValidationFailure   {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
-        YubicoResponse response = client.verify(otp);
-        assertEquals(YubicoResponseStatus.BAD_SIGNATURE, response.getStatus());
+        VerificationResponse response = client.verify(otp);
+        assertEquals(ResponseStatus.BAD_SIGNATURE, response.getStatus());
     }
     
     @Test
@@ -115,35 +116,35 @@ public class YubicoClientTest {
     }
     
     @Test
-    public void testTwoQueries() throws YubicoValidationException, YubicoValidationFailure {
+    public void testTwoQueries() throws YubicoVerificationException, YubicoValidationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-    	YubicoResponse response = client.verify(otp);
-    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response.getStatus());
-    	YubicoResponse response2 = client.verify(otp);
-    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response2.getStatus());
+    	VerificationResponse response = client.verify(otp);
+    	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
+    	VerificationResponse response2 = client.verify(otp);
+    	assertEquals(ResponseStatus.REPLAYED_OTP, response2.getStatus());
     }
     
-    @Test(expected=YubicoValidationException.class)
-    public void testBadUrls() throws YubicoValidationException, YubicoValidationFailure {
+    @Test(expected=YubicoVerificationException.class)
+    public void testBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	client.setWsapiUrls(new String[] {
     			"http://www.example.com/wsapi/2.0/verify",
     			"http://api2.example.com/wsapi/2.0/verify"
     			});
-    	YubicoResponse response = client.verify(otp);
-    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response.getStatus());
+    	VerificationResponse response = client.verify(otp);
+    	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
     
     @Test
-    public void testGoodAndBadUrls() throws YubicoValidationException, YubicoValidationFailure {
+    public void testGoodAndBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	client.setWsapiUrls(new String[] {
     			"http://api.example.com/wsapi/2.0/verify",
     			"http://www.example.com/wsapi/2.0/verify",
     			"http://api3.yubico.com/wsapi/2.0/verify"
     			});
-    	YubicoResponse response = client.verify(otp);
-    	assertEquals(YubicoResponseStatus.REPLAYED_OTP, response.getStatus());
+    	VerificationResponse response = client.verify(otp);
+    	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
     
     @Test(expected=IllegalArgumentException.class)

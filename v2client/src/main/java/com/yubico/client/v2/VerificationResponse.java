@@ -37,8 +37,15 @@ import java.util.Map;
  * Object built from server response, detailing the status of validation.
  *
  */
-public interface YubicoResponse {
-	
+public interface VerificationResponse {
+
+    /**
+     * Whether the response status from the server was OK, representing a valid OTP.
+     *
+     * @return true if the response status was OK, false otherwise
+     */
+    boolean isOk();
+
 	/**
 	 * Signature of the response, with the same API key as the request.
 	 * 
@@ -56,10 +63,10 @@ public interface YubicoResponse {
     /**
      * Server response to the request.
      * 
-     * @see YubicoResponseStatus
+     * @see ResponseStatus
      * @return response status
      */
-    YubicoResponseStatus getStatus();
+    ResponseStatus getStatus();
     
     /**
      * Returns the internal timestamp from the YubiKey 8hz timer.

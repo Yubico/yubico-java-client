@@ -35,21 +35,20 @@ public class Cmd {
 
     public static void main (String args []) throws Exception
     {
-        if (args.length != 2) {
+        if (args.length != 3) {
             System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
-            System.err.println("\nUsage: java -jar client.jar Auth_ID OTP");
+            System.err.println("\nUsage: java -jar client.jar Client_ID Client_key OTP");
             System.err.println("\nEg. java -jar client.jar 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
             System.err.println("\nTouch Yubikey to generate the OTP. Visit Yubico.com for more details.");
             return;
         }
 
-        int authId = Integer.parseInt(args[0]);
-        String otp = args[1];
+        String otp = args[2];
 
-        YubicoClient yc = YubicoClient.getClient(authId);
-        YubicoResponse response = yc.verify(otp);
+        YubicoClient yc = YubicoClient.getClient(Integer.parseInt(args[0]), args[1]);
+        VerificationResponse response = yc.verify(otp);
 
-        if(response!=null && response.getStatus() == YubicoResponseStatus.OK) {
+        if(response!=null && response.getStatus() == ResponseStatus.OK) {
             System.out.println("\n* OTP verified OK");
         } else {
             System.out.println("\n* Failed to verify OTP");

@@ -30,7 +30,7 @@
 package com.yubico.client.v2.exceptions;
 
 /**
- * YubicoValidationFailure is thrown for validation failures<br>
+ * This is thrown for validation failures<br>
  *  * OTP in request and response isn't matching, could mean a man-in-the-middle<br>
  *  * nonce in request and response isn't matching, could mean a man-in-the-middle<br>
  *  * response signature verification failed

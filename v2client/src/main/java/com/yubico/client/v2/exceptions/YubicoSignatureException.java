@@ -30,7 +30,7 @@
 package com.yubico.client.v2.exceptions;
 
 /**
- * YubicoSignatureException is thrown on signature algorithm or key errors.
+ * This is thrown on signature algorithm or key errors.
  */
 
 public class YubicoSignatureException extends Exception {

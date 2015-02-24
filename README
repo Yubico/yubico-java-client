@@ -6,7 +6,7 @@ to validate YubiKey OTPs (One-Time Passwords).
 By default, this library uses the Yubico YubiCloud validation platform,
 but it can be configured for another validation server.
 
-NOTE: For more details on how to use YubiKey OTP libraries, visit
+NOTE: For more details on how to use a YubiKey OTP library, visit
 https://developers.yubico.com/OTP[developers.yubico.com/OTP].
 
 === Usage
@@ -17,19 +17,18 @@ Add this to your pom.xml:
  <dependency>
    <groupId>com.yubico</groupId>
    <artifactId>yubico-validation-client2</artifactId>
-   <version>2.0.1</version>
+   <version>3.0.0</version>
  </dependency>
 
-A simple implementation would be:
-
 [source,java]
- // otp is the OTP from the Yubikey
- // clientId is the client ID from https://upgrade.yubico.com/getapikey/
- boolean validate(String otp, int clientId) {
-    YubicoClient client = YubicoClient.getClient(clientId);
-    YubicoResponse response = client.verify(otp);
-    return response.getStatus() == YubicoResponseStatus.OK;
- }
+----
+// clientId and secretKey are retrieved from https://upgrade.yubico.com/getapikey
+YubicoClient client = YubicoClient.getClient(clientId, secretKey);
+
+// otp is the OTP from the YubiKey
+VerificationResponse response = client.verify(otp);
+assert response.isOk();
+----
 
 After validating the OTP you should make sure that the publicId part belongs to
 the correct user. For example:
@@ -43,7 +42,7 @@ For a complete example, see the https://github.com/Yubico/yubico-java-client/tre
 === Logging
 The validation client depends on slf4j-api for logging. To get the actual logs
 and not receive warnings on System.out you will need to depend on a slf4j logger
-binding, for example slf4j-log4j with the following maven configuration:
+binding, for example slf4j-log4j with the following Maven configuration:
 
 [source,xml]
  <dependency>

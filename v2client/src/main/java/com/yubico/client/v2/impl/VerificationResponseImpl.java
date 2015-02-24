@@ -72,23 +72,23 @@ public class VerificationResponseImpl implements VerificationResponse {
             String val=inputLine.substring(ix+1);
 
             if ("h".equals(key)) {
-                this.setH(val);
+                this.h = val;
             } else if ("t".equals(key)) {
-            	this.setT(val);
+                this.t = val;
             } else if ("otp".equals(key)) {
-            	this.setOtp(val);
+                this.otp = val;
             } else if ("status".equals(key))  {
-                this.setStatus(ResponseStatus.valueOf(val));
+                this.status = ResponseStatus.valueOf(val);
             } else if ("timestamp".equals(key)) {
-                this.setTimestamp(val);
+                this.timestamp = val;
             } else if ("sessioncounter".equals(key)) {
-                this.setSessioncounter(val);
+                this.sessioncounter = val;
             } else if ("sessionuse".equals(key)) {
-                this.setSessionuse(val);
+                this.sessionuse = val;
             } else if ("sl".equals(key)) {
-                this.setSl(val);
+                this.sl = val;
             } else if ("nonce".equals(key)) {
-                this.setNonce(val);
+                this.nonce = val;
             }
             
             keyValueMap.put(key, val);
@@ -116,75 +116,39 @@ public class VerificationResponseImpl implements VerificationResponse {
         return h;
     }
 
-    public void setH(String h) {
-        this.h = h;
-    }
-
     public String getT() {
         return t;
-    }
-
-    public void setT(String t) {
-        this.t = t;
     }
 
     public ResponseStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ResponseStatus status) {
-        this.status = status;
-    }
-
     public String getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getSessioncounter() {
         return sessioncounter;
     }
 
-    public void setSessioncounter(String sessioncounter) {
-        this.sessioncounter = sessioncounter;
-    }
-
     public String getSessionuse() {
         return sessionuse;
-    }
-
-    public void setSessionuse(String sessionuse) {
-        this.sessionuse = sessionuse;
     }
 
     public String getSl() {
         return sl;
     }
 
-    public void setSl(String sl) {
-        this.sl = sl;
-    }
-
     public String getOtp() {
         return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
     }
 
     public String getNonce() {
         return nonce;
     }
 
-    public void setNonce(String nonce) {
-        this.nonce = nonce;
-    }
-
-	public String getPublicId() {
+    public String getPublicId() {
 		return YubicoClient.getPublicId(otp);
 	}
 }

@@ -25,7 +25,7 @@ Add this to your pom.xml:
 // clientId and secretKey are retrieved from https://upgrade.yubico.com/getapikey
 YubicoClient client = YubicoClient.getClient(clientId, secretKey);
 
-// otp is the OTP from the Yubikey
+// otp is the OTP from the YubiKey
 VerificationResponse response = client.verify(otp);
 assert response.isOk();
 ----
@@ -42,7 +42,7 @@ For a complete example, see the https://github.com/Yubico/yubico-java-client/tre
 === Logging
 The validation client depends on slf4j-api for logging. To get the actual logs
 and not receive warnings on System.out you will need to depend on a slf4j logger
-binding, for example slf4j-log4j with the following maven configuration:
+binding, for example slf4j-log4j with the following Maven configuration:
 
 [source,xml]
  <dependency>

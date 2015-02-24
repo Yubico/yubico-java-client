@@ -35,7 +35,7 @@ public class Cmd {
 
     public static void main (String args []) throws Exception
     {
-        if (args.length != 2) {
+        if (args.length != 3) {
             System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
             System.err.println("\nUsage: java -jar client.jar Client_ID Client_key OTP");
             System.err.println("\nEg. java -jar client.jar 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");

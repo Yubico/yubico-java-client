@@ -67,16 +67,16 @@ public class YubikeyLoginModule implements LoginModule {
 	/* Options for this class.
 	 * Note that the options map is shared with other classes, like YubikeyToUserMap.
 	 */
-	public static final String OPTION_YUBICO_CLIENT_ID			= "clientId";
-	public static final String OPTION_YUBICO_CLIENT_KEY         = "clientKey";
-	public static final String OPTION_YUBICO_ID_REALM			= "id_realm";
+	public static final String OPTION_YUBICO_CLIENT_ID		= "clientId";
+	public static final String OPTION_YUBICO_CLIENT_KEY         	= "clientKey";
+	public static final String OPTION_YUBICO_ID_REALM		= "id_realm";
 	public static final String OPTION_YUBICO_SOFT_FAIL_NO_OTPS	= "soft_fail_on_no_otps";
-	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
-	public static final String OPTION_YUBICO_USERMAP_CLASS      = "usermap_class";
-	public static final String OPTION_YUBICO_SYNC_POLICY        = "sync_policy";
-	public static final String OPTION_YUBICO_JACC			 	= "jacc";
+	public static final String OPTION_YUBICO_WSAPI_URLS		= "wsapi_urls";
+	public static final String OPTION_YUBICO_USERMAP_CLASS  	= "usermap_class";
+	public static final String OPTION_YUBICO_SYNC_POLICY        	= "sync_policy";
+	public static final String OPTION_YUBICO_JACC		 	= "jacc";
 	public static final String JACC_ATTR_WEB_REQUEST_KEY 		= "javax.servlet.http.HttpServletRequest";
-	public static final String HTTP_REQUEST_ATTR_TOTP 			= "j_otp";
+	public static final String HTTP_REQUEST_ATTR_TOTP 		= "j_otp";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -328,9 +328,7 @@ public class YubikeyLoginModule implements LoginModule {
 				String j_otp = request.getParameter(HTTP_REQUEST_ATTR_TOTP);
 				
 				if (j_otp.length() < 32) {
-					log.debug(
-							"Skipping token from j_otp, not a valid YubiKey OTP (too short, {} < 32)",
-							j_otp.length());
+					log.debug("Skipping token from j_otp, not a valid YubiKey OTP (too short, {} < 32)",j_otp.length());
 				} else {
 					result.add(j_otp);
 				}

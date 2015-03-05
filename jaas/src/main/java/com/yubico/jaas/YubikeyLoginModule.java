@@ -42,9 +42,13 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.VerificationResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +74,9 @@ public class YubikeyLoginModule implements LoginModule {
 	public static final String OPTION_YUBICO_WSAPI_URLS			= "wsapi_urls";
 	public static final String OPTION_YUBICO_USERMAP_CLASS      = "usermap_class";
 	public static final String OPTION_YUBICO_SYNC_POLICY        = "sync_policy";
+	public static final String OPTION_YUBICO_JACC			 	= "jacc";
+	public static final String JACC_ATTR_WEB_REQUEST_KEY 		= "javax.servlet.http.HttpServletRequest";
+	public static final String HTTP_REQUEST_ATTR_TOTP 			= "j_otp";
 
 	/* JAAS stuff */
 	private Subject subject;
@@ -79,7 +86,8 @@ public class YubikeyLoginModule implements LoginModule {
 	private YubicoClient yc;
 
 	private boolean soft_fail_on_no_otps;
-
+	private boolean jacc;
+	
 	private YubikeyToUserMap ykmap;
 	private String idRealm;
 
@@ -146,6 +154,13 @@ public class YubikeyLoginModule implements LoginModule {
 		if (options.containsKey(OPTION_YUBICO_SOFT_FAIL_NO_OTPS)) {
 			if ("true".equals(options.get(OPTION_YUBICO_SOFT_FAIL_NO_OTPS).toString())) {
 				this.soft_fail_on_no_otps = true;
+			}
+		}
+		
+		/* Should this JAAS module uses j_otp form to pick up otp */
+		if (options.containsKey(OPTION_YUBICO_JACC)) {
+			if ("true".equals(options.get(OPTION_YUBICO_JACC).toString())) {
+				this.jacc = true;
 			}
 		}
 
@@ -303,6 +318,26 @@ public class YubikeyLoginModule implements LoginModule {
 			log.error("Callback type not supported", ex);
 		} catch (IOException ex) {
 			log.error("CallbackHandler failed", ex);
+		}
+		
+		if (jacc) {
+			// This is JACC specific mechanism
+			try {
+				HttpServletRequest request = (HttpServletRequest) PolicyContext
+						.getContext(JACC_ATTR_WEB_REQUEST_KEY);
+				String j_otp = request.getParameter(HTTP_REQUEST_ATTR_TOTP);
+				
+				if (j_otp.length() < 32) {
+					log.debug(
+							"Skipping token from j_otp, not a valid YubiKey OTP (too short, {} < 32)",
+							j_otp.length());
+				} else {
+					result.add(j_otp);
+				}
+				log.debug("OTP from j_otp token : {}", j_otp);
+			} catch (PolicyContextException e) {
+				log.debug("No OTP from j_otp token)");
+			}
 		}
 
 		return result;

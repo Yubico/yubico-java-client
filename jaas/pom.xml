@@ -39,6 +39,16 @@
       <artifactId>commons-codec</artifactId>
       <version>1.4</version>
     </dependency>
+    <dependency>
+	  <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jacc_1.4_spec</artifactId>
+      <version>1.0</version>
+    </dependency>
+	<dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_3.0_spec</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

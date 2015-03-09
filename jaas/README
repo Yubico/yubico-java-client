@@ -32,6 +32,8 @@ https://upgrade.yubico.com/getapikey/
    sync_policy          default: none, let the server decide. a value between 0
                         and 100 indicating the percentage of synchronization
                         required by the client.
+   jacc			default: false, if true module picks up the otp from j_otp
+   			FORM authentication too
 
   Example configuration :
 

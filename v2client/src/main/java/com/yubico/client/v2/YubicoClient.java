@@ -47,14 +47,15 @@ public abstract class YubicoClient {
     protected byte[] key;
     protected Integer sync;
     protected String wsapi_urls[] = {
-    		"https://api.yubico.com/wsapi/2.0/verify",
-    		"https://api2.yubico.com/wsapi/2.0/verify",
-    		"https://api3.yubico.com/wsapi/2.0/verify",
-    		"https://api4.yubico.com/wsapi/2.0/verify",
-    		"https://api5.yubico.com/wsapi/2.0/verify"
+               "https://api.yubico.com/wsapi/2.0/verify",
+               "https://api2.yubico.com/wsapi/2.0/verify",
+               "https://api3.yubico.com/wsapi/2.0/verify",
+               "https://api4.yubico.com/wsapi/2.0/verify",
+               "https://api5.yubico.com/wsapi/2.0/verify"
     		};
     
-    protected String userAgent = "yubico-java-client/" + Version.version;
+    protected String userAgent = "yubico-java-client/" + Version.version +
+            " (" + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ")";
 
     /**
      * Validate an OTP using a webservice call to one or more ykval validation servers.

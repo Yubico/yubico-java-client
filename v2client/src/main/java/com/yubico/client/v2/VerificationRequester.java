@@ -39,7 +39,9 @@ public class VerificationRequester {
                 conn.setRequestProperty("User-Agent", userAgent);
                 conn.setConnectTimeout(15000);
                 conn.setReadTimeout(15000);
-                return Optional.of(new VerificationResponseImpl(conn.getInputStream()));
+                VerificationResponseImpl value = new VerificationResponseImpl(conn.getInputStream());
+                System.out.println(urlString);
+                return Optional.of(value);
             } catch (Exception e) {
                 log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
                 return Optional.empty();

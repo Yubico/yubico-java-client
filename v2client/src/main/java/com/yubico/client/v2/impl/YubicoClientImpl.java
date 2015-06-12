@@ -51,6 +51,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.net.UrlEscapers.urlFormParameterEscaper;
 import static com.google.common.net.UrlEscapers.urlPathSegmentEscaper;
 import static com.yubico.client.v2.HttpUtils.toQueryString;
 import static com.yubico.client.v2.ResponseStatus.BAD_SIGNATURE;
@@ -148,6 +149,7 @@ public class YubicoClientImpl extends YubicoClient {
     }
 
     private String sign(String queryString) throws YubicoSignatureException {
-        return  queryString + "&h=" + urlPathSegmentEscaper().escape(Signature.calculate(queryString, key));
+        String calculate = Signature.calculate(queryString, key);
+        return queryString + "&h=" + urlFormParameterEscaper().escape(calculate);
     }
 }

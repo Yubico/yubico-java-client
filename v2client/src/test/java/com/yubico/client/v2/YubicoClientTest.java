@@ -82,7 +82,7 @@ public class YubicoClientTest {
     @Test
     public void testSignature() throws YubicoVerificationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-        client.setKey(this.apiKey);
+
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(otp, response.getOtp());
@@ -92,7 +92,7 @@ public class YubicoClientTest {
     @Test
     public void testBadSignature() throws YubicoVerificationException, YubicoValidationFailure   {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-        client.setKey("bAX9u78e8BRHXPGDVV3lQUm4yVw=");
+        client = YubicoClient.getClient(this.clientId, "bAX9u78e8BRHXPGDVV3lQUm4yVw=");
         VerificationResponse response = client.verify(otp);
         assertEquals(ResponseStatus.BAD_SIGNATURE, response.getStatus());
     }
@@ -131,8 +131,7 @@ public class YubicoClientTest {
     			"http://www.example.com/wsapi/2.0/verify",
     			"http://api2.example.com/wsapi/2.0/verify"
     			});
-    	VerificationResponse response = client.verify(otp);
-    	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
+    	client.verify(otp);
     }
     
     @Test

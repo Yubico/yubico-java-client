@@ -45,6 +45,7 @@ public interface VerificationResponse {
      * @return true if the response status was OK, false otherwise
      */
     boolean isOk();
+    Boolean isReplayed();
 
 	/**
 	 * Signature of the response, with the same API key as the request.

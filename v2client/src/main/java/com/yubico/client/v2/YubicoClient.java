@@ -33,10 +33,11 @@
 
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
-import org.apache.commons.codec.binary.Base64;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Base class for doing YubiKey validations using version 2 of the validation protocol.
@@ -69,15 +70,6 @@ public abstract class YubicoClient {
     public abstract VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure;
 
     /**
-     * Get the ykval client identifier used to identify the application.
-     * @return ykval client identifier
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public Integer getClientId() {
-        return clientId;
-    }
-
-    /**
      * Set the ykval client identifier, used to identify the client application to
      * the validation servers. Such validation is only required for non-https-v2.0
      * validation queries, where the clientId tells the server what API key (shared
@@ -92,33 +84,6 @@ public abstract class YubicoClient {
         this.clientId = clientId;
     }
 
-    /**
-     * Set api key to be used for signing requests
-     * @param key ykval client key
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public void setKey(String key) {
-        this.key = Base64.decodeBase64(key.getBytes());
-    }
-    
-    /**
-     * Get the api key that is used for signing requests
-     * @return ykval client key
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public String getKey() {
-        return new String(Base64.encodeBase64(this.key));
-    }
-    
-    /**
-     * Set the sync percentage required for a successful auth.
-     * Default is to let the server decide.
-     * @param sync percentage or strings 'secure' or 'fast'
-     */
-    public void setSync(Integer sync) {
-    	this.sync = sync;
-    }
-    
     /**
      * Get the list of URLs that will be used for validating OTPs.
      * @return list of base URLs
@@ -165,18 +130,13 @@ public abstract class YubicoClient {
 	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings. 
 	 */
 	public static String getPublicId(String otp) {
-		if ((otp == null) || (otp.length() < OTP_MIN_LEN)){
-			//not a valid OTP format, throw an exception
-			throw new IllegalArgumentException("The OTP is too short to be valid");
-		}
-		
-		Integer len = otp.length();
+        checkArgument(otp != null && otp.length() >= OTP_MIN_LEN, "The OTP is too short to be valid");
 
 		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
 		 * (if anything) is the public ID of the YubiKey. The ID can be set to ''
 		 * through personalization.
 		 */
-		return otp.substring(0, len - 32).toLowerCase();
+		return otp.substring(0, otp.length() - 32).toLowerCase();
 	}
 	
 	private static final Integer OTP_MIN_LEN = 32;
@@ -190,15 +150,9 @@ public abstract class YubicoClient {
 	 * 
 	 */
 	public static boolean isValidOTPFormat(String otp) {
-		if (otp == null){
-			return false;
-		}		
-		int len = otp.length();
-		for (char c : otp.toCharArray()) {
-			if (c < 0x20 || c > 0x7E) {
-				return false;
-			}
-		}
-		return OTP_MIN_LEN <= len && len <= OTP_MAX_LEN;
+		return otp != null
+                && OTP_MIN_LEN <= otp.length()
+                && otp.length() <= OTP_MAX_LEN
+                && otp.chars().allMatch(c -> c >= 0x20 && c <= 0x7E);
 	}
 }

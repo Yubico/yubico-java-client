@@ -31,6 +31,7 @@
 
 package com.yubico.client.v2.impl;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.ResponseStatus;
@@ -55,17 +56,15 @@ public class VerificationResponseImpl implements VerificationResponse {
     private String otp;
     private String nonce;
     
-    private final Map<String, String> keyValueMap = new TreeMap<String, String>();
+    private final Map<String, String> keyValueMap = new TreeMap<>();
 
-    public VerificationResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
-        if(inStream == null) {
-            throw new IOException("InputStream argument was null");
-        }
+    public VerificationResponseImpl(InputStream inStream) throws YubicoInvalidResponse, IOException {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
 
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
             int ix=inputLine.indexOf("=");
             if(ix==-1) continue; // Invalid line
             String key=inputLine.substring(0,ix);
@@ -90,13 +89,13 @@ public class VerificationResponseImpl implements VerificationResponse {
             } else if ("nonce".equals(key)) {
                 this.nonce = val;
             }
-            
+
             keyValueMap.put(key, val);
         }
         in.close();
-        
+
         if(status == null) {
-        	throw new YubicoInvalidResponse("Invalid response, contains no status.");
+            throw new YubicoInvalidResponse("Invalid response, contains no status.");
         }
     }
 
@@ -110,6 +109,10 @@ public class VerificationResponseImpl implements VerificationResponse {
 
     public boolean isOk() {
         return getStatus() == ResponseStatus.OK;
+    }
+
+    public Boolean isReplayed() {
+        return getStatus() == ResponseStatus.REPLAYED_REQUEST;
     }
 
     public String getH() {

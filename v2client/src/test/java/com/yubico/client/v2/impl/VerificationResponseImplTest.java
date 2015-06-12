@@ -46,15 +46,6 @@ import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 public class VerificationResponseImplTest {
 
     @Test
-    public void testParserForNullArg() throws YubicoInvalidResponse {
-        try {
-			new VerificationResponseImpl(null);
-            fail("Expected an IOException to be thrown.");
-        } catch (IOException ioe) {
-        }
-    }
-
-    @Test
     public void testToString() throws YubicoInvalidResponse {
         String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
                             "t=2011-01-26T11:48:21Z0323\n" +

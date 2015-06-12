@@ -41,8 +41,7 @@ public enum ResponseStatus {
 	/* The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
 	/* Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
 	/* Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,
-	/* Server has seen the OTP/Nonce combination before, see http://forum.yubico.com/viewtopic.php?f=3&t=701 */
-	REPLAYED_REQUEST;
+	/* Server has seen the OTP/Nonce combination before */ REPLAYED_REQUEST;
 
     public boolean isError()
     {

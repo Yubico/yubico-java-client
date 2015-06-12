@@ -33,7 +33,7 @@ package com.yubico.client.v2.exceptions;
  * This is thrown on signature algorithm or key errors.
  */
 
-public class YubicoSignatureException extends Exception {
+public class YubicoSignatureException extends YubicoVerificationException {
 	private static final long serialVersionUID = 1L;
 	
 	public YubicoSignatureException(String message, Throwable cause) {

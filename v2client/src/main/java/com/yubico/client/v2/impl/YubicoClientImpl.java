@@ -39,33 +39,28 @@
 package com.yubico.client.v2.impl;
 
 import com.yubico.client.v2.Signature;
-import com.yubico.client.v2.YubicoClient;
-import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.VerificationRequester;
+import com.yubico.client.v2.VerificationResponse;
+import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.exceptions.YubicoSignatureException;
-import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.Map.Entry;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.net.UrlEscapers.urlPathSegmentEscaper;
 import static com.yubico.client.v2.HttpUtils.toQueryString;
 import static com.yubico.client.v2.ResponseStatus.BAD_SIGNATURE;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 public class YubicoClientImpl extends YubicoClient {
     private final VerificationRequester validationService;
-
-    /**
-     * Creates a YubicoClient that will be using the given Client ID.
-     *
-     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
-     */
-    public YubicoClientImpl(Integer clientId) {
-        validationService = new VerificationRequester();
-        this.clientId = clientId;
-    }
 
     /**
      * Creates a YubicoClient that will be using the given Client ID and API key.
@@ -74,8 +69,9 @@ public class YubicoClientImpl extends YubicoClient {
      * @param apiKey Retrieved from https://upgrade.yubico.com/getapikey
      */
     public YubicoClientImpl(Integer clientId, String apiKey) {
-        this(clientId);
-        setKey(apiKey);
+        validationService = new VerificationRequester();
+        this.clientId = clientId;
+        this.key = decodeBase64(apiKey.getBytes());
     }
 
     /**
@@ -88,17 +84,16 @@ public class YubicoClientImpl extends YubicoClient {
      */
     public YubicoClientImpl(Integer clientId, String apiKey, Integer sync) {
         this(clientId, apiKey);
-        setSync(sync);
+        this.sync = sync;
     }
 
     /**
      * {@inheritDoc}
      */
     public VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure {
-        if (!isValidOTPFormat(otp)) {
-            throw new IllegalArgumentException("The OTP is not a valid format");
-        }
-        Map<String, String> requestMap = new TreeMap<String, String>();
+        checkArgument(isValidOTPFormat(otp), "The OTP is not a valid format");
+
+        Map<String, String> requestMap = new TreeMap<>();
         String nonce = UUID.randomUUID().toString().replaceAll("-", "");
         requestMap.put("nonce", nonce);
         requestMap.put("id", clientId.toString());
@@ -108,29 +103,17 @@ public class YubicoClientImpl extends YubicoClient {
             requestMap.put("sl", sync.toString());
         }
 
-        String queryString;
-        try {
-            queryString = toQueryString(requestMap);
-        } catch (UnsupportedEncodingException e) {
-            throw new YubicoVerificationException("Failed to encode parameter.", e);
-        }
+        String queryString = sign(toQueryString(requestMap));
 
-        if (key != null) {
-            queryString = sign(queryString);
-        }
+        List<String> validationUrls = stream(getWsapiUrls())
+                .map(url -> url + "?" + queryString)
+                .collect(toList());
 
+        Optional<VerificationResponse> responseOpt = validationService.fetch(validationUrls, userAgent);
+        VerificationResponse response = responseOpt.orElseThrow(
+                () -> new YubicoVerificationException("No server returned a valid response. See log for details."));
 
-        String[] wsapiUrls = this.getWsapiUrls();
-        List<String> validationUrls = new ArrayList<String>();
-        for (String wsapiUrl : wsapiUrls) {
-            validationUrls.add(wsapiUrl + "?" + queryString);
-        }
-
-        VerificationResponse response = validationService.fetch(validationUrls, userAgent);
-
-        if (key != null) {
-            verifySignature(response);
-        }
+        verifySignature(response);
 
         // NONCE/OTP fields are not returned to the client when sending error codes.
         // If there is an error response, don't need to check them.
@@ -146,23 +129,15 @@ public class YubicoClientImpl extends YubicoClient {
     }
 
     private void verifySignature(VerificationResponse response) throws YubicoValidationFailure, YubicoVerificationException {
-        StringBuilder keyValueStr = new StringBuilder();
-        for (Entry<String, String> entry : response.getKeyValueMap().entrySet()) {
-            if ("h".equals(entry.getKey())) {
-                continue;
-            }
-            if (keyValueStr.length() > 0) {
-                keyValueStr.append("&");
-            }
-            keyValueStr
-                    .append(entry.getKey())
-                    .append("=")
-                    .append(entry.getValue());
-        }
+        String keyValueStr = response.getKeyValueMap().entrySet().stream()
+                .filter(e -> !"h".equals(e.getKey()))
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(joining("&"));
+
         try {
-            String signature = Signature.calculate(keyValueStr.toString(), key).trim();
+            String signature = Signature.calculate(keyValueStr, key).trim();
             if (!response.getH().equals(signature) &&
-                    !response.getStatus().equals(BAD_SIGNATURE)) {
+                    response.getStatus() != BAD_SIGNATURE) {
                 // don't throw a ValidationFailure if the server said bad signature, in that
                 // case we probably have the wrong key/id and want to check it.
                 throw new YubicoValidationFailure("Signatures do not match");
@@ -172,14 +147,7 @@ public class YubicoClientImpl extends YubicoClient {
         }
     }
 
-    private String sign(String queryString) throws YubicoVerificationException {
-        try {
-            queryString += "&h=" + URLEncoder.encode(Signature.calculate(queryString, key), "UTF-8");
-        } catch (YubicoSignatureException e) {
-            throw new YubicoVerificationException("Failed signing of request", e);
-        } catch (UnsupportedEncodingException e) {
-            throw new YubicoVerificationException("Failed to encode signature", e);
-        }
-        return queryString;
+    private String sign(String queryString) throws YubicoSignatureException {
+        return  queryString + "&h=" + urlPathSegmentEscaper().escape(Signature.calculate(queryString, key));
     }
 }

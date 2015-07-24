@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
@@ -92,7 +91,7 @@ public class VerificationResponseImplTest {
             assertEquals("42", response.getSessioncounter().get());
             assertEquals("foo", response.getSl().get());
             assertEquals("666", response.getSessionuse().get());
-            assertEquals("cccccccfhcbe", response.getPublicId().get());
+            assertEquals("cccccccfhcbe", response.publicId().get());
 
         } catch (IOException e) {
             fail("Encountered an exception");

@@ -32,6 +32,7 @@
 package com.yubico.client.v2.impl;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedMap;
 import com.yubico.client.v2.ImmutableVerificationResponse;
 import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.VerificationResponse;
@@ -49,7 +50,7 @@ public class ResponseParser {
 
     public VerificationResponse parse(InputStream inStream) throws YubicoInvalidResponse, IOException {
 
-        ImmutableMap.Builder<String, String> keyValueBuilder = ImmutableMap.builder();
+        ImmutableSortedMap.Builder<String, String> keyValueBuilder = ImmutableSortedMap.naturalOrder();
         ImmutableVerificationResponse.Builder responseBuilder = ImmutableVerificationResponse.builder();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(inStream));

@@ -37,6 +37,8 @@ import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
 
+import java.util.Optional;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
@@ -46,7 +48,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
-    protected Integer sync;
     protected String wsapi_urls[] = {
             "https://api.yubico.com/wsapi/2.0/verify",
             "https://api2.yubico.com/wsapi/2.0/verify",

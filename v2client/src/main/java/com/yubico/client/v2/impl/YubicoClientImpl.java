@@ -38,6 +38,7 @@
 
 package com.yubico.client.v2.impl;
 
+import com.google.common.collect.ImmutableSortedMap;
 import com.yubico.client.v2.Signature;
 import com.yubico.client.v2.VerificationRequester;
 import com.yubico.client.v2.VerificationResponse;
@@ -62,6 +63,7 @@ import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 public class YubicoClientImpl extends YubicoClient {
     private final VerificationRequester validationService;
+    private final Optional<Integer> sync;
 
     /**
      * Creates a YubicoClient that will be using the given Client ID and API key.
@@ -70,9 +72,7 @@ public class YubicoClientImpl extends YubicoClient {
      * @param apiKey Retrieved from https://upgrade.yubico.com/getapikey
      */
     public YubicoClientImpl(Integer clientId, String apiKey) {
-        validationService = new VerificationRequester();
-        this.clientId = clientId;
-        this.key = decodeBase64(apiKey.getBytes());
+        this(clientId, apiKey, null);
     }
 
     /**
@@ -84,8 +84,10 @@ public class YubicoClientImpl extends YubicoClient {
      *             to use server-configured values; if absent, let the server decide
      */
     public YubicoClientImpl(Integer clientId, String apiKey, Integer sync) {
-        this(clientId, apiKey);
-        this.sync = sync;
+        validationService = new VerificationRequester();
+        this.clientId = clientId;
+        this.key = decodeBase64(apiKey.getBytes());
+        this.sync = Optional.ofNullable(sync);
     }
 
     /**
@@ -94,17 +96,15 @@ public class YubicoClientImpl extends YubicoClient {
     public VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure {
         checkArgument(isValidOTPFormat(otp), "The OTP is not a valid format");
 
-        Map<String, String> requestMap = new TreeMap<>();
         String nonce = UUID.randomUUID().toString().replaceAll("-", "");
-        requestMap.put("nonce", nonce);
-        requestMap.put("id", clientId.toString());
-        requestMap.put("otp", otp);
-        requestMap.put("timestamp", "1");
-        if (sync != null) {
-            requestMap.put("sl", sync.toString());
-        }
+        ImmutableSortedMap.Builder<String, String> requestMapBuilder = ImmutableSortedMap.<String, String>naturalOrder()
+                .put("nonce", nonce)
+                .put("id", clientId.toString())
+                .put("otp", otp)
+                .put("timestamp", "1");
+        sync.ifPresent(sync -> requestMapBuilder.put("sl", sync.toString()));
 
-        String queryString = sign(toQueryString(requestMap));
+        String queryString = sign(toQueryString(requestMapBuilder.build()));
 
         List<String> validationUrls = stream(getWsapiUrls())
                 .map(url -> url + "?" + queryString)
@@ -119,10 +119,10 @@ public class YubicoClientImpl extends YubicoClient {
         // NONCE/OTP fields are not returned to the client when sending error codes.
         // If there is an error response, don't need to check them.
         if (!response.getStatus().isError()) {
-            if (response.getOtp() == null || !otp.equals(response.getOtp())) {
+            if (!response.getOtp().filter(otp::equals).isPresent()) {
                 throw new YubicoValidationFailure("OTP mismatch in response, is there a man-in-the-middle?");
             }
-            if (response.getNonce() == null || !nonce.equals(response.getNonce())) {
+            if (!response.getNonce().filter(nonce::equals).isPresent()) {
                 throw new YubicoValidationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
             }
         }
@@ -135,11 +135,8 @@ public class YubicoClientImpl extends YubicoClient {
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(joining("&"));
 
-        System.out.println(keyValueStr);
-
         try {
             String signature = Signature.calculate(keyValueStr, key).trim();
-            System.out.println(signature);
             if (!response.getH().equals(signature) &&
                     response.getStatus() != BAD_SIGNATURE) {
                 // don't throw a ValidationFailure if the server said bad signature, in that

@@ -30,25 +30,15 @@
 package com.yubico.client.v2.exceptions;
 
 /**
- * This is thrown for validation failures<br>
+ * This is thrown for verification failures<br>
  *  * OTP in request and response isn't matching, could mean a man-in-the-middle<br>
  *  * nonce in request and response isn't matching, could mean a man-in-the-middle<br>
  *  * response signature verification failed
  */
 
-public class YubicoValidationFailure extends Exception {
+public class YubicoVerificationFailure extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
-
-	public YubicoValidationFailure(String message) {
+	public YubicoVerificationFailure(String message) {
 		super(message);
-	}
-
-	public YubicoValidationFailure(Throwable cause) {
-		super(cause);
-	}
-
-	public YubicoValidationFailure(String message, Throwable cause) {
-		super(message, cause);
 	}
 }

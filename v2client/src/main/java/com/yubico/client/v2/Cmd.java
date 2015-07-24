@@ -45,10 +45,14 @@ public class Cmd {
 
         String otp = args[2];
 
-        YubicoClient yc = YubicoClient.getClient(Integer.parseInt(args[0]), args[1]);
+        YubicoClient yc = new YubicoClientBuilder()
+                .clientId(Integer.parseInt(args[0]))
+                .key(args[1])
+                .build();
+
         VerificationResponse response = yc.verify(otp);
 
-        if(response!=null && response.getStatus() == ResponseStatus.OK) {
+        if(response.isOk()) {
             System.out.println("\n* OTP verified OK");
         } else {
             System.out.println("\n* Failed to verify OTP");

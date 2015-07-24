@@ -30,15 +30,13 @@
 package com.yubico.client.v2.exceptions;
 
 /**
- * This is thrown for errors during validation process,
+ * This is thrown for errors during verification process,
  * like all servers unreachable. Or Connection timeouts.
  *
  */
 
-public class YubicoVerificationException extends Exception {
+public class YubicoVerificationException extends RuntimeException {
 	
-	private static final long serialVersionUID = 1L;
-
 	public YubicoVerificationException(String message, Throwable cause) {
 		super(message, cause);
 	}

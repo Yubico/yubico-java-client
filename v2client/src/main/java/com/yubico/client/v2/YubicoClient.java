@@ -1,19 +1,21 @@
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
-   Copyright (c) 2011-2012, Yubico AB.  All rights reserved.
+
    Copyright (c) 2011, Simon Buckle.  All rights reserved.
+   
+   Copyright (c) 2014, Yubico AB.  All rights reseved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
-
+  
    * Redistributions of source code must retain the above copyright
      notice, this list of conditions and the following disclaimer.
-
+  
    * Redistributions in binary form must reproduce the above copyright
      notice, this list of conditions and the following
      disclaimer in the documentation and/or other materials provided
      with the distribution.
-
+ 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
    CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
@@ -27,71 +29,50 @@
    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
    THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.
-
+ 
    Written by Linus Widströmer <linus.widstromer@it.su.se>, January 2011.
+   
+   Modified by Simon Buckle <simon@webteq.eu>, September 2011.
+    - Added support for generating and validating signatures
 */
 
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedMap;
+import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
-import com.yubico.client.v2.impl.YubicoClientImpl;
+import com.yubico.client.v2.exceptions.YubicoVerificationFailure;
+import org.immutables.builder.Builder;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.net.UrlEscapers.urlFormParameterEscaper;
+import static com.yubico.client.v2.HttpUtils.toQueryString;
+import static com.yubico.client.v2.OtpUtils.isValidOTPFormat;
+import static com.yubico.client.v2.ResponseStatus.BAD_SIGNATURE;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
-/**
- * Base class for doing YubiKey validations using version 2 of the validation protocol.
- */
+public class YubicoClient {
 
-public abstract class YubicoClient {
-    protected Integer clientId;
-    protected byte[] key;
-    protected String wsapi_urls[] = {
+    private static final Set<String> DEFAULT_API_URLS = ImmutableSet.of(
             "https://api.yubico.com/wsapi/2.0/verify",
             "https://api2.yubico.com/wsapi/2.0/verify",
             "https://api3.yubico.com/wsapi/2.0/verify",
             "https://api4.yubico.com/wsapi/2.0/verify",
             "https://api5.yubico.com/wsapi/2.0/verify"
-    		};
-    
-    protected String userAgent = "yubico-java-client/" + Version.version +
-            " (" + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ")";
+    );
 
-    /**
-     * Validate an OTP using a webservice call to one or more ykval validation servers.
-     *
-     * @param otp YubiKey OTP
-     * @return result of the webservice validation operation
-     * @throws com.yubico.client.v2.exceptions.YubicoVerificationException for validation errors, like unreachable servers
-     * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
-     * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
-     */
-    public abstract VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure;
-
-    /**
-     * Set the ykval client identifier, used to identify the client application to
-     * the validation servers. Such validation is only required for non-https-v2.0
-     * validation queries, where the clientId tells the server what API key (shared
-     * secret) to use to validate requests and sign responses.
-     *
-     * You can get a clientId and API key for the YubiCloud validation service at
-     * https://upgrade.yubico.com/getapikey/
-     *
-     * @param clientId  ykval client identifier
-     */
-    public void setClientId(Integer clientId) {
-        this.clientId = clientId;
-    }
-
-    /**
-     * Get the list of URLs that will be used for validating OTPs.
-     * @return list of base URLs
-     */
-    public String[] getWsapiUrls() {
-		return wsapi_urls;
-	}
+    private final VerificationRequester validationService;
+    private final Optional<Integer> sync;
+    private final Set<String> apiUrls;
+    private final Integer clientId;
+    private final byte[] key;
 
     /**
      * Configure what URLs to use for validating OTPs. These URLs will have
@@ -99,61 +80,105 @@ public abstract class YubicoClient {
      * {"https://api.yubico.com/wsapi/2.0/verify"}
      * @param wsapi  list of base URLs
      */
-	public void setWsapiUrls(String[] wsapi) {
-		this.wsapi_urls = wsapi;
-	}
-	
-	/**
-	 * Set user agent to be used in request to validation server
-	 * @param userAgent the user agent used in requests
-	 */
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-	}
-	
-	/**
-	 * Instantiate a YubicoClient object.
+
+    /**
+     * Instantiate a YubicoClient object.
      *
      * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
-	 * @return  client that can be used to validate YubiKey OTPs
-	 */
-	public static YubicoClient getClient(Integer clientId, String key) {
-        return new YubicoClientImpl(clientId, key);
+     * @return  client that can be used to validate YubiKey OTPs
+     */
+    @Builder.Factory
+    public static YubicoClient yubicoClient(Integer clientId,
+                                            String key,
+                                            Optional<Integer> syncLevel,
+                                            Set<String> apiUrls) {
+        return new YubicoClient(clientId, key, syncLevel, apiUrls.isEmpty() ? DEFAULT_API_URLS: apiUrls);
+    }
+
+    private final String userAgent = "yubico-java-client/" + Version.version +
+            " (" + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ")";
+
+    /**
+     * Creates a YubicoClient that will be using the given Client ID and API key.
+     *
+     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+     * @param apiKey Retrieved from https://upgrade.yubico.com/getapikey
+     * @param sync A value 0 to 100 indicating percentage of syncing required by client, or strings "fast" or "secure"
+     *             to use server-configured values; if absent, let the server decide
+     */
+    public YubicoClient(Integer clientId, String apiKey, Optional<Integer> sync, Set<String> apiUrls) {
+        validationService = new VerificationRequester();
+        this.clientId = clientId;
+        this.key = decodeBase64(apiKey.getBytes());
+        this.sync = sync;
+        this.apiUrls = apiUrls;
     }
 
     /**
-	 * Extract the public ID of a YubiKey from an OTP it generated.
-	 *
-	 * @param otp	The OTP to extract ID from, in modhex format.
-	 *
-	 * @return string	Public ID of YubiKey that generated otp. Between 0 and 12 lower-case characters.
-	 * 
-	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings. 
-	 */
-	public static String getPublicId(String otp) {
-        checkArgument(otp != null && otp.length() >= OTP_MIN_LEN, "The OTP is too short to be valid");
+     * Validate an OTP using a webservice call to one or more ykval validation servers.
+     *
+     * @param otp YubiKey OTP
+     * @return result of the webservice validation operation
+     * @throws YubicoVerificationException for validation errors, like unreachable servers
+     * @throws YubicoVerificationFailure for validation failures, like non matching OTPs in request and response
+     * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
+     */
+    public VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoVerificationFailure {
+        checkArgument(isValidOTPFormat(otp), "The OTP is not a valid format");
 
-		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
-		 * (if anything) is the public ID of the YubiKey. The ID can be set to ''
-		 * through personalization.
-		 */
-		return otp.substring(0, otp.length() - 32).toLowerCase();
-	}
-	
-	private static final Integer OTP_MIN_LEN = 32;
-	private static final Integer OTP_MAX_LEN = 48;
-	/**
-	 * Determines whether a given OTP is of the correct length
-	 * and only contains printable characters, as per the recommendation.
-	 *
-	 * @param otp The OTP to validate
-	 * @return boolean Returns true if it's valid; false otherwise
-	 * 
-	 */
-	public static boolean isValidOTPFormat(String otp) {
-		return otp != null
-                && OTP_MIN_LEN <= otp.length()
-                && otp.length() <= OTP_MAX_LEN
-                && otp.chars().allMatch(c -> c >= 0x20 && c <= 0x7E);
-	}
+        String nonce = UUID.randomUUID().toString().replaceAll("-", "");
+        ImmutableSortedMap.Builder<String, String> requestMapBuilder = ImmutableSortedMap.<String, String>naturalOrder()
+                .put("nonce", nonce)
+                .put("id", clientId.toString())
+                .put("otp", otp)
+                .put("timestamp", "1");
+        sync.ifPresent(sync -> requestMapBuilder.put("sl", sync.toString()));
+
+        String queryString = sign(toQueryString(requestMapBuilder.build()));
+
+        Set<String> validationUrls = apiUrls.stream()
+                .map(url -> url + "?" + queryString)
+                .collect(toSet());
+
+        Optional<VerificationResponse> responseOpt = validationService.fetch(validationUrls, userAgent);
+        VerificationResponse response = responseOpt.orElseThrow(
+                () -> new YubicoVerificationException("No server returned a valid response. See log for details."));
+
+        verifySignature(response);
+
+        // NONCE/OTP fields are not returned to the client when sending error codes.
+        // If there is an error response, don't need to check them.
+        if (!response.getStatus().isError()) {
+            if (!response.getOtp().filter(otp::equals).isPresent()) {
+                throw new YubicoVerificationFailure("OTP mismatch in response, is there a man-in-the-middle?");
+            }
+            if (!response.getNonce().filter(nonce::equals).isPresent()) {
+                throw new YubicoVerificationFailure("Nonce mismatch in response, is there a man-in-the-middle?");
+            }
+        }
+        return response;
+    }
+
+    private void verifySignature(VerificationResponse response) throws YubicoVerificationFailure, YubicoVerificationException {
+        String keyValueStr = response.getKeyValueMap().entrySet().stream()
+                .filter(e -> !"h".equals(e.getKey()))
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(joining("&"));
+
+        try {
+            String signature = Signature.calculate(keyValueStr, key).trim();
+            if (!response.getH().equals(signature) && response.getStatus() != BAD_SIGNATURE) {
+                // don't throw a ValidationFailure if the server said bad signature, in that
+                // case we probably have the wrong key/id and want to check it.
+                throw new YubicoVerificationFailure("Signatures do not match");
+            }
+        } catch (YubicoSignatureException e) {
+            throw new YubicoVerificationException("Failed to calculate the response signature.", e);
+        }
+    }
+
+    private String sign(String queryString) throws YubicoSignatureException {
+        String signature = Signature.calculate(queryString, key);
+        return queryString + "&h=" + urlFormParameterEscaper().escape(signature);
+    }
 }

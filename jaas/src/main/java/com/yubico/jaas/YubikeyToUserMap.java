@@ -49,12 +49,12 @@ public interface YubikeyToUserMap {
 	 * @publicId modhex encoded public id of a YubiKey (e.g. "vvcccccfhc")
 	 *
 	 */
-    public boolean is_right_user(String username, String publicId);
+    boolean is_right_user(String username, String publicId);
 	
 	/**
      * Sets configuration options received from JAAS.
      *
 	 * @param options  Configuration options
 	 */
-    public void setOptions(Map<String, ?> options);
+    void setOptions(Map<String, ?> options);
 }

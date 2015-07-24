@@ -7,6 +7,7 @@ import rx.Observable;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public class VerificationRequester {
 
     private static final Logger log = LoggerFactory.getLogger(VerificationRequester.class);
 
-    public Optional<VerificationResponse> fetch(List<String> urls, String userAgent) {
+    public Optional<VerificationResponse> fetch(Collection<String> urls, String userAgent) {
 
         List<Observable<Optional<VerificationResponse>>> responses = urls.stream()
                 .map(url -> request(url, userAgent))

@@ -3,7 +3,6 @@ package com.yubico.client.v2;
 import java.util.Map;
 
 import static com.google.common.net.UrlEscapers.urlFormParameterEscaper;
-import static com.google.common.net.UrlEscapers.urlPathSegmentEscaper;
 import static java.util.stream.Collectors.joining;
 
 public class HttpUtils {

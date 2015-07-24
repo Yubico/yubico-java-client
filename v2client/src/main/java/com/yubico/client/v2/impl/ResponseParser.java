@@ -31,20 +31,16 @@
 
 package com.yubico.client.v2.impl;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.yubico.client.v2.ImmutableVerificationResponse;
 import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.VerificationResponse;
-import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class ResponseParser {
 
@@ -91,7 +87,6 @@ public class ResponseParser {
                     responseBuilder.nonce(val);
                     break;
             }
-
             keyValueBuilder.put(key, val);
         }
         in.close();

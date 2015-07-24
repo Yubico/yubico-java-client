@@ -30,18 +30,8 @@
 package com.yubico.client.v2.exceptions;
 
 public class YubicoInvalidResponse extends Exception {
-	private static final long serialVersionUID = 1L;
 
 	public YubicoInvalidResponse(String message) {
 		super(message);
 	}
-
-	public YubicoInvalidResponse(Throwable cause) {
-		super(cause);
-	}
-
-	public YubicoInvalidResponse(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 }

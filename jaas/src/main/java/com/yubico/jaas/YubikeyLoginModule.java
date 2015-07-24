@@ -45,12 +45,15 @@ import javax.security.auth.spi.LoginModule;
 
 import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.VerificationResponse;
+import com.yubico.client.v2.YubicoClient;
+import com.yubico.client.v2.YubicoClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yubico.client.v2.YubicoClient;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
-import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationFailure;
+
+import static com.yubico.client.v2.OtpUtils.getPublicId;
 
 /**
  * A JAAS module for verifying OTPs (One Time Passwords) against a
@@ -135,7 +138,7 @@ public class YubikeyLoginModule implements LoginModule {
 		/* Yubico verification client */
 		Integer clientId = Integer.parseInt(options.get(OPTION_YUBICO_CLIENT_ID).toString());
         String clientKey = options.get(OPTION_YUBICO_CLIENT_KEY).toString();
-		this.yc = YubicoClient.getClient(clientId, clientKey);
+		this.yc = new YubicoClientBuilder().clientId(clientId).key(clientKey).build();
 		
 		/* Realm of principals added after authentication */
 		if (options.containsKey(OPTION_YUBICO_ID_REALM)) {
@@ -153,7 +156,7 @@ public class YubikeyLoginModule implements LoginModule {
 		if (options.containsKey(OPTION_YUBICO_WSAPI_URLS)) {
 			String in = options.get(OPTION_YUBICO_WSAPI_URLS).toString();
 			String l[] = in.split("\\|");
-			this.yc.setWsapiUrls(l);
+			//this.yc.setWsapiUrls(l); TODO: re-add this line
 		}
 		
 		if (options.containsKey(OPTION_YUBICO_SYNC_POLICY)) {
@@ -232,14 +235,14 @@ public class YubikeyLoginModule implements LoginModule {
 			} catch (YubicoVerificationException e) {
 				log.warn("Errors during validation: ", e);
 				throw new LoginException("Errors during validation: " + e.getMessage());
-			} catch (YubicoValidationFailure e) {
+			} catch (YubicoVerificationFailure e) {
 				log.warn("Something went very wrong during authentication: ", e);
 				throw new LoginException("Something went very wrong during authentication: " + e.getMessage());
 			}
 			if (ykr != null) {
 				log.trace("OTP {} verify result : {}", otp, ykr.getStatus().toString());
 				if (ykr.getStatus() == ResponseStatus.OK) {
-					String publicId = YubicoClient.getPublicId(otp);
+					String publicId = getPublicId(otp);
 					log.info("OTP verified successfully (YubiKey id {})", publicId);
 					if (is_right_user(nameCb.getName(), publicId)) {
 						this.principals.add(new YubikeyPrincipal(publicId, this.idRealm));

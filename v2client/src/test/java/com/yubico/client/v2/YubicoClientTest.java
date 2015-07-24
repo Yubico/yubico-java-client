@@ -1,11 +1,12 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
-import com.yubico.client.v2.exceptions.YubicoValidationFailure;
-import com.yubico.client.v2.impl.YubicoClientImpl;
+import com.yubico.client.v2.exceptions.YubicoVerificationFailure;
 import org.junit.Before;
 import org.junit.Test;
+
+import static com.yubico.client.v2.OtpUtils.getPublicId;
+import static com.yubico.client.v2.OtpUtils.isValidOTPFormat;
 import static org.junit.Assert.*;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
@@ -54,24 +55,22 @@ public class YubicoClientTest {
 
     @Before
     public void setup() {
-        client = YubicoClient.getClient(this.clientId, apiKey);
-    }
-
-    @Test
-    public void verifyConstruct() {
-        assertTrue(client instanceof YubicoClientImpl);
+        client = new YubicoClientBuilder()
+                .clientId(clientId)
+                .key(apiKey)
+                .build();
     }
 
     // YubiCloud is known to reply with bad signatures when given a bad OTP.
     // See https://github.com/Yubico/yubikey-val/issues/8
-    @Test(expected = YubicoValidationFailure.class)
-    public void testBadOTP() throws YubicoVerificationException, YubicoValidationFailure {
+    @Test(expected = YubicoVerificationFailure.class)
+    public void testBadOTP() throws YubicoVerificationException, YubicoVerificationFailure {
     	String otp="11111111111111111111111111111111111";
         client.verify(otp);
     }
     
     @Test
-    public void testReplayedOTP() throws YubicoVerificationException, YubicoValidationFailure {
+    public void testReplayedOTP() throws YubicoVerificationException, YubicoVerificationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
@@ -80,7 +79,7 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testSignature() throws YubicoVerificationException, YubicoValidationFailure {
+    public void testSignature() throws YubicoVerificationException, YubicoVerificationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
 
         VerificationResponse response = client.verify(otp);
@@ -90,9 +89,12 @@ public class YubicoClientTest {
     }
 
     @Test
-    public void testBadSignature() throws YubicoVerificationException, YubicoValidationFailure   {
+    public void testBadSignature() throws YubicoVerificationException, YubicoVerificationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-        client = YubicoClient.getClient(this.clientId, "bAX9u78e8BRHXPGDVV3lQUm4yVw=");
+        client = new YubicoClientBuilder()
+                .clientId(clientId)
+                .key("bAX9u78e8BRHXPGDVV3lQUm4yVw=")
+                .build();
         VerificationResponse response = client.verify(otp);
         assertEquals(ResponseStatus.BAD_SIGNATURE, response.getStatus());
     }
@@ -100,23 +102,23 @@ public class YubicoClientTest {
     @Test
     public void testUnPrintableOTP() {
     	String otp = new String(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06});
-    	assertFalse(YubicoClient.isValidOTPFormat(otp));
+    	assertFalse(isValidOTPFormat(otp));
     }
     
     @Test
     public void testShortOTP() {
     	String otp = "cccccc";
-    	assertFalse(YubicoClient.isValidOTPFormat(otp));
+    	assertFalse(isValidOTPFormat(otp));
     }
     
     @Test
     public void testLongOTP() {
     	String otp = "cccccccccccccccccccccccccccccccccccccccccccccccccc";
-    	assertFalse(YubicoClient.isValidOTPFormat(otp));
+    	assertFalse(isValidOTPFormat(otp));
     }
     
     @Test
-    public void testTwoQueries() throws YubicoVerificationException, YubicoValidationFailure {
+    public void testTwoQueries() throws YubicoVerificationException, YubicoVerificationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	VerificationResponse response = client.verify(otp);
     	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
@@ -125,42 +127,46 @@ public class YubicoClientTest {
     }
     
     @Test(expected=YubicoVerificationException.class)
-    public void testBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
+    public void testBadUrls() throws YubicoVerificationException, YubicoVerificationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-    	client.setWsapiUrls(new String[] {
-    			"http://www.example.com/wsapi/2.0/verify",
-    			"http://api2.example.com/wsapi/2.0/verify"
-    			});
+        client = new YubicoClientBuilder()
+                .clientId(clientId)
+                .key(apiKey)
+                .addApiUrls("http://www.example.com/wsapi/2.0/verify")
+                .addApiUrls("http://api2.example.com/wsapi/2.0/verify")
+                .build();
     	client.verify(otp);
     }
     
     @Test
     public void testGoodAndBadUrls() throws Exception {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
-    	client.setWsapiUrls(new String[] {
-    			"http://api.example.com/wsapi/2.0/verify",
-    			"http://www.example.com/wsapi/2.0/verify",
-    			"http://api3.yubico.com/wsapi/2.0/verify"
-    			});
+        client = new YubicoClientBuilder()
+                .clientId(clientId)
+                .key(apiKey)
+                .addApiUrls("http://api.example.com/wsapi/2.0/verify")
+                .addApiUrls("http://www.example.com/wsapi/2.0/verify")
+                .addApiUrls("http://api3.yubico.com/wsapi/2.0/verify")
+                .build();
     	VerificationResponse response = client.verify(otp);
     	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=NullPointerException.class)
     public void testNullOTPPublicId() {    	
-    	YubicoClient.getPublicId(null);
+    	getPublicId(null);
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyOTPPublicId() {
-        YubicoClient.getPublicId("");
+        getPublicId("");
     }
     
     @Test
     public void testValidOTPPublicId() {
     	String testOtp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	String testPublicId = "cccccccfhcbe";
-    	String resultPublicId = YubicoClient.getPublicId(testOtp);
+    	String resultPublicId = getPublicId(testOtp);
     	assertEquals(testPublicId, resultPublicId);
     }
 }

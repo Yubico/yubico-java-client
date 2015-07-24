@@ -61,7 +61,7 @@ public interface VerificationResponse {
      * @return public id
      */
     default Optional<String> publicId() {
-        return getOtp().map(YubicoClient::getPublicId);
+        return getOtp().map(OtpUtils::getPublicId);
     }
 
 	/**

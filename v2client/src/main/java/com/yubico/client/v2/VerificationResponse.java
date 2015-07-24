@@ -31,12 +31,16 @@
 
 package com.yubico.client.v2;
 
+import org.immutables.value.Value;
+
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Object built from server response, detailing the status of validation.
  *
  */
+@Value.Immutable
 public interface VerificationResponse {
 
     /**
@@ -44,8 +48,21 @@ public interface VerificationResponse {
      *
      * @return true if the response status was OK, false otherwise
      */
-    boolean isOk();
-    Boolean isReplayed();
+    default boolean isOk() {
+        return getStatus() == ResponseStatus.OK;
+    }
+    default Boolean isReplayed() {
+        return getStatus() == ResponseStatus.REPLAYED_REQUEST;
+    }
+
+    /**
+     * Returns the public id of the returned OTP
+     *
+     * @return public id
+     */
+    default Optional<String> getPublicId() {
+        return getOtp().map(YubicoClient::getPublicId);
+    }
 
 	/**
 	 * Signature of the response, with the same API key as the request.
@@ -74,14 +91,14 @@ public interface VerificationResponse {
      * 
      * @return yubikey internal timestamp
      */
-    String getTimestamp();
+    Optional<String> getTimestamp();
     
     /**
      * Returns the non-volatile counter that is incremented on power-up.
      * 
      * @return session counter
      */
-    String getSessioncounter();
+    Optional<String> getSessioncounter();
     
     /**
      * Returns the volatile counter that is incremented on each button-press,
@@ -89,7 +106,7 @@ public interface VerificationResponse {
      * 
      * @return session use counter
      */
-    String getSessionuse();
+    Optional<String> getSessionuse();
     
     /**
      * Returns the amount of sync the server achieved before sending the
@@ -97,32 +114,25 @@ public interface VerificationResponse {
      * 
      * @return sync, in procent
      */
-    String getSl();
+    Optional<String> getSl();
     
     /**
      * Echos back the OTP from the request, should match.
      * 
      * @return otp
      */
-    String getOtp();
+    Optional<String> getOtp();
     
     /**
      * Echos back the nonce from the request. Should match. 
      * @return nonce
      */
-    public String getNonce();
+    Optional<String> getNonce();
     
     /**
      * Returns all parameters from the response as a Map
      * 
      * @return map of all values
      */
-    public Map<String, String> getKeyValueMap();
-    
-    /**
-     * Returns the public id of the returned OTP
-     * 
-     * @return public id
-     */
-    public String getPublicId();
+    Map<String, String> getKeyValueMap();
 }

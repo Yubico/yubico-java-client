@@ -1,11 +1,10 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.impl.VerificationResponseImpl;
+import com.yubico.client.v2.impl.ResponseParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -16,7 +15,7 @@ import static rx.util.async.Async.fromCallable;
 
 public class VerificationRequester {
 
-    private final Logger log = LoggerFactory.getLogger(VerificationRequester.class);
+    private static final Logger log = LoggerFactory.getLogger(VerificationRequester.class);
 
     public Optional<VerificationResponse> fetch(List<String> urls, String userAgent) {
 
@@ -31,7 +30,7 @@ public class VerificationRequester {
                 .firstOrDefault(Optional.empty());
     }
 
-    public Observable<Optional<VerificationResponse>> request(String urlString, String userAgent) {
+    private static Observable<Optional<VerificationResponse>> request(String urlString, String userAgent) {
         return fromCallable(() -> {
             URL url = new URL(urlString);
             try {
@@ -39,8 +38,7 @@ public class VerificationRequester {
                 conn.setRequestProperty("User-Agent", userAgent);
                 conn.setConnectTimeout(15000);
                 conn.setReadTimeout(15000);
-                VerificationResponseImpl value = new VerificationResponseImpl(conn.getInputStream());
-                System.out.println(urlString);
+                VerificationResponse value = new ResponseParser().parse(conn.getInputStream());
                 return Optional.of(value);
             } catch (Exception e) {
                 log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());

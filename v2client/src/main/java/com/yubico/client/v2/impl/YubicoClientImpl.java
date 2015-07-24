@@ -135,8 +135,11 @@ public class YubicoClientImpl extends YubicoClient {
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(joining("&"));
 
+        System.out.println(keyValueStr);
+
         try {
             String signature = Signature.calculate(keyValueStr, key).trim();
+            System.out.println(signature);
             if (!response.getH().equals(signature) &&
                     response.getStatus() != BAD_SIGNATURE) {
                 // don't throw a ValidationFailure if the server said bad signature, in that
@@ -149,7 +152,7 @@ public class YubicoClientImpl extends YubicoClient {
     }
 
     private String sign(String queryString) throws YubicoSignatureException {
-        String calculate = Signature.calculate(queryString, key);
-        return queryString + "&h=" + urlFormParameterEscaper().escape(calculate);
+        String signature = Signature.calculate(queryString, key);
+        return queryString + "&h=" + urlFormParameterEscaper().escape(signature);
     }
 }

@@ -75,7 +75,7 @@ public class YubicoClientTest {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
-        assertEquals(otp, response.getOtp());
+        assertEquals(otp, response.getOtp().get());
         assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
 
@@ -85,7 +85,7 @@ public class YubicoClientTest {
 
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
-        assertEquals(otp, response.getOtp());
+        assertEquals(otp, response.getOtp().get());
         assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
 
@@ -135,7 +135,7 @@ public class YubicoClientTest {
     }
     
     @Test
-    public void testGoodAndBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
+    public void testGoodAndBadUrls() throws Exception {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	client.setWsapiUrls(new String[] {
     			"http://api.example.com/wsapi/2.0/verify",

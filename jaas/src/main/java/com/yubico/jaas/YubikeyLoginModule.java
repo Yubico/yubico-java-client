@@ -157,7 +157,8 @@ public class YubikeyLoginModule implements LoginModule {
 		}
 		
 		if (options.containsKey(OPTION_YUBICO_SYNC_POLICY)) {
-			this.yc.setSync(Integer.parseInt(options.get(OPTION_YUBICO_SYNC_POLICY).toString()));
+			// TODO: re-add below line
+			//this.yc.setSync(Integer.parseInt(options.get(OPTION_YUBICO_SYNC_POLICY).toString()));
 		}
 
 		/* Instantiate the specified usermap implementation. */

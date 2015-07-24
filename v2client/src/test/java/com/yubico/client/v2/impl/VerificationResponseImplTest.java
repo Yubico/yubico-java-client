@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
@@ -45,6 +46,8 @@ import com.yubico.client.v2.exceptions.YubicoInvalidResponse;
 
 public class VerificationResponseImplTest {
 
+    private ResponseParser responseParser = new ResponseParser();
+
     @Test
     public void testToString() throws YubicoInvalidResponse {
         String testData=    "h=lPuwrWh8/5ZuRBN1q+v7/pCOfYo=\n" +
@@ -58,10 +61,10 @@ public class VerificationResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = responseParser.parse(new ByteArrayInputStream(testData.getBytes("UTF-8")));
             assertTrue(response.toString().contains("REPLAYED_OTP"));
             assertTrue(response.toString().contains("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd"));
-        } catch (IOException ioe) {
+        } catch (IOException e) {
             fail("Encountered an exception");
         }
     }
@@ -79,32 +82,28 @@ public class VerificationResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = responseParser.parse(new ByteArrayInputStream(testData.getBytes("UTF-8")));
             assertEquals("2011-01-26T11:48:21Z0323",response.getT());
             assertEquals("lPuwrWh8/5ZuRBN1q+v7/pCOfYo=", response.getH());
             assertEquals("REPLAYED_OTP", response.getStatus().toString());
-            assertEquals("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd", response.getOtp());
-            assertEquals("askjdnkagfdgdgdgggggggddddddddd", response.getNonce());
-            assertEquals("4711", response.getTimestamp());
-            assertEquals("42", response.getSessioncounter());
-            assertEquals("foo", response.getSl());
-            assertEquals("666", response.getSessionuse());
-            assertEquals("cccccccfhcbe", response.getPublicId());
+            assertEquals("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd", response.getOtp().get());
+            assertEquals("askjdnkagfdgdgdgggggggddddddddd", response.getNonce().get());
+            assertEquals("4711", response.getTimestamp().get());
+            assertEquals("42", response.getSessioncounter().get());
+            assertEquals("foo", response.getSl().get());
+            assertEquals("666", response.getSessionuse().get());
+            assertEquals("cccccccfhcbe", response.getPublicId().get());
 
-        } catch (IOException ioe) {
+        } catch (IOException e) {
             fail("Encountered an exception");
         }
     }
     
     @Test(expected=YubicoInvalidResponse.class)
-    public void testBrokenResponse() throws YubicoInvalidResponse {
+    public void testBrokenResponse() throws Exception {
     	String testData = 	"foo=bar\n" +
     						"kaka=blahonga\n";
-    	try {
-    		new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
-    	} catch (IOException ioe) {
-    		fail("Encountered an exception");
-    	}
+        responseParser.parse(new ByteArrayInputStream(testData.getBytes("UTF-8")));
     }
 }
 

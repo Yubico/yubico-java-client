@@ -160,6 +160,14 @@ public class Cmd {
                     log("sl", response.getSl());
                 }
 
+                if (legacyUsage) {
+                    if (response.isOk()) {
+                        System.out.println("\n* OTP verified OK");
+                    } else {
+                        System.out.println("\n* Failed to verify OTP");
+                    }
+                }
+                        
                 if (response.isOk()) {
                     System.exit(0);
                 } else if (status == ResponseStatus.REPLAYED_OTP)  {

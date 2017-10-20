@@ -31,16 +31,14 @@ package com.yubico.client.v2;
 	Written by Simon Buckle <simon@webteq.eu>, September 2011.
 */
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import com.yubico.client.v2.exceptions.YubicoSignatureException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
-
-import com.yubico.client.v2.exceptions.YubicoSignatureException;
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class Signature {
 
@@ -54,7 +52,7 @@ public class Signature {
 			mac.init(signingKey);        
 			byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
 			// Base64 encode the result, use old API call to work on android
-			return new String(Base64.encodeBase64(raw));
+			return DatatypeConverter.printBase64Binary(raw);
 		} catch (NoSuchAlgorithmException e) {
 			throw new YubicoSignatureException("No such algorithm (HMAC_SHA1?)", e);
 		} catch (InvalidKeyException e) {

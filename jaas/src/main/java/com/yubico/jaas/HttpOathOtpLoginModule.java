@@ -29,17 +29,6 @@
  */
 package com.yubico.jaas;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.login.LoginException;
-import javax.security.auth.spi.LoginModule;
-import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,6 +37,18 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.auth.login.LoginException;
+import javax.security.auth.spi.LoginModule;
+
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A JAAS module for verifying OATH OTPs (One Time Passwords) using
@@ -176,7 +177,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	boolean verify_otp(String userName, String otp) {
 		try {
 			String authString = userName + ":" + otp;
-			String authStringEnc = DatatypeConverter.printString(authString);
+			String authStringEnc = Base64.encodeBase64URLSafeString(authString.getBytes());
 
 			BufferedReader in = attemptAuthentication(authStringEnc);
 

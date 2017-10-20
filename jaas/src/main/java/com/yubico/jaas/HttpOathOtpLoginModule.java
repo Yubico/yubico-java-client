@@ -174,7 +174,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	 * @param otp
 	 * @return boolean
 	 */
-	private boolean verify_otp(String userName, String otp) {
+	boolean verify_otp(String userName, String otp) {
 		try {
 			String authString = userName + ":" + otp;
 			String authStringEnc = Base64.encodeBase64URLSafeString(authString.getBytes());
@@ -193,7 +193,7 @@ public class HttpOathOtpLoginModule implements LoginModule {
 		return false;
 	}
 
-	private BufferedReader attemptAuthentication(String authStringEnc) throws IOException {
+	BufferedReader attemptAuthentication(String authStringEnc) throws IOException {
 		URL url = new URL(this.protectedUrl);
 		URLConnection conn = url.openConnection();
 		conn.setRequestProperty("Authorization", "Basic " + authStringEnc);

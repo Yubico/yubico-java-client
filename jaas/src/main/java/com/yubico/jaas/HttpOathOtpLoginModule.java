@@ -67,12 +67,12 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	public static final String OPTION_HTTPOATHOTP_REQUIRE_ALL_DIGITS	= "requireAllDigits";
 	public static final String OPTION_HTTPOATHOTP_ID_REALM				= "id_realm";
 
-	public String protectedUrl;
-	public String expectedOutput = "Authenticated OK";
-	public int minLength = 6;
-	public int maxLength = 12;
-	public boolean requireAllDigits = true;
-	public String idRealm;
+	private String protectedUrl;
+	private String expectedOutput = "Authenticated OK";
+	private int minLength = 6;
+	private int maxLength = 12;
+	private boolean requireAllDigits = true;
+	private String idRealm;
 
 	/* JAAS stuff */
 	private Subject subject;

@@ -179,13 +179,8 @@ public class HttpOathOtpLoginModule implements LoginModule {
 			String authString = userName + ":" + otp;
 			String authStringEnc = Base64.encodeBase64URLSafeString(authString.getBytes());
 
-			URL url = new URL(this.protectedUrl);
-			URLConnection conn = url.openConnection();
-			conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
-			conn.connect();
+			BufferedReader in = attemptAuthentication(authStringEnc);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					conn.getInputStream()));
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				if (inputLine.contains(expectedOutput)) {
@@ -196,6 +191,17 @@ public class HttpOathOtpLoginModule implements LoginModule {
 			log.error("Failed verifying OATH OTP :", ex);
 		}
 		return false;
+	}
+
+	private BufferedReader attemptAuthentication(String authStringEnc) throws IOException {
+		URL url = new URL(this.protectedUrl);
+		URLConnection conn = url.openConnection();
+		conn.setRequestProperty("Authorization", "Basic " + authStringEnc);
+		conn.connect();
+
+		return new BufferedReader(new InputStreamReader(
+                conn.getInputStream()
+		));
 	}
 
 	private List<String> get_tokens(NameCallback nameCb) throws LoginException {

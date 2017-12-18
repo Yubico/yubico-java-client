@@ -1,6 +1,5 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.impl.YubicoClientImpl;

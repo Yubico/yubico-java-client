@@ -56,8 +56,8 @@ public class Resource {
         VerificationResponse response = client.verify(otp);
         if (response.isOk()) {
             String yubikeyId = YubicoClient.getPublicId(otp);
-            if(yubikeyIds.get(username).contains(yubikeyId)) {
-                return "Success fully logged in " + username + "!" + NAVIGATION;
+            if (yubikeyIds.get(username).contains(yubikeyId)) {
+                return "Successfully logged in " + username + "!" + NAVIGATION;
             }
             return "No such username and YubiKey combination.";
         }

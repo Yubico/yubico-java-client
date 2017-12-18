@@ -39,134 +39,152 @@ import com.yubico.client.v2.impl.YubicoClientImpl;
 
 import javax.xml.bind.DatatypeConverter;
 
+
 /**
  * Base class for doing YubiKey validations using version 2 of the validation protocol.
  */
 
 public abstract class YubicoClient {
-    protected Integer clientId;
-    protected byte[] key;
-    protected Integer sync;
-    protected String wsapi_urls[] = {
-               "https://api.yubico.com/wsapi/2.0/verify",
-               "https://api2.yubico.com/wsapi/2.0/verify",
-               "https://api3.yubico.com/wsapi/2.0/verify",
-               "https://api4.yubico.com/wsapi/2.0/verify",
-               "https://api5.yubico.com/wsapi/2.0/verify"
-    		};
-    
-    protected String userAgent = "yubico-java-client/" + Version.version +
-            " (" + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ")";
-
-    /**
-     * Validate an OTP using a webservice call to one or more ykval validation servers.
-     *
-     * @param otp YubiKey OTP
-     * @return result of the webservice validation operation
-     * @throws com.yubico.client.v2.exceptions.YubicoVerificationException for validation errors, like unreachable servers
-     * @throws YubicoValidationFailure for validation failures, like non matching OTPs in request and response
-     * @throws IllegalArgumentException for arguments that are not correctly formatted OTP strings.
-     */
-    public abstract VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure;
-
-    /**
-     * Get the ykval client identifier used to identify the application.
-     * @return ykval client identifier
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public Integer getClientId() {
-        return clientId;
-    }
-
-    /**
-     * Set the ykval client identifier, used to identify the client application to
-     * the validation servers. Such validation is only required for non-https-v2.0
-     * validation queries, where the clientId tells the server what API key (shared
-     * secret) to use to validate requests and sign responses.
-     *
-     * You can get a clientId and API key for the YubiCloud validation service at
-     * https://upgrade.yubico.com/getapikey/
-     *
-     * @param clientId  ykval client identifier
-     */
-    public void setClientId(Integer clientId) {
-        this.clientId = clientId;
-    }
-
-    /**
-     * Set api key to be used for signing requests
-     * @param key ykval client key
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public void setKey(String key) {
-        this.key = DatatypeConverter.parseBase64Binary(key);
-    }
-    
-    /**
-     * Get the api key that is used for signing requests
-     * @return ykval client key
-     * @see YubicoClient#setClientId(Integer)
-     */
-    public String getKey() {
-        return DatatypeConverter.printBase64Binary(this.key);
-    }
-    
-    /**
-     * Set the sync percentage required for a successful auth.
-     * Default is to let the server decide.
-     * @param sync percentage or strings 'secure' or 'fast'
-     */
-    public void setSync(Integer sync) {
-    	this.sync = sync;
-    }
-    
-    /**
-     * Get the list of URLs that will be used for validating OTPs.
-     * @return list of base URLs
-     */
-    public String[] getWsapiUrls() {
+	
+	protected Integer clientId;
+	protected byte[] key;
+	protected Integer sync;
+	protected String wsapi_urls[] = {
+		  "https://api.yubico.com/wsapi/2.0/verify",
+		  "https://api2.yubico.com/wsapi/2.0/verify",
+		  "https://api3.yubico.com/wsapi/2.0/verify",
+		  "https://api4.yubico.com/wsapi/2.0/verify",
+		  "https://api5.yubico.com/wsapi/2.0/verify"
+	};
+	
+	protected String userAgent = "yubico-java-client/" + Version.version +
+		  " (" + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ")";
+	
+	
+	/**
+	 * Validate an OTP using a webservice call to one or more ykval validation servers.
+	 *
+	 * @param otp YubiKey OTP
+	 * @return result of the webservice validation operation
+	 * @throws com.yubico.client.v2.exceptions.YubicoVerificationException for validation errors, like unreachable servers
+	 * @throws YubicoValidationFailure                                     for validation failures, like non matching OTPs in request and response
+	 * @throws IllegalArgumentException                                    for arguments that are not correctly formatted OTP strings.
+	 */
+	public abstract VerificationResponse verify(String otp) throws YubicoVerificationException, YubicoValidationFailure;
+	
+	
+	/**
+	 * Get the ykval client identifier used to identify the application.
+	 *
+	 * @return ykval client identifier
+	 * @see YubicoClient#setClientId(Integer)
+	 */
+	public Integer getClientId() {
+		return clientId;
+	}
+	
+	
+	/**
+	 * Set the ykval client identifier, used to identify the client application to
+	 * the validation servers. Such validation is only required for non-https-v2.0
+	 * validation queries, where the clientId tells the server what API key (shared
+	 * secret) to use to validate requests and sign responses.
+	 * <p>
+	 * You can get a clientId and API key for the YubiCloud validation service at
+	 * https://upgrade.yubico.com/getapikey/
+	 *
+	 * @param clientId ykval client identifier
+	 */
+	public void setClientId(Integer clientId) {
+		this.clientId = clientId;
+	}
+	
+	
+	/**
+	 * Set api key to be used for signing requests
+	 *
+	 * @param key ykval client key
+	 * @see YubicoClient#setClientId(Integer)
+	 */
+	public void setKey(String key) {
+		this.key = DatatypeConverter.parseBase64Binary(key);
+	}
+	
+	
+	/**
+	 * Get the api key that is used for signing requests
+	 *
+	 * @return ykval client key
+	 * @see YubicoClient#setClientId(Integer)
+	 */
+	public String getKey() {
+		return DatatypeConverter.printBase64Binary(this.key);
+	}
+	
+	
+	/**
+	 * Set the sync percentage required for a successful auth.
+	 * Default is to let the server decide.
+	 *
+	 * @param sync percentage or strings 'secure' or 'fast'
+	 */
+	public void setSync(Integer sync) {
+		this.sync = sync;
+	}
+	
+	
+	/**
+	 * Get the list of URLs that will be used for validating OTPs.
+	 *
+	 * @return list of base URLs
+	 */
+	public String[] getWsapiUrls() {
 		return wsapi_urls;
 	}
-
-    /**
-     * Configure what URLs to use for validating OTPs. These URLs will have
-     * all the necessary parameters appended to them. Example :
-     * {"https://api.yubico.com/wsapi/2.0/verify"}
-     * @param wsapi  list of base URLs
-     */
+	
+	
+	/**
+	 * Configure what URLs to use for validating OTPs. These URLs will have
+	 * all the necessary parameters appended to them. Example :
+	 * {"https://api.yubico.com/wsapi/2.0/verify"}
+	 *
+	 * @param wsapi list of base URLs
+	 */
 	public void setWsapiUrls(String[] wsapi) {
 		this.wsapi_urls = wsapi;
 	}
 	
+	
 	/**
 	 * Set user agent to be used in request to validation server
+	 *
 	 * @param userAgent the user agent used in requests
 	 */
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
 	}
 	
+	
 	/**
 	 * Instantiate a YubicoClient object.
-     *
-     * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
-	 * @return  client that can be used to validate YubiKey OTPs
+	 *
+	 * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+	 * @return client that can be used to validate YubiKey OTPs
 	 */
 	public static YubicoClient getClient(Integer clientId, String key) {
-        return new YubicoClientImpl(clientId, key);
-    }
-
-    /**
+		return new YubicoClientImpl(clientId, key);
+	}
+	
+	
+	/**
 	 * Extract the public ID of a YubiKey from an OTP it generated.
 	 *
-	 * @param otp	The OTP to extract ID from, in modhex format.
-	 *
-	 * @return string	Public ID of YubiKey that generated otp. Between 0 and 12 lower-case characters.
-	 * 
-	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings. 
+	 * @param otp The OTP to extract ID from, in modhex format.
+	 * @return string    Public ID of YubiKey that generated otp. Between 0 and 12 lower-case characters.
+	 * @throws IllegalArgumentException for arguments that are null or too short to be valid OTP strings.
 	 */
 	public static String getPublicId(String otp) {
-		if ((otp == null) || (otp.length() < OTP_MIN_LEN)){
+		if ((otp == null) || (otp.length() < OTP_MIN_LEN)) {
 			//not a valid OTP format, throw an exception
 			throw new IllegalArgumentException("The OTP is too short to be valid");
 		}
@@ -180,20 +198,22 @@ public abstract class YubicoClient {
 		return otp.substring(0, len - 32).toLowerCase();
 	}
 	
+	
 	private static final Integer OTP_MIN_LEN = 32;
 	private static final Integer OTP_MAX_LEN = 48;
+	
+	
 	/**
 	 * Determines whether a given OTP is of the correct length
 	 * and only contains printable characters, as per the recommendation.
 	 *
 	 * @param otp The OTP to validate
 	 * @return boolean Returns true if it's valid; false otherwise
-	 * 
 	 */
 	public static boolean isValidOTPFormat(String otp) {
-		if (otp == null){
+		if (otp == null) {
 			return false;
-		}		
+		}
 		int len = otp.length();
 		for (char c : otp.toCharArray()) {
 			if (c < 0x20 || c > 0x7E) {

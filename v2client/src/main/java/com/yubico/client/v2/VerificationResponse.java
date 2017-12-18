@@ -33,95 +33,96 @@ package com.yubico.client.v2;
 
 import java.util.Map;
 
+
 /**
  * Object built from server response, detailing the status of validation.
- *
  */
 public interface VerificationResponse {
-
-    /**
-     * Whether the response status from the server was OK, representing a valid OTP.
-     *
-     * @return true if the response status was OK, false otherwise
-     */
-    boolean isOk();
-
+	
+	/**
+	 * Whether the response status from the server was OK, representing a valid OTP.
+	 *
+	 * @return true if the response status was OK, false otherwise
+	 */
+	boolean isOk();
+	
 	/**
 	 * Signature of the response, with the same API key as the request.
-	 * 
+	 *
 	 * @return response signature
 	 */
-    String getH();
-    
-    /**
-     * UTC timestamp from the server when response was processed.
-     * 
-     * @return server UTC timestamp
-     */
-    String getT();
-    
-    /**
-     * Server response to the request.
-     * 
-     * @see ResponseStatus
-     * @return response status
-     */
-    ResponseStatus getStatus();
-    
-    /**
-     * Returns the internal timestamp from the YubiKey 8hz timer.
-     * 
-     * @return yubikey internal timestamp
-     */
-    String getTimestamp();
-    
-    /**
-     * Returns the non-volatile counter that is incremented on power-up.
-     * 
-     * @return session counter
-     */
-    String getSessioncounter();
-    
-    /**
-     * Returns the volatile counter that is incremented on each button-press,
-     * starts at 0 after power-up.
-     * 
-     * @return session use counter
-     */
-    String getSessionuse();
-    
-    /**
-     * Returns the amount of sync the server achieved before sending the
-     * response.
-     * 
-     * @return sync, in procent
-     */
-    String getSl();
-    
-    /**
-     * Echos back the OTP from the request, should match.
-     * 
-     * @return otp
-     */
-    String getOtp();
-    
-    /**
-     * Echos back the nonce from the request. Should match. 
-     * @return nonce
-     */
-    public String getNonce();
-    
-    /**
-     * Returns all parameters from the response as a Map
-     * 
-     * @return map of all values
-     */
-    public Map<String, String> getKeyValueMap();
-    
-    /**
-     * Returns the public id of the returned OTP
-     * 
-     * @return public id
-     */
-    public String getPublicId();
+	String getH();
+	
+	/**
+	 * UTC timestamp from the server when response was processed.
+	 *
+	 * @return server UTC timestamp
+	 */
+	String getT();
+	
+	/**
+	 * Server response to the request.
+	 *
+	 * @return response status
+	 * @see ResponseStatus
+	 */
+	ResponseStatus getStatus();
+	
+	/**
+	 * Returns the internal timestamp from the YubiKey 8hz timer.
+	 *
+	 * @return yubikey internal timestamp
+	 */
+	String getTimestamp();
+	
+	/**
+	 * Returns the non-volatile counter that is incremented on power-up.
+	 *
+	 * @return session counter
+	 */
+	String getSessioncounter();
+	
+	/**
+	 * Returns the volatile counter that is incremented on each button-press,
+	 * starts at 0 after power-up.
+	 *
+	 * @return session use counter
+	 */
+	String getSessionuse();
+	
+	/**
+	 * Returns the amount of sync the server achieved before sending the
+	 * response.
+	 *
+	 * @return sync, in procent
+	 */
+	String getSl();
+	
+	/**
+	 * Echos back the OTP from the request, should match.
+	 *
+	 * @return otp
+	 */
+	String getOtp();
+	
+	/**
+	 * Echos back the nonce from the request. Should match.
+	 *
+	 * @return nonce
+	 */
+	String getNonce();
+	
+	/**
+	 * Returns all parameters from the response as a Map
+	 *
+	 * @return map of all values
+	 */
+	Map<String, String> getKeyValueMap();
+	
+	/**
+	 * Returns the public id of the returned OTP
+	 *
+	 * @return public id
+	 */
+	String getPublicId();
 }

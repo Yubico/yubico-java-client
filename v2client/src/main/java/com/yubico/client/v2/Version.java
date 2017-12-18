@@ -33,18 +33,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class Version {
-	public static final String version;
 
-  static {
-    Properties properties = new Properties();
-    try {
-      InputStream stream = Version.class.getResourceAsStream("/version.properties");
-      properties.load(stream);
-      stream.close();
-      version = properties.getProperty("version");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
+public class Version {
+	
+	public static final String version;
+	
+	static {
+		Properties properties = new Properties();
+		try {
+			InputStream stream = Version.class.getResourceAsStream("/version.properties");
+			properties.load(stream);
+			stream.close();
+			version = properties.getProperty("version");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -40,16 +40,18 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+
 public class Signature {
-
+	
 	private final static String HMAC_SHA1 = "HmacSHA1";
-
+	
+	
 	public static String calculate(String data, byte[] key)
-			throws YubicoSignatureException {
+		  throws YubicoSignatureException {
 		try {
 			SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 			Mac mac = Mac.getInstance(HMAC_SHA1);
-			mac.init(signingKey);        
+			mac.init(signingKey);
 			byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
 			// Base64 encode the result, use old API call to work on android
 			return DatatypeConverter.printBase64Binary(raw);

@@ -32,31 +32,30 @@
 package com.yubico.client.v2;
 
 public class Cmd {
-
-    public static void main (String args []) throws Exception
-    {
-        if (args.length != 3) {
-            System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
-            System.err.println("\nUsage: java -jar client.jar Client_ID Client_key OTP");
-            System.err.println("\nEg. java -jar client.jar 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
-            System.err.println("\nTouch Yubikey to generate the OTP. Visit Yubico.com for more details.");
-            return;
-        }
-
-        String otp = args[2];
-
-        YubicoClient yc = YubicoClient.getClient(Integer.parseInt(args[0]), args[1]);
-        VerificationResponse response = yc.verify(otp);
-
-        if(response!=null && response.getStatus() == ResponseStatus.OK) {
-            System.out.println("\n* OTP verified OK");
-        } else {
-            System.out.println("\n* Failed to verify OTP");
-        }
-
-        System.out.println("\n* Last response: " + response);
-        System.exit(0);
-
-    } // End of main
-
+	
+	public static void main(String args[]) throws Exception {
+		if (args.length != 3) {
+			System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");
+			System.err.println("\nUsage: java -jar client.jar Client_ID Client_key OTP");
+			System.err.println("\nEg. java -jar client.jar 28 vvfucnlcrrnejlbuthlktguhclhvegbungldcrefbnku");
+			System.err.println("\nTouch Yubikey to generate the OTP. Visit Yubico.com for more details.");
+			return;
+		}
+		
+		String otp = args[2];
+		
+		YubicoClient yc = YubicoClient.getClient(Integer.parseInt(args[0]), args[1]);
+		VerificationResponse response = yc.verify(otp);
+		
+		if (response != null && response.getStatus() == ResponseStatus.OK) {
+			System.out.println("\n* OTP verified OK");
+		} else {
+			System.out.println("\n* Failed to verify OTP");
+		}
+		
+		System.out.println("\n* Last response: " + response);
+		System.exit(0);
+		
+	} // End of main
+	
 }

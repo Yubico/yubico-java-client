@@ -48,45 +48,49 @@ import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
+
 /**
- * Fires off a number of validation requests to each specified URL 
+ * Fires off a number of validation requests to each specified URL
  * in parallel.
- * 
+ *
  * @author Simon Buckle (simon@webteq.eu)
  */
 public class VerificationRequester {
+	
 	private final ExecutorCompletionService<VerificationResponse> completionService;
+	
 	
 	/**
 	 * Sets up thread pool for validation requests.
 	 */
 	public VerificationRequester() {
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, 100, 250L,
-				MILLISECONDS, new SynchronousQueue<Runnable>());
-	    completionService = new ExecutorCompletionService<VerificationResponse>(pool);
+			  MILLISECONDS, new SynchronousQueue<Runnable>());
+		completionService = new ExecutorCompletionService<VerificationResponse>(pool);
 	}
-
+	
+	
 	/**
 	 * Fires off a validation request to each url in the list, returning the first one
 	 * that is not {@link ResponseStatus#REPLAYED_REQUEST}
-	 * 
-	 * @param urls a list of validation urls to be contacted
+	 *
+	 * @param urls      a list of validation urls to be contacted
 	 * @param userAgent userAgent to send in request, if null one will be generated
 	 * @return {@link VerificationResponse} object from the first server response that is not
 	 * {@link ResponseStatus#REPLAYED_REQUEST}
 	 * @throws com.yubico.client.v2.exceptions.YubicoVerificationException if validation fails on all urls
 	 */
 	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
-	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
-	    for(String url : urls) {
-	    	tasks.add(completionService.submit(new VerifyTask(url, userAgent)));
-	    }
-	    VerificationResponse response = null;
+		List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
+		for (String url : urls) {
+			tasks.add(completionService.submit(new VerifyTask(url, userAgent)));
+		}
+		VerificationResponse response = null;
 		try {
 			int tasksDone = 0;
 			Throwable savedException = null;
 			Future<VerificationResponse> futureResponse = completionService.poll(1L, MINUTES);
-			while(futureResponse != null) {
+			while (futureResponse != null) {
 				try {
 					tasksDone++;
 					tasks.remove(futureResponse);
@@ -98,7 +102,7 @@ public class VerificationRequester {
 					 * the same).
 					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
 					 */
-					if(!response.getStatus().equals(REPLAYED_REQUEST)) {
+					if (!response.getStatus().equals(REPLAYED_REQUEST)) {
 						break;
 					}
 				} catch (CancellationException ignored) {
@@ -108,15 +112,15 @@ public class VerificationRequester {
 					// tuck the real exception away and use it if we don't get any valid answers.
 					savedException = e.getCause();
 				}
-				if(tasksDone >= urls.size()) {
+				if (tasksDone >= urls.size()) {
 					break;
 				}
 				futureResponse = completionService.poll(1L, MINUTES);
 			}
-			if(futureResponse == null || response == null) {
-				if(savedException != null) {
+			if (futureResponse == null || response == null) {
+				if (savedException != null) {
 					throw new YubicoVerificationException(
-							"Exception while executing validation.", savedException);
+						  "Exception while executing validation.", savedException);
 				} else {
 					throw new YubicoVerificationException("Validation timeout.");
 				}
@@ -124,27 +128,30 @@ public class VerificationRequester {
 		} catch (InterruptedException e) {
 			throw new YubicoVerificationException("Validation interrupted.", e);
 		}
-	    
-		for(Future<VerificationResponse> task : tasks) {
+		
+		for (Future<VerificationResponse> task : tasks) {
 			task.cancel(true);
 		}
 		
-	    return response;
+		return response;
 	}
+	
 	
 	/**
 	 * Inner class for doing requests to validation server.
 	 */
 	static class VerifyTask implements Callable<VerificationResponse> {
-
+		
 		private final Logger log = LoggerFactory.getLogger(VerifyTask.class);
-
+		
 		private final String url;
 		private final String userAgent;
 		
+		
 		/**
 		 * Set up a VerifyTask for the Yubico Validation protocol v2
-		 * @param url the url to be used
+		 *
+		 * @param url       the url to be used
 		 * @param userAgent the userAgent to be sent to the server, or NULL and one is calculated
 		 */
 		public VerifyTask(String url, String userAgent) {
@@ -152,14 +159,16 @@ public class VerificationRequester {
 			this.userAgent = userAgent;
 		}
 		
+		
 		/**
 		 * Do the validation query for previous URL.
+		 *
 		 * @throws Exception should not be anything but {@link IOException}
 		 */
 		public VerificationResponse call() throws Exception {
 			URL url = new URL(this.url);
 			try {
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 				conn.setRequestProperty("User-Agent", userAgent);
 				conn.setConnectTimeout(15000);
 				conn.setReadTimeout(15000);
@@ -168,6 +177,6 @@ public class VerificationRequester {
 				log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
 				throw e;
 			}
-		}	
+		}
 	}
 }

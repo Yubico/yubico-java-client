@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;;
 import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -97,8 +98,12 @@ public class VerificationRequester {
 					 * validation server got sync before it parsed our query (otp and nonce is
 					 * the same).
 					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+					 *
+					 * Also if the response is BACKEND_ERROR, keep looking for a server that
+					 * sends a valid response
+					 * @see https://github.com/Yubico/yubico-java-client/issues/12
 					 */
-					if(!response.getStatus().equals(REPLAYED_REQUEST)) {
+					if(!response.getStatus().equals(REPLAYED_REQUEST) && !response.getStatus().equals(BACKEND_ERROR)) {
 						break;
 					}
 				} catch (CancellationException ignored) {

@@ -80,7 +80,7 @@ public class VerificationRequester {
 	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
 	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
 	    for(String url : urls) {
-	    	tasks.add(completionService.submit(new VerifyTask(url, userAgent)));
+			tasks.add(completionService.submit(createTask(userAgent, url)));
 	    }
 	    VerificationResponse response = null;
 		try {
@@ -132,7 +132,11 @@ public class VerificationRequester {
 		
 	    return response;
 	}
-	
+
+	protected VerifyTask createTask(String userAgent, String url) {
+		return new VerifyTask(url, userAgent);
+	}
+
 	/**
 	 * Inner class for doing requests to validation server.
 	 */

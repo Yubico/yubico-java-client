@@ -34,6 +34,7 @@ package com.yubico.client.v2;
 
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.VerificationResponseImpl;
+import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,15 +160,19 @@ public class VerificationRequester {
 		public VerificationResponse call() throws Exception {
 			URL url = new URL(this.url);
 			try {
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestProperty("User-Agent", userAgent);
-				conn.setConnectTimeout(15000);
-				conn.setReadTimeout(15000);
-				return new VerificationResponseImpl(conn.getInputStream());
+				return new VerificationResponseImpl(getResponseStream(url));
 			} catch (IOException e) {
 				log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
 				throw e;
 			}
-		}	
+		}
+
+		protected InputStream getResponseStream(URL url) throws IOException {
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestProperty("User-Agent", userAgent);
+			conn.setConnectTimeout(15000);
+			conn.setReadTimeout(15000);
+			return conn.getInputStream();
+		}
 	}
 }

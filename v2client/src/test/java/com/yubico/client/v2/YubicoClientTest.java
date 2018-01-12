@@ -132,7 +132,7 @@ public class YubicoClientTest {
     			"http://api2.example.com/wsapi/2.0/verify"
     			});
     	VerificationResponse response = client.verify(otp);
-    	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
+	fail("Expected exception to be thrown.");
     }
     
     @Test

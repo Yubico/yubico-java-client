@@ -1,12 +1,21 @@
 package com.yubico.client.v2;
 
-import com.yubico.client.v2.exceptions.YubicoSignatureException;
-import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
+import com.yubico.client.v2.exceptions.YubicoVerificationException;
+import com.yubico.client.v2.impl.TestYubicoClientImpl;
 import com.yubico.client.v2.impl.YubicoClientImpl;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /* Copyright (c) 2011, Linus Widströmer.  All rights reserved.
    Copyright (c) 2012, Yubico AB. All rights reserved.
@@ -146,7 +155,39 @@ public class YubicoClientTest {
     	VerificationResponse response = client.verify(otp);
     	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
     }
-    
+
+    @Test
+    public void testBackendErrorResponseIsIgnoredIfOtherResponseIsAvailable() throws YubicoVerificationException, YubicoValidationFailure {
+        String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
+
+        YubicoClient client = new TestYubicoClientImpl(new VerificationRequester() {
+            private boolean firstCall = true;
+            @Override
+            protected VerifyTask createTask(String userAgent, String url) {
+                if (firstCall) {
+                    firstCall = false;
+                    return new VerifyTask(url, userAgent) {
+                        @Override
+                        protected InputStream getResponseStream(URL url) throws IOException {
+                            return new ByteArrayInputStream("status=BACKEND_ERROR".getBytes("UTF-8"));
+                        }
+                    };
+                } else {
+                    return super.createTask(userAgent, url);
+                }
+            }
+        });
+        client.setClientId(clientId);
+        client.setKey(apiKey);
+
+        client.setWsapiUrls(new String[] {
+            "http://whatever.this.will.be.ignored.anyway.yubico.com/wsapi/2.0/verify",
+            "http://api3.yubico.com/wsapi/2.0/verify",
+        });
+        VerificationResponse response = client.verify(otp);
+        assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
+    }
+
     @Test(expected=IllegalArgumentException.class)
     public void testNullOTPPublicId() {    	
     	YubicoClient.getPublicId(null);

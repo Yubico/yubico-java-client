@@ -34,6 +34,7 @@ package com.yubico.client.v2;
 
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.VerificationResponseImpl;
+import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;;
 import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -79,7 +81,7 @@ public class VerificationRequester {
 	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
 	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
 	    for(String url : urls) {
-	    	tasks.add(completionService.submit(new VerifyTask(url, userAgent)));
+			tasks.add(completionService.submit(createTask(userAgent, url)));
 	    }
 	    VerificationResponse response = null;
 		try {
@@ -97,8 +99,12 @@ public class VerificationRequester {
 					 * validation server got sync before it parsed our query (otp and nonce is
 					 * the same).
 					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+					 *
+					 * Also if the response is BACKEND_ERROR, keep looking for a server that
+					 * sends a valid response
+					 * @see https://github.com/Yubico/yubico-java-client/issues/12
 					 */
-					if(!response.getStatus().equals(REPLAYED_REQUEST)) {
+					if(!response.getStatus().equals(REPLAYED_REQUEST) && !response.getStatus().equals(BACKEND_ERROR)) {
 						break;
 					}
 				} catch (CancellationException ignored) {
@@ -131,7 +137,11 @@ public class VerificationRequester {
 		
 	    return response;
 	}
-	
+
+	protected VerifyTask createTask(String userAgent, String url) {
+		return new VerifyTask(url, userAgent);
+	}
+
 	/**
 	 * Inner class for doing requests to validation server.
 	 */
@@ -159,15 +169,19 @@ public class VerificationRequester {
 		public VerificationResponse call() throws Exception {
 			URL url = new URL(this.url);
 			try {
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setRequestProperty("User-Agent", userAgent);
-				conn.setConnectTimeout(15000);
-				conn.setReadTimeout(15000);
-				return new VerificationResponseImpl(conn.getInputStream());
+				return new VerificationResponseImpl(getResponseStream(url));
 			} catch (IOException e) {
 				log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
 				throw e;
 			}
-		}	
+		}
+
+		protected InputStream getResponseStream(URL url) throws IOException {
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestProperty("User-Agent", userAgent);
+			conn.setConnectTimeout(15000);
+			conn.setReadTimeout(15000);
+			return conn.getInputStream();
+		}
 	}
 }

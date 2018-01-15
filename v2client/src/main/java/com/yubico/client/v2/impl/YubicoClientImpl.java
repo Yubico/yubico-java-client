@@ -57,13 +57,17 @@ import static com.yubico.client.v2.ResponseStatus.BAD_SIGNATURE;
 public class YubicoClientImpl extends YubicoClient {
     private final VerificationRequester validationService;
 
+    YubicoClientImpl(VerificationRequester validationService) {
+        this.validationService = validationService;
+    }
+
     /**
      * Creates a YubicoClient that will be using the given Client ID.
      *
      * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
      */
     public YubicoClientImpl(Integer clientId) {
-        validationService = new VerificationRequester();
+        this(new VerificationRequester());
         this.clientId = clientId;
     }
 

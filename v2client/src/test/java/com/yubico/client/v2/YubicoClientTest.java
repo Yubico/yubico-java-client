@@ -137,8 +137,8 @@ public class YubicoClientTest {
     public void testBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	client.setWsapiUrls(new String[] {
-    			"http://www.example.com/wsapi/2.0/verify",
-    			"http://api2.example.com/wsapi/2.0/verify"
+			"https://www.example.com/wsapi/2.0/verify",
+			"https://api2.example.com/wsapi/2.0/verify"
     			});
     	VerificationResponse response = client.verify(otp);
 	fail("Expected exception to be thrown.");
@@ -148,9 +148,9 @@ public class YubicoClientTest {
     public void testGoodAndBadUrls() throws YubicoVerificationException, YubicoValidationFailure {
     	String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";
     	client.setWsapiUrls(new String[] {
-    			"http://api.example.com/wsapi/2.0/verify",
-    			"http://www.example.com/wsapi/2.0/verify",
-    			"http://api3.yubico.com/wsapi/2.0/verify"
+			"https://api.example.com/wsapi/2.0/verify",
+			"https://www.example.com/wsapi/2.0/verify",
+			"https://api3.yubico.com/wsapi/2.0/verify"
     			});
     	VerificationResponse response = client.verify(otp);
     	assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());
@@ -181,8 +181,8 @@ public class YubicoClientTest {
         client.setKey(apiKey);
 
         client.setWsapiUrls(new String[] {
-            "http://whatever.this.will.be.ignored.anyway.yubico.com/wsapi/2.0/verify",
-            "http://api3.yubico.com/wsapi/2.0/verify",
+            "https://whatever.this.will.be.ignored.anyway.yubico.com/wsapi/2.0/verify",
+            "https://api3.yubico.com/wsapi/2.0/verify",
         });
         VerificationResponse response = client.verify(otp);
         assertEquals(ResponseStatus.REPLAYED_OTP, response.getStatus());

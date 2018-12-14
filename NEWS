@@ -4,6 +4,8 @@ yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
  ** v1client:
   *** Added deprecation notes
   *** Starting on 2019-02-04, YubicoClient.verify will always throw an UnsupportedOperationException explaining that the YubiCloud v1 API has been dropped.
+ ** v2client:
+  *** YubicoClient and YubicoClientImpl will now log warnings whenever they see a naked http:// URL in the wsapi_urls field.
 
 * Version 3.0.2
  ** `commons-codec` dependency removed, except for jaas subproject which still uses it

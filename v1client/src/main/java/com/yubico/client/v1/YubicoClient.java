@@ -42,6 +42,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 /**
  * Your app instantiate an object of this class, then call verify(OTP) to validate the
@@ -92,6 +93,9 @@ public class YubicoClient {
 	 */
 	@Deprecated
 	public boolean verify( String otp ) {
+		if (new Date().after(new Date(119, 1, 3))) { // 2019-02-03
+			throw new UnsupportedOperationException("The YubiCloud v1 protocol is no longer supported. Please upgrade to the YubiCloud v2 client.");
+		}
 
 		boolean result = false;
 		

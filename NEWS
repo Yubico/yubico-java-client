@@ -1,5 +1,9 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
+* Version 3.0.3 (unreleased)
+ ** v1client:
+  *** Added deprecation notes
+
 * Version 3.0.2
  ** `commons-codec` dependency removed, except for jaas subproject which still uses it
  ** Fixed a bug in handling `BACKEND_ERROR` responses

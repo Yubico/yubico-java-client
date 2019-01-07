@@ -127,6 +127,7 @@ public class YubicoClientImpl extends YubicoClient {
         String[] wsapiUrls = this.getWsapiUrls();
         List<String> validationUrls = new ArrayList<String>();
         for (String wsapiUrl : wsapiUrls) {
+            warnIfDeprecatedUrl(wsapiUrl);
             validationUrls.add(wsapiUrl + "?" + queryString);
         }
 

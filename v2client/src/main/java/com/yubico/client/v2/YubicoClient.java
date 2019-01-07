@@ -36,6 +36,8 @@ package com.yubico.client.v2;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -44,6 +46,8 @@ import javax.xml.bind.DatatypeConverter;
  */
 
 public abstract class YubicoClient {
+    private static final Logger log = LoggerFactory.getLogger(YubicoClient.class);
+
     protected Integer clientId;
     protected byte[] key;
     protected Integer sync;
@@ -135,7 +139,16 @@ public abstract class YubicoClient {
      * @param wsapi  list of base URLs
      */
 	public void setWsapiUrls(String[] wsapi) {
+		for (String url : wsapi) {
+			warnIfDeprecatedUrl(url);
+		}
 		this.wsapi_urls = wsapi;
+	}
+
+	protected void warnIfDeprecatedUrl(String url) {
+		if (url != null && url.startsWith("http:")) {
+			log.warn("Deprecated YubiCloud URL: {} - naked HTTP requests are deprecated and will not be supported from 2019-02-04. See: https://status.yubico.com/2018/11/26/deprecating-yubicloud-v1-protocol-plain-text-requests-and-old-tls-versions/", url);
+		}
 	}
 	
 	/**

@@ -98,7 +98,7 @@ public class VerificationRequester {
 					 * and hope we get something else. REPLAYED_REQUEST will be returned if a
 					 * validation server got sync before it parsed our query (otp and nonce is
 					 * the same).
-					 * @see http://forum.yubico.com/viewtopic.php?f=3&t=701
+					 * @see https://forum.yubico.com/viewtopic21be.html
 					 *
 					 * Also if the response is BACKEND_ERROR, keep looking for a server that
 					 * sends a valid response

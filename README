@@ -1,4 +1,7 @@
 == yubico-java-client
+
+image:https://travis-ci.org/Yubico/yubico-java-client.svg?branch=master["Build Status", link="https://travis-ci.org/Yubico/yubico-java-client"]
+
 This repository contains a Java library with an accompanying demo server, as well as a 
 https://github.com/Yubico/yubico-java-client/tree/master/jaas[JAAS module],
 to validate YubiKey OTPs (One-Time Passwords).

@@ -57,5 +57,3 @@ binding, for example slf4j-log4j with the following Maven configuration:
 === Read more
 For more complete descriptions of methods and failure states, please see
 the https://developers.yubico.com/yubico-java-client[JavaDoc].
-
-NOTE: If you want the client for the legacy version 1 of the API, it can be found https://github.com/Yubico/yubico-java-client/tree/master/v1client[here].

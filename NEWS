@@ -1,5 +1,9 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
+* Version 3.0.4 (unreleased)
+ ** v1client:
+  *** Deleted all contents from class YubicoClient so that use attempts fail at compile time instead of runtime.
+
 * Version 3.0.3
  ** v1client:
   *** Added deprecation notes

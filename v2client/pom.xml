@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.yubico</groupId>
     <artifactId>yubico-validation-client</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -40,6 +40,11 @@
       <artifactId>slf4j-simple</artifactId>
       <version>1.6.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
     </dependency>
   </dependencies>
   <build>

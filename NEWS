@@ -1,5 +1,9 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
+* Version 3.0.5
+ ** Fixed runtime error on JRE 11 due to `javax.xml.bind.DatatypeConverter` not existing anymore
+  *** Re-introduced `commons-codec` dependency.
+
 * Version 3.0.4
  ** v1client:
   *** Deleted all contents from class YubicoClient so that use attempts fail at compile time instead of runtime.

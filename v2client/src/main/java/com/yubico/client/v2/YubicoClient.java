@@ -36,10 +36,9 @@ package com.yubico.client.v2;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Base class for doing YubiKey validations using version 2 of the validation protocol.
@@ -103,7 +102,7 @@ public abstract class YubicoClient {
      * @see YubicoClient#setClientId(Integer)
      */
     public void setKey(String key) {
-        this.key = DatatypeConverter.parseBase64Binary(key);
+        this.key = Base64.decodeBase64(key.getBytes());
     }
     
     /**
@@ -112,7 +111,7 @@ public abstract class YubicoClient {
      * @see YubicoClient#setClientId(Integer)
      */
     public String getKey() {
-        return DatatypeConverter.printBase64Binary(this.key);
+        return new String(Base64.encodeBase64(this.key));
     }
     
     /**

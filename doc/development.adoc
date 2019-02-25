@@ -1,0 +1,26 @@
+== Running test coverage
+
+```
+$ COVERALLS=true mvn jacoco:report
+```
+
+
+== Releasing a new version
+
+1. Run the tests: `mvn clean test`
+2. Update NEWS
+3. Bump version number: `mvn versions:set` and commit
+4. Tag release: `git tag -as yubico-validation-client-<VERSION>`
+5. Release to Maven Central via Sonatype Nexus (see below)
+
+
+=== Releasing to Maven Central
+
+First, create a staging repository:
+
+```
+$ mvn clean test && mvn deploy -DperformRelease=true
+```
+
+Then go to https://oss.sonatype.org/#stagingRepositories, _close_ the staging
+repository and then _release_ it once successfully closed.

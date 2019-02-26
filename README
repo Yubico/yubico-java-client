@@ -20,7 +20,7 @@ Add this to your pom.xml:
  <dependency>
    <groupId>com.yubico</groupId>
    <artifactId>yubico-validation-client2</artifactId>
-   <version>3.0.1</version>
+   <version>3.0.5</version>
  </dependency>
 
 [source,java]

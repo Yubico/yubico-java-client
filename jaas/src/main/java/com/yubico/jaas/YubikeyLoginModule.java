@@ -328,7 +328,7 @@ public class YubikeyLoginModule implements LoginModule {
 				String j_otp = request.getParameter(HTTP_REQUEST_ATTR_TOTP);
 				
 				if (j_otp == null || j_otp.length() < 32) {
-					log.debug("Skipping token from j_otp, not a valid YubiKey OTP (too short, {} < 32)",j_otp.length());
+					log.debug("Skipping token from j_otp, not a valid YubiKey OTP (too short, {} < 32)", j_otp == null ? 0 : j_otp.length());
 				} else {
 					result.add(j_otp);
 				}

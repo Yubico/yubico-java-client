@@ -1,9 +1,27 @@
-language: java
-matrix:
-  include:
-    - jdk: openjdk8
-    - jdk: openjdk11
-    - jdk: oraclejdk11
-      env: COVERALLS=true
-after_success:
-  - test -z $COVERALLS || mvn clean test jacoco:report coveralls:report
+{
+  "os": [
+    "linux"
+  ],
+  "jobs": {
+    "include": [
+    {
+      "jdk": "openjdk8"
+    },
+    {
+      "jdk": "openjdk11"
+    },
+    {
+      "env": [
+      {
+        "COVERALLS": "true"
+      }
+      ],
+      "jdk": "oraclejdk11"
+    }
+    ]
+  },
+  "language": "java",
+  "after_success": [
+    "test -z $COVERALLS || mvn clean -Dmaven.javadoc.skip=true -DskipTests=true  -B -V jacoco:report coveralls:report"
+  ]
+}

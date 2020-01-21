@@ -35,11 +35,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.yubico.client.v2.exceptions.YubicoSignatureException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 public class Signature {
 
@@ -50,10 +49,10 @@ public class Signature {
 		try {
 			SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 			Mac mac = Mac.getInstance(HMAC_SHA1);
-			mac.init(signingKey);        
+			mac.init(signingKey);
 			byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
 			// Base64 encode the result, use old API call to work on android
-			return new String(Base64.encodeBase64(raw));
+			return Base64.getEncoder().encodeToString(raw);
 		} catch (NoSuchAlgorithmException e) {
 			throw new YubicoSignatureException("No such algorithm (HMAC_SHA1?)", e);
 		} catch (InvalidKeyException e) {

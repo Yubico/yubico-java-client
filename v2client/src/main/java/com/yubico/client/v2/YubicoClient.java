@@ -105,7 +105,7 @@ public abstract class YubicoClient {
      * @see YubicoClient#setClientId(Integer)
      */
     public void setKey(String key) {
-        this.key = Base64.getEncoder().encode(key.getBytes(StandardCharsets.UTF_8));
+        this.key = Base64.getDecoder().decode(key.getBytes(StandardCharsets.UTF_8));
     }
     
     /**

@@ -9,6 +9,8 @@ yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
    * using StandardCharsets UTF8
    * removed redundant public declaration
    * make use of Java build in Base64
+   * Maven Sources updated
+   * Java Doc completion to prevent warnings
 
 
 * Version 3.0.5

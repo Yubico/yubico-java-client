@@ -165,6 +165,7 @@ public abstract class YubicoClient {
 	 * Instantiate a YubicoClient object.
      *
      * @param clientId Retrieved from https://upgrade.yubico.com/getapikey
+	 * @param key (Secret key) Retrieved from https://upgrade.yubico.com/getapikey
 	 * @return  client that can be used to validate YubiKey OTPs
 	 */
 	public static YubicoClient getClient(Integer clientId, String key) {

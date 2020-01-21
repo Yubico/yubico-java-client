@@ -170,8 +170,8 @@ public class HttpOathOtpLoginModule implements LoginModule {
 	/**
 	 * Access protectedUrl using userName and otp for basic auth.
 	 * Check if what we get back contains expectedOutput.
-	 * @param userName
-	 * @param otp
+	 * @param userName the username to verify
+	 * @param otp the one time password
 	 * @return boolean
 	 */
 	boolean verify_otp(String userName, String otp) {

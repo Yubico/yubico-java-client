@@ -291,7 +291,7 @@ public class YubikeyLoginModule implements LoginModule {
 	 *
 	 * The tokens returned have been identified as plausible YubiKey OTPs.
 	 *
-	 * @param nameCb
+	 * @param nameCb the NameCallback
 	 * @return list of possible YubiKey OTPs
 	 */
 	private List<String> get_tokens(NameCallback nameCb) {

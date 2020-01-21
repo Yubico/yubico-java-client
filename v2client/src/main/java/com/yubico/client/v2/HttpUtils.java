@@ -2,6 +2,7 @@ package com.yubico.client.v2;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HttpUtils {
@@ -11,7 +12,7 @@ public class HttpUtils {
             if(paramStr.length() > 0) {
                 paramStr.append("&");
             }
-            paramStr.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            paramStr.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return paramStr.toString();
     }

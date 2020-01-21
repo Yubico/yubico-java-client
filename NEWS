@@ -1,5 +1,16 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
+* Version 3.0.6
+** * unneeded declaration inside TreeMap (2x)
+   * using switch statement (micro performance and exact predictable size - compiler)
+   * C-Style to Java Style []
+   * using StringBuilder instead of =+
+   * added Enums from Java doc
+   * using StandardCharsets UTF8
+   * removed redundant public declaration
+   * make use of Java build in Base64
+
+
 * Version 3.0.5
  ** Fixed runtime error on JRE 11 due to `javax.xml.bind.DatatypeConverter` not existing anymore
   *** Re-introduced `commons-codec` dependency.

@@ -36,6 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.yubico.client.v2.exceptions.YubicoSignatureException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Base64;
@@ -50,7 +51,7 @@ public class Signature {
 			SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1);
 			Mac mac = Mac.getInstance(HMAC_SHA1);
 			mac.init(signingKey);        
-			byte[] raw = mac.doFinal(data.getBytes("UTF-8"));
+			byte[] raw = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
 			// Base64 encode the result, use old API call to work on android
 			return new String(Base64.encodeBase64(raw));
 		} catch (NoSuchAlgorithmException e) {
@@ -59,8 +60,6 @@ public class Signature {
 			throw new YubicoSignatureException("Invalid key in signature.", e);
 		} catch (IllegalStateException e) {
 			throw new YubicoSignatureException("Illegal state in signature", e);
-		} catch (UnsupportedEncodingException e) {
-			throw new YubicoSignatureException("Unsupported encoding (utf8?)", e);
 		}
 	}
 }

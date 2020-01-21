@@ -33,7 +33,7 @@ package com.yubico.client.v2;
 
 public class Cmd {
 
-    public static void main (String args []) throws Exception
+    public static void main (String[] args) throws Exception
     {
         if (args.length != 3) {
             System.err.println("\n*** Test your Yubikey against Yubico OTP validation server ***");

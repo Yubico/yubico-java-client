@@ -36,9 +36,12 @@ package com.yubico.client.v2;
 import com.yubico.client.v2.exceptions.YubicoValidationFailure;
 import com.yubico.client.v2.exceptions.YubicoVerificationException;
 import com.yubico.client.v2.impl.YubicoClientImpl;
-import org.apache.commons.codec.binary.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Base class for doing YubiKey validations using version 2 of the validation protocol.
@@ -50,7 +53,7 @@ public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
     protected Integer sync;
-    protected String wsapi_urls[] = {
+    protected String[] wsapi_urls = {
                "https://api.yubico.com/wsapi/2.0/verify",
                "https://api2.yubico.com/wsapi/2.0/verify",
                "https://api3.yubico.com/wsapi/2.0/verify",
@@ -102,7 +105,7 @@ public abstract class YubicoClient {
      * @see YubicoClient#setClientId(Integer)
      */
     public void setKey(String key) {
-        this.key = Base64.decodeBase64(key.getBytes());
+        this.key = Base64.getEncoder().encode(key.getBytes(StandardCharsets.UTF_8));
     }
     
     /**
@@ -111,7 +114,7 @@ public abstract class YubicoClient {
      * @see YubicoClient#setClientId(Integer)
      */
     public String getKey() {
-        return new String(Base64.encodeBase64(this.key));
+        return Base64.getEncoder().encodeToString(this.key);
     }
     
     /**
@@ -183,7 +186,7 @@ public abstract class YubicoClient {
 			throw new IllegalArgumentException("The OTP is too short to be valid");
 		}
 		
-		Integer len = otp.length();
+		int len = otp.length();
 
 		/* The OTP part is always the last 32 bytes of otp. Whatever is before that
 		 * (if anything) is the public ID of the YubiKey. The ID can be set to ''

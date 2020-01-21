@@ -55,7 +55,7 @@ public class VerificationResponseImpl implements VerificationResponse {
     private String otp;
     private String nonce;
     
-    private final Map<String, String> keyValueMap = new TreeMap<String, String>();
+    private final Map<String, String> keyValueMap = new TreeMap<>();
 
     public VerificationResponseImpl(InputStream inStream) throws IOException, YubicoInvalidResponse {
         if(inStream == null) {
@@ -71,24 +71,34 @@ public class VerificationResponseImpl implements VerificationResponse {
             String key=inputLine.substring(0,ix);
             String val=inputLine.substring(ix+1);
 
-            if ("h".equals(key)) {
-                this.h = val;
-            } else if ("t".equals(key)) {
-                this.t = val;
-            } else if ("otp".equals(key)) {
-                this.otp = val;
-            } else if ("status".equals(key))  {
-                this.status = ResponseStatus.valueOf(val);
-            } else if ("timestamp".equals(key)) {
-                this.timestamp = val;
-            } else if ("sessioncounter".equals(key)) {
-                this.sessioncounter = val;
-            } else if ("sessionuse".equals(key)) {
-                this.sessionuse = val;
-            } else if ("sl".equals(key)) {
-                this.sl = val;
-            } else if ("nonce".equals(key)) {
-                this.nonce = val;
+            switch (key) {
+                case "h":
+                    this.h = val;
+                    break;
+                case "t":
+                    this.t = val;
+                    break;
+                case "otp":
+                    this.otp = val;
+                    break;
+                case "status":
+                    this.status = ResponseStatus.valueOf(val);
+                    break;
+                case "timestamp":
+                    this.timestamp = val;
+                    break;
+                case "sessioncounter":
+                    this.sessioncounter = val;
+                    break;
+                case "sessionuse":
+                    this.sessionuse = val;
+                    break;
+                case "sl":
+                    this.sl = val;
+                    break;
+                case "nonce":
+                    this.nonce = val;
+                    break;
             }
             
             keyValueMap.put(key, val);

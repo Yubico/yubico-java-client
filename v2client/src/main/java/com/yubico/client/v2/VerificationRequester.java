@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;;
+import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;
 import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -64,8 +64,8 @@ public class VerificationRequester {
 	 */
 	public VerificationRequester() {
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(0, 100, 250L,
-				MILLISECONDS, new SynchronousQueue<Runnable>());
-	    completionService = new ExecutorCompletionService<VerificationResponse>(pool);
+				MILLISECONDS, new SynchronousQueue<>());
+	    completionService = new ExecutorCompletionService<>(pool);
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class VerificationRequester {
 	 * @throws com.yubico.client.v2.exceptions.YubicoVerificationException if validation fails on all urls
 	 */
 	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
-	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
+	    List<Future<VerificationResponse>> tasks = new ArrayList<>();
 	    for(String url : urls) {
 			tasks.add(completionService.submit(createTask(userAgent, url)));
 	    }
@@ -93,7 +93,7 @@ public class VerificationRequester {
 					tasksDone++;
 					tasks.remove(futureResponse);
 					response = futureResponse.get();
-					/**
+					/*
 					 * If the response returned is REPLAYED_REQUEST keep looking at responses
 					 * and hope we get something else. REPLAYED_REQUEST will be returned if a
 					 * validation server got sync before it parsed our query (otp and nonce is

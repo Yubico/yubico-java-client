@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -169,7 +171,7 @@ public class YubicoClientTest {
                     return new VerifyTask(url, userAgent) {
                         @Override
                         protected InputStream getResponseStream(URL url) throws IOException {
-                            return new ByteArrayInputStream("status=BACKEND_ERROR".getBytes("UTF-8"));
+                            return new ByteArrayInputStream("status=BACKEND_ERROR".getBytes(StandardCharsets.UTF_8));
                         }
                     };
                 } else {

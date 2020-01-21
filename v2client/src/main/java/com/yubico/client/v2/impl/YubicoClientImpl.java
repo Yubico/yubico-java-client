@@ -102,7 +102,7 @@ public class YubicoClientImpl extends YubicoClient {
         if (!isValidOTPFormat(otp)) {
             throw new IllegalArgumentException("The OTP is not a valid format");
         }
-        Map<String, String> requestMap = new TreeMap<String, String>();
+        Map<String, String> requestMap = new TreeMap<>();
         String nonce = UUID.randomUUID().toString().replaceAll("-", "");
         requestMap.put("nonce", nonce);
         requestMap.put("id", clientId.toString());
@@ -125,7 +125,7 @@ public class YubicoClientImpl extends YubicoClient {
 
 
         String[] wsapiUrls = this.getWsapiUrls();
-        List<String> validationUrls = new ArrayList<String>();
+        List<String> validationUrls = new ArrayList<>();
         for (String wsapiUrl : wsapiUrls) {
             warnIfDeprecatedUrl(wsapiUrl);
             validationUrls.add(wsapiUrl + "?" + queryString);

@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -50,7 +51,7 @@ public class VerificationResponseImplTest {
         try {
 			new VerificationResponseImpl(null);
             fail("Expected an IOException to be thrown.");
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         }
     }
 
@@ -67,7 +68,7 @@ public class VerificationResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
             assertTrue(response.toString().contains("REPLAYED_OTP"));
             assertTrue(response.toString().contains("cccccccfhcbeceeiinhjfjhfjutfvrjetfkjlhbduvdd"));
         } catch (IOException ioe) {
@@ -88,7 +89,7 @@ public class VerificationResponseImplTest {
                             "status=REPLAYED_OTP\n";
 
         try {
-            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+            VerificationResponse response = new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
             assertEquals("2011-01-26T11:48:21Z0323",response.getT());
             assertEquals("lPuwrWh8/5ZuRBN1q+v7/pCOfYo=", response.getH());
             assertEquals("REPLAYED_OTP", response.getStatus().toString());
@@ -110,7 +111,7 @@ public class VerificationResponseImplTest {
     	String testData = 	"foo=bar\n" +
     						"kaka=blahonga\n";
     	try {
-    		new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes("UTF-8")));
+    		new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
     	} catch (IOException ioe) {
     		fail("Encountered an exception");
     	}

@@ -109,19 +109,19 @@ public interface VerificationResponse {
      * Echos back the nonce from the request. Should match. 
      * @return nonce
      */
-    public String getNonce();
+    String getNonce();
     
     /**
      * Returns all parameters from the response as a Map
      * 
      * @return map of all values
      */
-    public Map<String, String> getKeyValueMap();
+    Map<String, String> getKeyValueMap();
     
     /**
      * Returns the public id of the returned OTP
      * 
      * @return public id
      */
-    public String getPublicId();
+    String getPublicId();
 }

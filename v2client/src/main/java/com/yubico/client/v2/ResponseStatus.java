@@ -32,25 +32,27 @@
 package com.yubico.client.v2;
 
 public enum ResponseStatus {
-	/* The OTP is valid. */ OK,
-	/* The OTP is invalid format. */ BAD_OTP,
-	/* The OTP has already been seen by the service. */ REPLAYED_OTP,
-	/* The HMAC signature verification failed. */ BAD_SIGNATURE,
-	/* The request lacks a parameter. */ MISSING_PARAMETER,
-	/* The request id does not exist. */ NO_SUCH_CLIENT,
-	/* The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
-	/* Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
-	/* Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,
-	/* Server has seen the OTP/Nonce combination before, see https://forum.yubico.com/viewtopic21be.html */
-	REPLAYED_REQUEST;
+    /* The OTP is valid. */ OK,
+    /* The OTP is invalid format. */ BAD_OTP,
+    /* The OTP has already been seen by the service. */ REPLAYED_OTP,
+    /* The HMAC signature verification failed. */ BAD_SIGNATURE,
+    /* The request lacks a parameter. */ MISSING_PARAMETER,
+    /* The request id does not exist. */ NO_SUCH_CLIENT,
+    /* The request id is not allowed to verify OTPs. */ OPERATION_NOT_ALLOWED,
+    /* Unexpected error in our server. Please contact us if you see this error. */ BACKEND_ERROR,
+    /* Server could not get requested number of syncs during before timeout */ NOT_ENOUGH_ANSWERS,
+    /* Server has seen the OTP/Nonce combination before, see https://forum.yubico.com/viewtopic21be.html */
+    REPLAYED_REQUEST;
 
-    public boolean isError()
-    {
+
+    public boolean isError() {
         return this == BACKEND_ERROR ||
-                this == BAD_OTP ||
-                this == BAD_SIGNATURE ||
-                this == NO_SUCH_CLIENT ||
-                this == MISSING_PARAMETER;
+               this == BAD_OTP ||
+               this == BAD_SIGNATURE ||
+               this == NO_SUCH_CLIENT ||
+               this == MISSING_PARAMETER ||
+               this == OPERATION_NOT_ALLOWED ||
+               this == NOT_ENOUGH_ANSWERS;
     }
 }
 

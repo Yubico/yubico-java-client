@@ -47,12 +47,12 @@ public enum ResponseStatus {
 
     public boolean isError() {
         return this == BACKEND_ERROR ||
-               this == BAD_OTP ||
-               this == BAD_SIGNATURE ||
-               this == NO_SUCH_CLIENT ||
-               this == MISSING_PARAMETER ||
-               this == OPERATION_NOT_ALLOWED ||
-               this == NOT_ENOUGH_ANSWERS;
+            this == BAD_OTP ||
+            this == BAD_SIGNATURE ||
+            this == NO_SUCH_CLIENT ||
+            this == MISSING_PARAMETER ||
+            this == OPERATION_NOT_ALLOWED ||
+            this == NOT_ENOUGH_ANSWERS;
     }
 }
 

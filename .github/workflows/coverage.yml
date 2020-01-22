@@ -1,0 +1,29 @@
+name: coverage
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    name: JDK ${{matrix.java}}
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [13]
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.java }}
+
+    - name: Report test coverage
+      env:
+        COVERALLS: true
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: mvn -B -DrepoToken=${COVERALLS_REPO_TOKEN} clean test jacoco:report coveralls:report

@@ -1,9 +1,10 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
-* Version 3.0.6 (unreleased)
- ** make use of Java build in Base64
- ** Maven Sources updated
- ** Java Doc completion to prevent warnings
+* Version 3.1.0 (unreleased)
+ ** Dropped support for JRE 7
+ ** Removed unused `commons-codec` dependency
+ ** Bumped dependency versions
+ ** Minor improvements to JavaDoc
 
 * Version 3.0.5
  ** Fixed runtime error on JRE 11 due to `javax.xml.bind.DatatypeConverter` not existing anymore

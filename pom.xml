@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.yubico</groupId>
     <artifactId>yubico-validation-client</artifactId>
-    <version>3.0.6</version>
+    <version>3.0.5</version>
     <name>Yubico OTP validation client</name>
     <description>Client library written in Java for verifying Yubikey one-time passwords (OTPs).</description>
     <organization>
@@ -67,8 +67,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

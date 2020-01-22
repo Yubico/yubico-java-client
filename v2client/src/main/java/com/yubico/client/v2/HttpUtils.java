@@ -12,7 +12,7 @@ public class HttpUtils {
             if(paramStr.length() > 0) {
                 paramStr.append("&");
             }
-            paramStr.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+            paramStr.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.name()));
         }
         return paramStr.toString();
     }

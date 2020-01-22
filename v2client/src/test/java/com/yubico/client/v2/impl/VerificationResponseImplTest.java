@@ -108,13 +108,13 @@ public class VerificationResponseImplTest {
     
     @Test(expected=YubicoInvalidResponse.class)
     public void testBrokenResponse() throws YubicoInvalidResponse {
-    	String testData = 	"foo=bar\n" +
-    						"kaka=blahonga\n";
-    	try {
-    		new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
-    	} catch (IOException ioe) {
-    		fail("Encountered an exception");
-    	}
+        String testData = "foo=bar\n" +
+            "kaka=blahonga\n";
+        try {
+            new VerificationResponseImpl(new ByteArrayInputStream(testData.getBytes(StandardCharsets.UTF_8)));
+        } catch (IOException ioe) {
+            fail("Encountered an exception");
+        }
     }
 }
 

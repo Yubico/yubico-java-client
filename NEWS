@@ -1,6 +1,6 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
-* Version 3.0.6
+* Version 3.0.6 (unreleased)
 ** * unneeded declaration inside TreeMap (2x)
    * using switch statement (micro performance and exact predictable size - compiler)
    * C-Style to Java Style []

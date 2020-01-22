@@ -5,6 +5,7 @@ target
 .project
 .classpath
 bin/
+pom.xml.versionsBackup
 
 ### Intellij ###
 # Covers IntelliJ and PyCharm

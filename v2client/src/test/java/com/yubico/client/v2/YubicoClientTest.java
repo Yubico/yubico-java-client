@@ -73,14 +73,14 @@ public class YubicoClientTest {
         assertTrue(client instanceof YubicoClientImpl);
     }
 
-    // YubiCloud is known to reply with bad signatures when given a bad OTP.
-    // See https://github.com/Yubico/yubikey-val/issues/8
-    @Test(expected = YubicoValidationFailure.class)
+    @Test
     public void testBadOTP() throws YubicoVerificationException, YubicoValidationFailure {
-    	String otp="11111111111111111111111111111111111";
-        client.verify(otp);
+        String otp="11111111111111111111111111111111111";
+        VerificationResponse response = client.verify(otp);
+        assertNotNull(response);
+        assertEquals(ResponseStatus.BAD_OTP, response.getStatus());
     }
-    
+
     @Test
     public void testReplayedOTP() throws YubicoVerificationException, YubicoValidationFailure {
         String otp = "cccccccfhcbelrhifnjrrddcgrburluurftrgfdrdifj";

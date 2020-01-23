@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 11, 13]
+        java: [7, 8, 11, 13]
 
     steps:
     - name: Check out code

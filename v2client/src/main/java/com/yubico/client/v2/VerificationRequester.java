@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;;
+import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;
 import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;

@@ -73,15 +73,7 @@ public class YubicoClientTest {
 
     @Test
     public void testBadOTP() throws YubicoVerificationException, YubicoValidationFailure {
-        String otp="11111111111111111111111111111111111";
-        client.setWsapiUrls(new String[] {
-            // api.yubico.com is known to return bad signatures when given a bad OTP
-            // See https://github.com/Yubico/yubikey-val/issues/8
-            "https://api2.yubico.com/wsapi/2.0/verify",
-            "https://api3.yubico.com/wsapi/2.0/verify",
-            "https://api4.yubico.com/wsapi/2.0/verify",
-            "https://api3.yubico.com/wsapi/2.0/verify",
-        });
+    	String otp="11111111111111111111111111111111111";
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(ResponseStatus.BAD_OTP, response.getStatus());
@@ -149,7 +141,7 @@ public class YubicoClientTest {
 			"https://api2.example.com/wsapi/2.0/verify"
     			});
     	VerificationResponse response = client.verify(otp);
-	fail("Expected exception to be thrown.");
+        fail("Expected exception to be thrown.");
     }
     
     @Test

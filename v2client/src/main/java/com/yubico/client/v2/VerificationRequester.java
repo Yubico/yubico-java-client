@@ -69,6 +69,16 @@ public class VerificationRequester {
 	}
 
 	/**
+	 * Alias of <code>fetch(urls, userAgent, 5)</code>.
+	 * @deprecated Use {@link #fetch(List, String, int)} with an explicit
+	 * <code>maxRetries</code> argument instead.
+	 */
+	@Deprecated
+	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
+		return fetch(urls, userAgent, 5);
+	}
+
+	/**
 	 * Fires off a validation request to each url in the list, returning the first one
 	 * that is not {@link ResponseStatus#REPLAYED_REQUEST}
 	 * 

@@ -166,6 +166,7 @@ public class YubicoClientTest {
             private boolean firstCall = true;
 
             @Override
+            @SuppressWarnings("deprecation")
             public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
                 // Plain pass-through just to test that the signature is stable
                 return super.fetch(urls, userAgent);

@@ -139,8 +139,8 @@ public class YubicoClientTest {
     	client.setWsapiUrls(new String[] {
 			"https://www.example.com/wsapi/2.0/verify",
 			"https://api2.example.com/wsapi/2.0/verify"
-    			});
-    	VerificationResponse response = client.verify(otp);
+        });
+    	client.verify(otp);
         fail("Expected exception to be thrown.");
     }
     
@@ -163,17 +163,17 @@ public class YubicoClientTest {
         YubicoClient client = new TestYubicoClientImpl(new VerificationRequester() {
             private boolean firstCall = true;
             @Override
-            protected VerifyTask createTask(String userAgent, String url) {
+            protected VerifyTask createTask(String userAgent, String url, int maxRetries) {
                 if (firstCall) {
                     firstCall = false;
-                    return new VerifyTask(url, userAgent) {
+                    return new VerifyTask(url, userAgent, maxRetries) {
                         @Override
                         protected InputStream getResponseStream(URL url) throws IOException {
                             return new ByteArrayInputStream("status=BACKEND_ERROR".getBytes("UTF-8"));
                         }
                     };
                 } else {
-                    return super.createTask(userAgent, url);
+                    return super.createTask(userAgent, url, maxRetries);
                 }
             }
         });

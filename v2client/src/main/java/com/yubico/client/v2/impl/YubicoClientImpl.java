@@ -131,7 +131,7 @@ public class YubicoClientImpl extends YubicoClient {
             validationUrls.add(wsapiUrl + "?" + queryString);
         }
 
-        VerificationResponse response = validationService.fetch(validationUrls, userAgent);
+        VerificationResponse response = validationService.fetch(validationUrls, userAgent, maxRetries);
 
         if (key != null) {
             verifySignature(response);

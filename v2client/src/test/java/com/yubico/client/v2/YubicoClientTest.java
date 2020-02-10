@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -162,6 +164,14 @@ public class YubicoClientTest {
 
         YubicoClient client = new TestYubicoClientImpl(new VerificationRequester() {
             private boolean firstCall = true;
+
+            @Override
+            @SuppressWarnings("deprecation")
+            public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
+                // Plain pass-through just to test that the signature is stable
+                return super.fetch(urls, userAgent);
+            }
+
             @Override
             protected VerifyTask createTask(String userAgent, String url, int maxRetries) {
                 if (firstCall) {

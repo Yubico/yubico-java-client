@@ -212,7 +212,7 @@ public class VerificationRequester {
 					// Oh well. Try again anyway.
 				}
 				attempt++;
-			} while (attempt < maxRetries + 1);
+			} while (attempt <= maxRetries);
 
 			throw lastException;
 		}

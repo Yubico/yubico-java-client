@@ -50,7 +50,7 @@ public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
     protected Integer sync;
-    protected Integer maxRetries = 5;
+    protected int maxRetries = 5;
     protected String wsapi_urls[] = {
                "https://api.yubico.com/wsapi/2.0/verify"
     		};
@@ -125,7 +125,7 @@ public abstract class YubicoClient {
      * Default is 5.
      * @param maxRetries maximum number of retries
      */
-    public void setMaxRetries(Integer maxRetries) {
+    public void setMaxRetries(int maxRetries) {
         this.maxRetries = maxRetries;
     }
     

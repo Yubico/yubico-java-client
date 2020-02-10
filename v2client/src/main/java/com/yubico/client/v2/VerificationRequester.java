@@ -174,7 +174,7 @@ public class VerificationRequester {
 			try {
 				return new VerificationResponseImpl(getResponseStream(url));
 			} catch (IOException e) {
-				log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
+				log.warn("Exception when requesting {}.", url.getHost(), e);
 				throw e;
 			}
 		}
@@ -191,7 +191,7 @@ public class VerificationRequester {
 					conn.setReadTimeout(15000);
 					return conn.getInputStream();
 				} catch (IOException e) {
-					log.warn("Exception when requesting {}, retrying: {}", url.getHost(), e.getMessage());
+					log.warn("Exception when requesting {}, retrying.", url.getHost(), e);
 					lastException = e;
 				}
 

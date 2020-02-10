@@ -123,9 +123,13 @@ public abstract class YubicoClient {
     /**
      * Set the maximum number of retries to attempt in the event of a network-related failure.
      * Default is 5.
-     * @param maxRetries maximum number of retries
+     * @param maxRetries maximum number of retries. Must not be negative.
      */
     public void setMaxRetries(int maxRetries) {
+        if (maxRetries < 0) {
+            throw new IllegalArgumentException("negative maxRetries is not valid.");
+        }
+
         this.maxRetries = maxRetries;
     }
     

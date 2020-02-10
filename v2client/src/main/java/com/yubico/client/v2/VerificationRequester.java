@@ -84,12 +84,16 @@ public class VerificationRequester {
 	 * 
 	 * @param urls a list of validation urls to be contacted
 	 * @param userAgent userAgent to send in request, if null one will be generated
-	 * @param maxRetries maximum number of retries in the case of network errors
+	 * @param maxRetries maximum number of retries in the case of network errors. Must not be negative.
 	 * @return {@link VerificationResponse} object from the first server response that is not
 	 * {@link ResponseStatus#REPLAYED_REQUEST}
 	 * @throws com.yubico.client.v2.exceptions.YubicoVerificationException if validation fails on all urls
 	 */
 	public VerificationResponse fetch(List<String> urls, String userAgent, int maxRetries) throws YubicoVerificationException {
+	    if (maxRetries < 0) {
+		throw new IllegalArgumentException("negative maxRetries is not valid.");
+	    }
+
 	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
 	    for(String url : urls) {
 			tasks.add(completionService.submit(createTask(userAgent, url, maxRetries)));
@@ -168,8 +172,12 @@ public class VerificationRequester {
 		 * Set up a VerifyTask for the Yubico Validation protocol v2
 		 * @param url the url to be used
 		 * @param userAgent the userAgent to be sent to the server, or NULL and one is calculated
+		 * @param maxRetries the maximum number of times to retry on network or server error
 		 */
 		public VerifyTask(String url, String userAgent, int maxRetries) {
+			if (maxRetries < 0) {
+				throw new IllegalArgumentException("negative maxRetries is not valid.");
+			}
 			this.url = url;
 			this.userAgent = userAgent;
 			this.maxRetries = maxRetries;

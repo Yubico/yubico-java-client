@@ -207,6 +207,11 @@ public class YubicoClientTest {
     public void testEmptyOTPPublicId() {
         YubicoClient.getPublicId("");
     }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testNegativeMaxRetries() {
+        client.setMaxRetries(-1);
+    }
     
     @Test
     public void testValidOTPPublicId() {

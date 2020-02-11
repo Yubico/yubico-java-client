@@ -1,5 +1,11 @@
 yubico-java-client NEWS -- History of user-visible changes.     -*- outline -*-
 
+* Version 3.1.0 (unreleased)
+ ** Updates to work better with new YubiCloud
+  *** Default YubiCloud URLs now include only `api.yubico.com`
+  *** `YubicoClient` now retries requests a number of times configurable via `.setMaxRetries(int)` (default: 5)
+  *** `YubicoClient` now logs warnings when deprecated URLs `api2.yubico.com ... api5.yubico.com` are used
+
 * Version 3.0.5
  ** Fixed runtime error on JRE 11 due to `javax.xml.bind.DatatypeConverter` not existing anymore
   *** Re-introduced `commons-codec` dependency.

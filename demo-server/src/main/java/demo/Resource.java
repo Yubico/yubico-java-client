@@ -1,7 +1,6 @@
 package demo;
 
 import com.google.common.collect.HashMultimap;
-import com.yubico.client.v2.ResponseStatus;
 import com.yubico.client.v2.VerificationResponse;
 import com.yubico.client.v2.YubicoClient;
 

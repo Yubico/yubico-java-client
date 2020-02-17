@@ -50,12 +50,9 @@ public abstract class YubicoClient {
     protected Integer clientId;
     protected byte[] key;
     protected Integer sync;
+    protected int maxRetries = 5;
     protected String wsapi_urls[] = {
-               "https://api.yubico.com/wsapi/2.0/verify",
-               "https://api2.yubico.com/wsapi/2.0/verify",
-               "https://api3.yubico.com/wsapi/2.0/verify",
-               "https://api4.yubico.com/wsapi/2.0/verify",
-               "https://api5.yubico.com/wsapi/2.0/verify"
+               "https://api.yubico.com/wsapi/2.0/verify"
     		};
     
     protected String userAgent = "yubico-java-client/" + Version.version +
@@ -122,6 +119,19 @@ public abstract class YubicoClient {
     public void setSync(Integer sync) {
     	this.sync = sync;
     }
+
+    /**
+     * Set the maximum number of retries to attempt in the event of a network-related failure.
+     * Default is 5.
+     * @param maxRetries maximum number of retries. Must not be negative.
+     */
+    public void setMaxRetries(int maxRetries) {
+        if (maxRetries < 0) {
+            throw new IllegalArgumentException("negative maxRetries is not valid.");
+        }
+
+        this.maxRetries = maxRetries;
+    }
     
     /**
      * Get the list of URLs that will be used for validating OTPs.
@@ -147,6 +157,13 @@ public abstract class YubicoClient {
 	protected void warnIfDeprecatedUrl(String url) {
 		if (url != null && url.startsWith("http:")) {
 			log.warn("Deprecated YubiCloud URL: {} - naked HTTP requests are deprecated and will not be supported from 2019-02-04. See: https://status.yubico.com/2018/11/26/deprecating-yubicloud-v1-protocol-plain-text-requests-and-old-tls-versions/", url);
+		}
+		if (url != null &&
+                    (url.startsWith("https://api2.yubico.com/") ||
+                     url.startsWith("https://api3.yubico.com/") ||
+                     url.startsWith("https://api4.yubico.com/") ||
+                     url.startsWith("https://api5.yubico.com/"))) {
+			log.warn("Deprecated YubiCloud URL: {} - api2, api3, api4 and api5 are deprecated will not be supported from 2020-07-01. See: https://status.yubico.com/", url);
 		}
 	}
 	

@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,15 +75,7 @@ public class YubicoClientTest {
 
     @Test
     public void testBadOTP() throws YubicoVerificationException, YubicoValidationFailure {
-        String otp="11111111111111111111111111111111111";
-        client.setWsapiUrls(new String[] {
-            // api.yubico.com is known to return bad signatures when given a bad OTP
-            // See https://github.com/Yubico/yubikey-val/issues/8
-            "https://api2.yubico.com/wsapi/2.0/verify",
-            "https://api3.yubico.com/wsapi/2.0/verify",
-            "https://api4.yubico.com/wsapi/2.0/verify",
-            "https://api3.yubico.com/wsapi/2.0/verify",
-        });
+    	String otp="11111111111111111111111111111111111";
         VerificationResponse response = client.verify(otp);
         assertNotNull(response);
         assertEquals(ResponseStatus.BAD_OTP, response.getStatus());
@@ -147,9 +141,9 @@ public class YubicoClientTest {
     	client.setWsapiUrls(new String[] {
 			"https://www.example.com/wsapi/2.0/verify",
 			"https://api2.example.com/wsapi/2.0/verify"
-    			});
-    	VerificationResponse response = client.verify(otp);
-	fail("Expected exception to be thrown.");
+        });
+    	client.verify(otp);
+        fail("Expected exception to be thrown.");
     }
     
     @Test
@@ -170,18 +164,26 @@ public class YubicoClientTest {
 
         YubicoClient client = new TestYubicoClientImpl(new VerificationRequester() {
             private boolean firstCall = true;
+
             @Override
-            protected VerifyTask createTask(String userAgent, String url) {
+            @SuppressWarnings("deprecation")
+            public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
+                // Plain pass-through just to test that the signature is stable
+                return super.fetch(urls, userAgent);
+            }
+
+            @Override
+            protected VerifyTask createTask(String userAgent, String url, int maxRetries) {
                 if (firstCall) {
                     firstCall = false;
-                    return new VerifyTask(url, userAgent) {
+                    return new VerifyTask(url, userAgent, maxRetries) {
                         @Override
                         protected InputStream getResponseStream(URL url) throws IOException {
                             return new ByteArrayInputStream("status=BACKEND_ERROR".getBytes("UTF-8"));
                         }
                     };
                 } else {
-                    return super.createTask(userAgent, url);
+                    return super.createTask(userAgent, url, maxRetries);
                 }
             }
         });
@@ -204,6 +206,11 @@ public class YubicoClientTest {
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyOTPPublicId() {
         YubicoClient.getPublicId("");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testNegativeMaxRetries() {
+        client.setMaxRetries(-1);
     }
     
     @Test

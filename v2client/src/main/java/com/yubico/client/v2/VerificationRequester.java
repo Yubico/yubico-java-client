@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;;
+import static com.yubico.client.v2.ResponseStatus.BACKEND_ERROR;
 import static com.yubico.client.v2.ResponseStatus.REPLAYED_REQUEST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -69,19 +69,34 @@ public class VerificationRequester {
 	}
 
 	/**
+	 * Alias of <code>fetch(urls, userAgent, 5)</code>.
+	 * @deprecated Use {@link #fetch(List, String, int)} with an explicit
+	 * <code>maxRetries</code> argument instead.
+	 */
+	@Deprecated
+	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
+		return fetch(urls, userAgent, 5);
+	}
+
+	/**
 	 * Fires off a validation request to each url in the list, returning the first one
 	 * that is not {@link ResponseStatus#REPLAYED_REQUEST}
 	 * 
 	 * @param urls a list of validation urls to be contacted
 	 * @param userAgent userAgent to send in request, if null one will be generated
+	 * @param maxRetries maximum number of retries in the case of network errors. Must not be negative.
 	 * @return {@link VerificationResponse} object from the first server response that is not
 	 * {@link ResponseStatus#REPLAYED_REQUEST}
 	 * @throws com.yubico.client.v2.exceptions.YubicoVerificationException if validation fails on all urls
 	 */
-	public VerificationResponse fetch(List<String> urls, String userAgent) throws YubicoVerificationException {
+	public VerificationResponse fetch(List<String> urls, String userAgent, int maxRetries) throws YubicoVerificationException {
+	    if (maxRetries < 0) {
+		throw new IllegalArgumentException("negative maxRetries is not valid.");
+	    }
+
 	    List<Future<VerificationResponse>> tasks = new ArrayList<Future<VerificationResponse>>();
 	    for(String url : urls) {
-			tasks.add(completionService.submit(createTask(userAgent, url)));
+			tasks.add(completionService.submit(createTask(userAgent, url, maxRetries)));
 	    }
 	    VerificationResponse response = null;
 		try {
@@ -138,8 +153,8 @@ public class VerificationRequester {
 	    return response;
 	}
 
-	protected VerifyTask createTask(String userAgent, String url) {
-		return new VerifyTask(url, userAgent);
+	protected VerifyTask createTask(String userAgent, String url, int maxRetries) {
+		return new VerifyTask(url, userAgent, maxRetries);
 	}
 
 	/**
@@ -151,15 +166,21 @@ public class VerificationRequester {
 
 		private final String url;
 		private final String userAgent;
+		private final int maxRetries;
 		
 		/**
 		 * Set up a VerifyTask for the Yubico Validation protocol v2
 		 * @param url the url to be used
 		 * @param userAgent the userAgent to be sent to the server, or NULL and one is calculated
+		 * @param maxRetries the maximum number of times to retry on network or server error
 		 */
-		public VerifyTask(String url, String userAgent) {
+		public VerifyTask(String url, String userAgent, int maxRetries) {
+			if (maxRetries < 0) {
+				throw new IllegalArgumentException("negative maxRetries is not valid.");
+			}
 			this.url = url;
 			this.userAgent = userAgent;
+			this.maxRetries = maxRetries;
 		}
 		
 		/**
@@ -171,17 +192,37 @@ public class VerificationRequester {
 			try {
 				return new VerificationResponseImpl(getResponseStream(url));
 			} catch (IOException e) {
-				log.warn("Exception when requesting {}: {}", url.getHost(), e.getMessage());
+				log.warn("Exception when requesting {}.", url.getHost(), e);
 				throw e;
 			}
 		}
 
 		protected InputStream getResponseStream(URL url) throws IOException {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestProperty("User-Agent", userAgent);
-			conn.setConnectTimeout(15000);
-			conn.setReadTimeout(15000);
-			return conn.getInputStream();
+			int attempt = 0;
+			IOException lastException;
+
+			do {
+				try {
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setRequestProperty("User-Agent", userAgent);
+					conn.setConnectTimeout(15000);
+					conn.setReadTimeout(15000);
+					return conn.getInputStream();
+				} catch (IOException e) {
+					log.warn("Exception when requesting {}, retrying.", url.getHost(), e);
+					lastException = e;
+				}
+
+				try {
+					// Delay a little bit and hope whatever is happening network-wise clears up.
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// Oh well. Try again anyway.
+				}
+				attempt++;
+			} while (attempt <= maxRetries);
+
+			throw lastException;
 		}
 	}
 }

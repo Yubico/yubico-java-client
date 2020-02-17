@@ -12,3 +12,7 @@ pom.xml.versionsBackup
 
 *.iml
 .idea/
+
+### VSCode ###
+
+.vscode/

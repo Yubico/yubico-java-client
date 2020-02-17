@@ -31,6 +31,7 @@ package com.yubico.jaas;
 
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -184,13 +185,17 @@ public class YubikeyLoginModule implements LoginModule {
                 }
                 try {
                     log.debug("Trying to instantiate {}",usermap_class_name);
-                    this.ykmap = (YubikeyToUserMap) Class.forName(usermap_class_name).newInstance();
+                    this.ykmap = (YubikeyToUserMap) Class.forName(usermap_class_name).getDeclaredConstructor().newInstance();
                     this.ykmap.setOptions(options);
                 } catch (ClassNotFoundException ex) {
                     log.error("Could not create usermap from class " + usermap_class_name, ex);
                 } catch (InstantiationException ex) {
                     log.error("Could not create usermap from class " + usermap_class_name, ex);
                 } catch (IllegalAccessException ex) {
+                    log.error("Could not create usermap from class " + usermap_class_name, ex);
+                } catch (NoSuchMethodException ex) {
+                    log.error("Could not create usermap from class " + usermap_class_name, ex);
+                } catch (InvocationTargetException ex) {
                     log.error("Could not create usermap from class " + usermap_class_name, ex);
                 }
 	}

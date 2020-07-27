@@ -18,7 +18,7 @@ jobs:
 
     - name: Prep scan
       run: |
-        docker login yubico-yes-docker-local.jfrog.iodn/ \
+        docker login yubico-yes-docker-local.jfrog.io/ \
              -u svc-static-code-analysis-reader \
              -p ${{ secrets.ARTIFACTORY_READER_TOKEN }}
         docker pull ${SCAN_IMG}

@@ -1,5 +1,7 @@
 == yubico-java-client
 
+NOTE: This project is deprecated and is no longer being maintained. For more information and guidance on how to implement Yubico OTP support in applications, see https://status.yubico.com/2021/04/15/one-api-yubico-com-one-http-get/.
+
 image:https://github.com/Yubico/yubico-java-client/workflows/build/badge.svg["Build Status", link="https://github.com/Yubico/yubico-java-client/actions"]
 
 This repository contains a Java library with an accompanying demo server, as well as a 
